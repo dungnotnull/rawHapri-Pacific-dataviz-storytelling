@@ -1,0 +1,208 @@
+"use client";
+
+import { useRef } from "react";
+
+import { SeaLevelScrolly } from "@/components/charts/SeaLevelScrolly";
+import { ShorelineStrip } from "@/components/charts/ShorelineStrip";
+import { SourceNote } from "@/components/ui/SourceNote";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { useStepObserver } from "@/hooks/useStepObserver";
+
+const STEPS = [
+  {
+    kicker: "1993 → 2023",
+    text: "Across the Pacific, sea levels have climbed almost every single year for three decades.",
+  },
+  {
+    kicker: "Tuvalu",
+    text: "For low-lying atoll nations like Tuvalu, that rise isn't abstract - it's measured against land that barely clears the water to begin with.",
+  },
+  {
+    kicker: "What's left",
+    text: "Multiply this by thirty years, and a shoreline doesn't just move. It disappears.",
+  },
+];
+
+export function Hero() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const step = useStepObserver(containerRef, 0);
+
+  return (
+    <section
+      id="intro"
+      className="relative bg-ocean-deep text-foam"
+    >
+      {/* ---- opening banner ---- */}
+      <div className="relative flex min-h-[92vh] flex-col items-start justify-center px-6 md:px-16 pt-10">
+        <AmbientWaves />
+        <div className="relative z-10 grid w-full gap-8 md:grid-cols-[1fr_0.8fr] items-center">
+          <div>
+            <ScrollReveal animation="fade-down" delay={200}>
+              <p className="eyebrow text-coral-soft">
+                A Pacific climate story 
+              </p>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-up" delay={400}>
+              <h1 className="mt-5 max-w-2xl font-display text-[clamp(2.4rem,6vw,4.75rem)] font-medium leading-[1.05] tracking-tight">
+                The tide that keeps rising has already been paid for -
+                <span className="italic text-lagoon-soft"> just not by the people it's rising on.</span>
+              </h1>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-up" delay={600}>
+              <p className="prose-col mt-7 text-lg text-foam/70">
+                Twenty-one Pacific Island countries and territories report their
+                sea levels every year. Almost none of them produce the emissions
+                driving the rise.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-up" delay={800}>
+              <div className="mt-14 flex items-center gap-3 text-foam/50">
+                <span className="eyebrow">Scroll</span>
+                <span className="h-8 w-px animate-pulse bg-foam/30" />
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Hero Image */}
+          <ScrollReveal animation="fade-left" delay={600}>
+            <div className="relative overflow-hidden rounded-2xl shadow-2xl border border-foam/10">
+              <img
+                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Pacific Island coastline showing the delicate relationship between land and rising seas"
+                className="h-64 w-full object-cover md:h-80 lg:h-96"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent p-5">
+                <p className="text-sm font-medium text-foam">Rising seas, rising costs</p>
+                <p className="text-xs text-foam/80 mt-1">Pacific coastlines bear the brunt of climate change</p>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </div>
+
+      {/* ---- scrollytelling: sea level + shoreline ---- */}
+      <div ref={containerRef} className="relative mx-auto max-w-6xl px-6 md:px-16">
+        <div className="grid gap-10 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] items-start">
+          {/* text steps */}
+          <div className="relative">
+            {STEPS.map((s, i) => (
+              <div
+                key={i}
+                data-step={i}
+                className="flex min-h-[80vh] flex-col justify-center py-12"
+              >
+                <p className="eyebrow text-coral-soft">{s.kicker}</p>
+                <p className="prose-col mt-4 font-display text-2xl font-medium leading-snug md:text-[1.85rem]">
+                  {s.text}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* sticky visual */}
+          <div className="relative h-full">
+            <div className="sticky top-0 flex h-screen flex-col justify-center gap-6 py-8">
+              <div className="h-[54vh] w-full overflow-hidden">
+                <SeaLevelScrolly step={step} />
+              </div>
+              <ShorelineStrip retreat={step >= 1 ? 1 : 0} />
+              <SourceNote className="text-white text-xs">
+                <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 1993–2023.</span>
+                <span>Line shows unweighted average across 21 PICTs; Tuvalu shown individually.</span>
+              </SourceNote>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ---- illustrative images ---- */}
+      <div className="relative mx-auto max-w-6xl px-6 pb-20 md:px-16">
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Image 1 - Pacific Island coastline */}
+          <ScrollReveal animation="fade-right" delay={200}>
+            <div className="relative overflow-hidden rounded-2xl shadow-xl">
+              <img
+                src="https://images.unsplash.com/photo-1682832920244-78123cc71cfa?q=80&w=1075&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Pacific Island coastline showing the delicate relationship between land and sea"
+                className="h-64 w-full object-cover md:h-80"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                <p className="text-sm font-medium text-foam">Where land meets ocean</p>
+                <p className="text-xs text-foam/70">Pacific Island coastline</p>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          {/* Image 2 - Rising tide impact */}
+          <ScrollReveal animation="fade-left" delay={400}>
+            <div className="relative overflow-hidden rounded-2xl shadow-xl md:mt-12">
+              <img
+                src="https://images.unsplash.com/photo-1776267195984-a6bb22048cea?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Coastal erosion showing the impact of rising seas on shorelines"
+                className="h-64 w-full object-cover md:h-80"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                <p className="text-sm font-medium text-foam">The rising tide</p>
+                <p className="text-xs text-foam/70">Shorelines transformed over time</p>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </div>
+
+      {/* ---- closing quote ---- */}
+      <div className="relative mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-6 py-24 text-center md:px-16">
+        <svg width="28" height="20" viewBox="0 0 28 20" fill="none" className="mb-6 text-coral animate-on-scroll animate-zoom-in is-visible">
+          <path d="M0 20V11.5C0 5.15 4.5 0.9 11 0L11.8 3.1C7.8 4 5.6 6.7 5.3 10.2H10V20H0ZM16.2 20V11.5C16.2 5.15 20.7 0.9 27.2 0L28 3.1C24 4 21.8 6.7 21.5 10.2H26.2V20H16.2Z" fill="currentColor"/>
+        </svg>
+        <p className="font-display text-2xl italic leading-relaxed text-foam md:text-3xl animate-on-scroll animate-fade-up is-visible">
+          The sea keeps us alive, but at the same time, it slowly devours us.
+          It devours our memories and our culture bit by bit. And that
+          scares me.
+        </p>
+        <ScrollReveal animation="fade-up" delay={600}>
+          <p className="eyebrow mt-6 text-foam/45">— a voice from the Pacific</p>
+        </ScrollReveal>
+      </div>
+    </section>
+  );
+}
+
+function AmbientWaves() {
+  return (
+    <svg
+      aria-hidden
+      className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.14]"
+      viewBox="0 0 1200 800"
+      preserveAspectRatio="xMidYMax slice"
+    >
+      <path
+        d="M0 620 Q150 580 300 620 T600 620 T900 620 T1200 620 V800 H0 Z"
+        fill="var(--lagoon)"
+      >
+        <animate
+          attributeName="d"
+          dur="14s"
+          repeatCount="indefinite"
+          values="M0 620 Q150 580 300 620 T600 620 T900 620 T1200 620 V800 H0 Z;
+                  M0 640 Q150 600 300 640 T600 640 T900 640 T1200 640 V800 H0 Z;
+                  M0 620 Q150 580 300 620 T600 620 T900 620 T1200 620 V800 H0 Z"
+        />
+      </path>
+      <path
+        d="M0 680 Q200 650 400 680 T800 680 T1200 680 V800 H0 Z"
+        fill="var(--coral)"
+        opacity="0.5"
+      >
+        <animate
+          attributeName="d"
+          dur="18s"
+          repeatCount="indefinite"
+          values="M0 680 Q200 650 400 680 T800 680 T1200 680 V800 H0 Z;
+                  M0 660 Q200 690 400 660 T800 660 T1200 660 V800 H0 Z;
+                  M0 680 Q200 650 400 680 T800 680 T1200 680 V800 H0 Z"
+        />
+      </path>
+    </svg>
+  );
+}

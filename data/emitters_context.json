@@ -1,0 +1,165 @@
+{
+  "pacific_avg": 1.2,
+  "major_emitters": [
+    {
+      "label": "Qatar",
+      "value": 35.1,
+      "group": "world"
+    },
+    {
+      "label": "Kuwait",
+      "value": 21.5,
+      "group": "world"
+    },
+    {
+      "label": "United Arab Emirates",
+      "value": 19.3,
+      "group": "world"
+    },
+    {
+      "label": "Bahrain",
+      "value": 18.2,
+      "group": "world"
+    },
+    {
+      "label": "Saudi Arabia",
+      "value": 17.1,
+      "group": "world"
+    },
+    {
+      "label": "Australia",
+      "value": 14.9,
+      "group": "world"
+    },
+    {
+      "label": "United States",
+      "value": 14.2,
+      "group": "world"
+    },
+    {
+      "label": "Canada",
+      "value": 14.1,
+      "group": "world"
+    },
+    {
+      "label": "Russia",
+      "value": 11.8,
+      "group": "world"
+    },
+    {
+      "label": "Germany",
+      "value": 8.8,
+      "group": "world"
+    },
+    {
+      "label": "Japan",
+      "value": 8.7,
+      "group": "world"
+    },
+    {
+      "label": "South Korea",
+      "value": 11.6,
+      "group": "world"
+    },
+    {
+      "label": "China",
+      "value": 7.9,
+      "group": "world"
+    }
+  ],
+  "pacific_countries": [
+    {
+      "label": "Kiribati",
+      "value": 0.6,
+      "group": "pacific",
+      "lat": -3.37,
+      "lon": -168.73
+    },
+    {
+      "label": "Marshall Islands",
+      "value": 0.5,
+      "group": "pacific",
+      "lat": 7.13,
+      "lon": 171.18
+    },
+    {
+      "label": "Federated States of Micronesia",
+      "value": 0.7,
+      "group": "pacific",
+      "lat": 7.43,
+      "lon": 150.55
+    },
+    {
+      "label": "Nauru",
+      "value": 0.4,
+      "group": "pacific",
+      "lat": -0.52,
+      "lon": 166.93
+    },
+    {
+      "label": "Palau",
+      "value": 86.7,
+      "group": "pacific",
+      "lat": 7.52,
+      "lon": 134.58,
+      "note": "International shipping registry"
+    },
+    {
+      "label": "Papua New Guinea",
+      "value": 0.9,
+      "group": "pacific",
+      "lat": -6.31,
+      "lon": 143.95
+    },
+    {
+      "label": "Solomon Islands",
+      "value": 0.5,
+      "group": "pacific",
+      "lat": -9.64,
+      "lon": 160.16
+    },
+    {
+      "label": "Tonga",
+      "value": 1.8,
+      "group": "pacific",
+      "lat": -21.18,
+      "lon": -175.2
+    },
+    {
+      "label": "Tuvalu",
+      "value": 0.4,
+      "group": "pacific",
+      "lat": -7.47,
+      "lon": 177.65
+    },
+    {
+      "label": "Vanuatu",
+      "value": 0.6,
+      "group": "pacific",
+      "lat": -15.38,
+      "lon": 166.96
+    },
+    {
+      "label": "Samoa",
+      "value": 1.2,
+      "group": "pacific",
+      "lat": -13.76,
+      "lon": -172.1
+    },
+    {
+      "label": "Fiji",
+      "value": 1.9,
+      "group": "pacific",
+      "lat": -17.71,
+      "lon": 178.07
+    },
+    {
+      "label": "New Caledonia",
+      "value": 18.4,
+      "group": "pacific",
+      "lat": -20.91,
+      "lon": 165.4,
+      "note": "Nickel processing industry"
+    }
+  ]
+}

@@ -1,0 +1,2816 @@
+[
+  {
+    "code": "FJI",
+    "name": "Fiji",
+    "lat": -17.71,
+    "lon": 178.07,
+    "latest_year": 2023,
+    "latest_value": 159,
+    "series": [
+      {
+        "year": 1993,
+        "value": 85
+      },
+      {
+        "year": 1994,
+        "value": 89.5
+      },
+      {
+        "year": 1995,
+        "value": 90
+      },
+      {
+        "year": 1996,
+        "value": 95.5
+      },
+      {
+        "year": 1997,
+        "value": 95
+      },
+      {
+        "year": 1998,
+        "value": 100.5
+      },
+      {
+        "year": 1999,
+        "value": 100
+      },
+      {
+        "year": 2000,
+        "value": 103.5
+      },
+      {
+        "year": 2001,
+        "value": 105
+      },
+      {
+        "year": 2002,
+        "value": 107.5
+      },
+      {
+        "year": 2003,
+        "value": 109
+      },
+      {
+        "year": 2004,
+        "value": 115.5
+      },
+      {
+        "year": 2005,
+        "value": 115
+      },
+      {
+        "year": 2006,
+        "value": 117.5
+      },
+      {
+        "year": 2007,
+        "value": 123
+      },
+      {
+        "year": 2008,
+        "value": 121.5
+      },
+      {
+        "year": 2009,
+        "value": 126
+      },
+      {
+        "year": 2010,
+        "value": 128.5
+      },
+      {
+        "year": 2011,
+        "value": 131
+      },
+      {
+        "year": 2012,
+        "value": 133.5
+      },
+      {
+        "year": 2013,
+        "value": 138
+      },
+      {
+        "year": 2014,
+        "value": 137.5
+      },
+      {
+        "year": 2015,
+        "value": 141
+      },
+      {
+        "year": 2016,
+        "value": 144.5
+      },
+      {
+        "year": 2017,
+        "value": 144
+      },
+      {
+        "year": 2018,
+        "value": 146.5
+      },
+      {
+        "year": 2019,
+        "value": 151
+      },
+      {
+        "year": 2020,
+        "value": 154.5
+      },
+      {
+        "year": 2021,
+        "value": 156
+      },
+      {
+        "year": 2022,
+        "value": 157.5
+      },
+      {
+        "year": 2023,
+        "value": 159
+      }
+    ]
+  },
+  {
+    "code": "KIR",
+    "name": "Kiribati",
+    "lat": -3.37,
+    "lon": -168.73,
+    "latest_year": 2023,
+    "latest_value": 122,
+    "series": [
+      {
+        "year": 1993,
+        "value": 48
+      },
+      {
+        "year": 1994,
+        "value": 49.5
+      },
+      {
+        "year": 1995,
+        "value": 53
+      },
+      {
+        "year": 1996,
+        "value": 52.5
+      },
+      {
+        "year": 1997,
+        "value": 57
+      },
+      {
+        "year": 1998,
+        "value": 60.5
+      },
+      {
+        "year": 1999,
+        "value": 63
+      },
+      {
+        "year": 2000,
+        "value": 62.5
+      },
+      {
+        "year": 2001,
+        "value": 67
+      },
+      {
+        "year": 2002,
+        "value": 69.5
+      },
+      {
+        "year": 2003,
+        "value": 70
+      },
+      {
+        "year": 2004,
+        "value": 73.5
+      },
+      {
+        "year": 2005,
+        "value": 78
+      },
+      {
+        "year": 2006,
+        "value": 77.5
+      },
+      {
+        "year": 2007,
+        "value": 82
+      },
+      {
+        "year": 2008,
+        "value": 82.5
+      },
+      {
+        "year": 2009,
+        "value": 87
+      },
+      {
+        "year": 2010,
+        "value": 86.5
+      },
+      {
+        "year": 2011,
+        "value": 93
+      },
+      {
+        "year": 2012,
+        "value": 92.5
+      },
+      {
+        "year": 2013,
+        "value": 96
+      },
+      {
+        "year": 2014,
+        "value": 97.5
+      },
+      {
+        "year": 2015,
+        "value": 100
+      },
+      {
+        "year": 2016,
+        "value": 102.5
+      },
+      {
+        "year": 2017,
+        "value": 106
+      },
+      {
+        "year": 2018,
+        "value": 106.5
+      },
+      {
+        "year": 2019,
+        "value": 110
+      },
+      {
+        "year": 2020,
+        "value": 111.5
+      },
+      {
+        "year": 2021,
+        "value": 114
+      },
+      {
+        "year": 2022,
+        "value": 119.5
+      },
+      {
+        "year": 2023,
+        "value": 122
+      }
+    ]
+  },
+  {
+    "code": "MHL",
+    "name": "Marshall Islands",
+    "lat": 7.13,
+    "lon": 171.18,
+    "latest_year": 2023,
+    "latest_value": 120,
+    "series": [
+      {
+        "year": 1993,
+        "value": 45
+      },
+      {
+        "year": 1994,
+        "value": 49.5
+      },
+      {
+        "year": 1995,
+        "value": 54
+      },
+      {
+        "year": 1996,
+        "value": 52.5
+      },
+      {
+        "year": 1997,
+        "value": 57
+      },
+      {
+        "year": 1998,
+        "value": 60.5
+      },
+      {
+        "year": 1999,
+        "value": 64
+      },
+      {
+        "year": 2000,
+        "value": 64.5
+      },
+      {
+        "year": 2001,
+        "value": 66
+      },
+      {
+        "year": 2002,
+        "value": 68.5
+      },
+      {
+        "year": 2003,
+        "value": 70
+      },
+      {
+        "year": 2004,
+        "value": 73.5
+      },
+      {
+        "year": 2005,
+        "value": 76
+      },
+      {
+        "year": 2006,
+        "value": 78.5
+      },
+      {
+        "year": 2007,
+        "value": 81
+      },
+      {
+        "year": 2008,
+        "value": 82.5
+      },
+      {
+        "year": 2009,
+        "value": 86
+      },
+      {
+        "year": 2010,
+        "value": 89.5
+      },
+      {
+        "year": 2011,
+        "value": 91
+      },
+      {
+        "year": 2012,
+        "value": 92.5
+      },
+      {
+        "year": 2013,
+        "value": 96
+      },
+      {
+        "year": 2014,
+        "value": 97.5
+      },
+      {
+        "year": 2015,
+        "value": 104
+      },
+      {
+        "year": 2016,
+        "value": 106.5
+      },
+      {
+        "year": 2017,
+        "value": 107
+      },
+      {
+        "year": 2018,
+        "value": 110.5
+      },
+      {
+        "year": 2019,
+        "value": 111
+      },
+      {
+        "year": 2020,
+        "value": 116.5
+      },
+      {
+        "year": 2021,
+        "value": 117
+      },
+      {
+        "year": 2022,
+        "value": 118.5
+      },
+      {
+        "year": 2023,
+        "value": 120
+      }
+    ]
+  },
+  {
+    "code": "FSM",
+    "name": "Micronesia",
+    "lat": 7.43,
+    "lon": 150.55,
+    "latest_year": 2023,
+    "latest_value": 155,
+    "series": [
+      {
+        "year": 1993,
+        "value": 83
+      },
+      {
+        "year": 1994,
+        "value": 83.5
+      },
+      {
+        "year": 1995,
+        "value": 84
+      },
+      {
+        "year": 1996,
+        "value": 87.5
+      },
+      {
+        "year": 1997,
+        "value": 89
+      },
+      {
+        "year": 1998,
+        "value": 94.5
+      },
+      {
+        "year": 1999,
+        "value": 97
+      },
+      {
+        "year": 2000,
+        "value": 96.5
+      },
+      {
+        "year": 2001,
+        "value": 100
+      },
+      {
+        "year": 2002,
+        "value": 103.5
+      },
+      {
+        "year": 2003,
+        "value": 106
+      },
+      {
+        "year": 2004,
+        "value": 108.5
+      },
+      {
+        "year": 2005,
+        "value": 113
+      },
+      {
+        "year": 2006,
+        "value": 115.5
+      },
+      {
+        "year": 2007,
+        "value": 114
+      },
+      {
+        "year": 2008,
+        "value": 119.5
+      },
+      {
+        "year": 2009,
+        "value": 121
+      },
+      {
+        "year": 2010,
+        "value": 121.5
+      },
+      {
+        "year": 2011,
+        "value": 125
+      },
+      {
+        "year": 2012,
+        "value": 129.5
+      },
+      {
+        "year": 2013,
+        "value": 132
+      },
+      {
+        "year": 2014,
+        "value": 132.5
+      },
+      {
+        "year": 2015,
+        "value": 136
+      },
+      {
+        "year": 2016,
+        "value": 139.5
+      },
+      {
+        "year": 2017,
+        "value": 140
+      },
+      {
+        "year": 2018,
+        "value": 145.5
+      },
+      {
+        "year": 2019,
+        "value": 144
+      },
+      {
+        "year": 2020,
+        "value": 147.5
+      },
+      {
+        "year": 2021,
+        "value": 153
+      },
+      {
+        "year": 2022,
+        "value": 151.5
+      },
+      {
+        "year": 2023,
+        "value": 155
+      }
+    ]
+  },
+  {
+    "code": "NRU",
+    "name": "Nauru",
+    "lat": -0.52,
+    "lon": 166.93,
+    "latest_year": 2023,
+    "latest_value": 124,
+    "series": [
+      {
+        "year": 1993,
+        "value": 48
+      },
+      {
+        "year": 1994,
+        "value": 52.5
+      },
+      {
+        "year": 1995,
+        "value": 54
+      },
+      {
+        "year": 1996,
+        "value": 59.5
+      },
+      {
+        "year": 1997,
+        "value": 61
+      },
+      {
+        "year": 1998,
+        "value": 61.5
+      },
+      {
+        "year": 1999,
+        "value": 65
+      },
+      {
+        "year": 2000,
+        "value": 67.5
+      },
+      {
+        "year": 2001,
+        "value": 71
+      },
+      {
+        "year": 2002,
+        "value": 74.5
+      },
+      {
+        "year": 2003,
+        "value": 77
+      },
+      {
+        "year": 2004,
+        "value": 76.5
+      },
+      {
+        "year": 2005,
+        "value": 78
+      },
+      {
+        "year": 2006,
+        "value": 82.5
+      },
+      {
+        "year": 2007,
+        "value": 83
+      },
+      {
+        "year": 2008,
+        "value": 88.5
+      },
+      {
+        "year": 2009,
+        "value": 88
+      },
+      {
+        "year": 2010,
+        "value": 90.5
+      },
+      {
+        "year": 2011,
+        "value": 97
+      },
+      {
+        "year": 2012,
+        "value": 96.5
+      },
+      {
+        "year": 2013,
+        "value": 101
+      },
+      {
+        "year": 2014,
+        "value": 102.5
+      },
+      {
+        "year": 2015,
+        "value": 104
+      },
+      {
+        "year": 2016,
+        "value": 107.5
+      },
+      {
+        "year": 2017,
+        "value": 112
+      },
+      {
+        "year": 2018,
+        "value": 113.5
+      },
+      {
+        "year": 2019,
+        "value": 115
+      },
+      {
+        "year": 2020,
+        "value": 116.5
+      },
+      {
+        "year": 2021,
+        "value": 118
+      },
+      {
+        "year": 2022,
+        "value": 124.5
+      },
+      {
+        "year": 2023,
+        "value": 124
+      }
+    ]
+  },
+  {
+    "code": "PLW",
+    "name": "Palau",
+    "lat": 7.52,
+    "lon": 134.58,
+    "latest_year": 2023,
+    "latest_value": 126,
+    "series": [
+      {
+        "year": 1993,
+        "value": 51
+      },
+      {
+        "year": 1994,
+        "value": 53.5
+      },
+      {
+        "year": 1995,
+        "value": 58
+      },
+      {
+        "year": 1996,
+        "value": 58.5
+      },
+      {
+        "year": 1997,
+        "value": 61
+      },
+      {
+        "year": 1998,
+        "value": 62.5
+      },
+      {
+        "year": 1999,
+        "value": 66
+      },
+      {
+        "year": 2000,
+        "value": 69.5
+      },
+      {
+        "year": 2001,
+        "value": 73
+      },
+      {
+        "year": 2002,
+        "value": 71.5
+      },
+      {
+        "year": 2003,
+        "value": 75
+      },
+      {
+        "year": 2004,
+        "value": 77.5
+      },
+      {
+        "year": 2005,
+        "value": 83
+      },
+      {
+        "year": 2006,
+        "value": 85.5
+      },
+      {
+        "year": 2007,
+        "value": 87
+      },
+      {
+        "year": 2008,
+        "value": 90.5
+      },
+      {
+        "year": 2009,
+        "value": 92
+      },
+      {
+        "year": 2010,
+        "value": 95.5
+      },
+      {
+        "year": 2011,
+        "value": 97
+      },
+      {
+        "year": 2012,
+        "value": 96.5
+      },
+      {
+        "year": 2013,
+        "value": 103
+      },
+      {
+        "year": 2014,
+        "value": 104.5
+      },
+      {
+        "year": 2015,
+        "value": 107
+      },
+      {
+        "year": 2016,
+        "value": 107.5
+      },
+      {
+        "year": 2017,
+        "value": 110
+      },
+      {
+        "year": 2018,
+        "value": 111.5
+      },
+      {
+        "year": 2019,
+        "value": 116
+      },
+      {
+        "year": 2020,
+        "value": 117.5
+      },
+      {
+        "year": 2021,
+        "value": 122
+      },
+      {
+        "year": 2022,
+        "value": 124.5
+      },
+      {
+        "year": 2023,
+        "value": 126
+      }
+    ]
+  },
+  {
+    "code": "PNG",
+    "name": "Papua New Guinea",
+    "lat": -6.31,
+    "lon": 143.95,
+    "latest_year": 2023,
+    "latest_value": 135,
+    "series": [
+      {
+        "year": 1993,
+        "value": 61
+      },
+      {
+        "year": 1994,
+        "value": 61.5
+      },
+      {
+        "year": 1995,
+        "value": 66
+      },
+      {
+        "year": 1996,
+        "value": 68.5
+      },
+      {
+        "year": 1997,
+        "value": 68
+      },
+      {
+        "year": 1998,
+        "value": 73.5
+      },
+      {
+        "year": 1999,
+        "value": 76
+      },
+      {
+        "year": 2000,
+        "value": 75.5
+      },
+      {
+        "year": 2001,
+        "value": 79
+      },
+      {
+        "year": 2002,
+        "value": 83.5
+      },
+      {
+        "year": 2003,
+        "value": 85
+      },
+      {
+        "year": 2004,
+        "value": 87.5
+      },
+      {
+        "year": 2005,
+        "value": 89
+      },
+      {
+        "year": 2006,
+        "value": 92.5
+      },
+      {
+        "year": 2007,
+        "value": 95
+      },
+      {
+        "year": 2008,
+        "value": 97.5
+      },
+      {
+        "year": 2009,
+        "value": 99
+      },
+      {
+        "year": 2010,
+        "value": 100.5
+      },
+      {
+        "year": 2011,
+        "value": 106
+      },
+      {
+        "year": 2012,
+        "value": 105.5
+      },
+      {
+        "year": 2013,
+        "value": 110
+      },
+      {
+        "year": 2014,
+        "value": 112.5
+      },
+      {
+        "year": 2015,
+        "value": 115
+      },
+      {
+        "year": 2016,
+        "value": 116.5
+      },
+      {
+        "year": 2017,
+        "value": 121
+      },
+      {
+        "year": 2018,
+        "value": 123.5
+      },
+      {
+        "year": 2019,
+        "value": 126
+      },
+      {
+        "year": 2020,
+        "value": 126.5
+      },
+      {
+        "year": 2021,
+        "value": 128
+      },
+      {
+        "year": 2022,
+        "value": 130.5
+      },
+      {
+        "year": 2023,
+        "value": 135
+      }
+    ]
+  },
+  {
+    "code": "SLB",
+    "name": "Solomon Islands",
+    "lat": -9.64,
+    "lon": 160.16,
+    "latest_year": 2023,
+    "latest_value": 152,
+    "series": [
+      {
+        "year": 1993,
+        "value": 78
+      },
+      {
+        "year": 1994,
+        "value": 79.5
+      },
+      {
+        "year": 1995,
+        "value": 83
+      },
+      {
+        "year": 1996,
+        "value": 84.5
+      },
+      {
+        "year": 1997,
+        "value": 87
+      },
+      {
+        "year": 1998,
+        "value": 89.5
+      },
+      {
+        "year": 1999,
+        "value": 93
+      },
+      {
+        "year": 2000,
+        "value": 92.5
+      },
+      {
+        "year": 2001,
+        "value": 97
+      },
+      {
+        "year": 2002,
+        "value": 100.5
+      },
+      {
+        "year": 2003,
+        "value": 100
+      },
+      {
+        "year": 2004,
+        "value": 104.5
+      },
+      {
+        "year": 2005,
+        "value": 107
+      },
+      {
+        "year": 2006,
+        "value": 107.5
+      },
+      {
+        "year": 2007,
+        "value": 110
+      },
+      {
+        "year": 2008,
+        "value": 115.5
+      },
+      {
+        "year": 2009,
+        "value": 115
+      },
+      {
+        "year": 2010,
+        "value": 119.5
+      },
+      {
+        "year": 2011,
+        "value": 123
+      },
+      {
+        "year": 2012,
+        "value": 124.5
+      },
+      {
+        "year": 2013,
+        "value": 124
+      },
+      {
+        "year": 2014,
+        "value": 127.5
+      },
+      {
+        "year": 2015,
+        "value": 133
+      },
+      {
+        "year": 2016,
+        "value": 131.5
+      },
+      {
+        "year": 2017,
+        "value": 134
+      },
+      {
+        "year": 2018,
+        "value": 138.5
+      },
+      {
+        "year": 2019,
+        "value": 143
+      },
+      {
+        "year": 2020,
+        "value": 143.5
+      },
+      {
+        "year": 2021,
+        "value": 146
+      },
+      {
+        "year": 2022,
+        "value": 146.5
+      },
+      {
+        "year": 2023,
+        "value": 152
+      }
+    ]
+  },
+  {
+    "code": "TON",
+    "name": "Tonga",
+    "lat": -21.18,
+    "lon": -175.2,
+    "latest_year": 2023,
+    "latest_value": 151,
+    "series": [
+      {
+        "year": 1993,
+        "value": 75
+      },
+      {
+        "year": 1994,
+        "value": 77.5
+      },
+      {
+        "year": 1995,
+        "value": 83
+      },
+      {
+        "year": 1996,
+        "value": 85.5
+      },
+      {
+        "year": 1997,
+        "value": 88
+      },
+      {
+        "year": 1998,
+        "value": 86.5
+      },
+      {
+        "year": 1999,
+        "value": 89
+      },
+      {
+        "year": 2000,
+        "value": 92.5
+      },
+      {
+        "year": 2001,
+        "value": 94
+      },
+      {
+        "year": 2002,
+        "value": 96.5
+      },
+      {
+        "year": 2003,
+        "value": 100
+      },
+      {
+        "year": 2004,
+        "value": 105.5
+      },
+      {
+        "year": 2005,
+        "value": 107
+      },
+      {
+        "year": 2006,
+        "value": 110.5
+      },
+      {
+        "year": 2007,
+        "value": 110
+      },
+      {
+        "year": 2008,
+        "value": 115.5
+      },
+      {
+        "year": 2009,
+        "value": 116
+      },
+      {
+        "year": 2010,
+        "value": 116.5
+      },
+      {
+        "year": 2011,
+        "value": 120
+      },
+      {
+        "year": 2012,
+        "value": 121.5
+      },
+      {
+        "year": 2013,
+        "value": 128
+      },
+      {
+        "year": 2014,
+        "value": 130.5
+      },
+      {
+        "year": 2015,
+        "value": 132
+      },
+      {
+        "year": 2016,
+        "value": 135.5
+      },
+      {
+        "year": 2017,
+        "value": 135
+      },
+      {
+        "year": 2018,
+        "value": 138.5
+      },
+      {
+        "year": 2019,
+        "value": 141
+      },
+      {
+        "year": 2020,
+        "value": 142.5
+      },
+      {
+        "year": 2021,
+        "value": 148
+      },
+      {
+        "year": 2022,
+        "value": 149.5
+      },
+      {
+        "year": 2023,
+        "value": 151
+      }
+    ]
+  },
+  {
+    "code": "TUV",
+    "name": "Tuvalu",
+    "lat": -7.47,
+    "lon": 177.65,
+    "latest_year": 2023,
+    "latest_value": 150,
+    "series": [
+      {
+        "year": 1993,
+        "value": 77
+      },
+      {
+        "year": 1994,
+        "value": 78.5
+      },
+      {
+        "year": 1995,
+        "value": 79
+      },
+      {
+        "year": 1996,
+        "value": 83.5
+      },
+      {
+        "year": 1997,
+        "value": 85
+      },
+      {
+        "year": 1998,
+        "value": 90.5
+      },
+      {
+        "year": 1999,
+        "value": 92
+      },
+      {
+        "year": 2000,
+        "value": 91.5
+      },
+      {
+        "year": 2001,
+        "value": 96
+      },
+      {
+        "year": 2002,
+        "value": 98.5
+      },
+      {
+        "year": 2003,
+        "value": 99
+      },
+      {
+        "year": 2004,
+        "value": 105.5
+      },
+      {
+        "year": 2005,
+        "value": 104
+      },
+      {
+        "year": 2006,
+        "value": 110.5
+      },
+      {
+        "year": 2007,
+        "value": 111
+      },
+      {
+        "year": 2008,
+        "value": 111.5
+      },
+      {
+        "year": 2009,
+        "value": 117
+      },
+      {
+        "year": 2010,
+        "value": 118.5
+      },
+      {
+        "year": 2011,
+        "value": 121
+      },
+      {
+        "year": 2012,
+        "value": 122.5
+      },
+      {
+        "year": 2013,
+        "value": 128
+      },
+      {
+        "year": 2014,
+        "value": 128.5
+      },
+      {
+        "year": 2015,
+        "value": 132
+      },
+      {
+        "year": 2016,
+        "value": 134.5
+      },
+      {
+        "year": 2017,
+        "value": 136
+      },
+      {
+        "year": 2018,
+        "value": 136.5
+      },
+      {
+        "year": 2019,
+        "value": 140
+      },
+      {
+        "year": 2020,
+        "value": 145.5
+      },
+      {
+        "year": 2021,
+        "value": 145
+      },
+      {
+        "year": 2022,
+        "value": 150.5
+      },
+      {
+        "year": 2023,
+        "value": 150
+      }
+    ]
+  },
+  {
+    "code": "VUT",
+    "name": "Vanuatu",
+    "lat": -15.38,
+    "lon": 166.96,
+    "latest_year": 2023,
+    "latest_value": 152,
+    "series": [
+      {
+        "year": 1993,
+        "value": 75
+      },
+      {
+        "year": 1994,
+        "value": 77.5
+      },
+      {
+        "year": 1995,
+        "value": 80
+      },
+      {
+        "year": 1996,
+        "value": 84.5
+      },
+      {
+        "year": 1997,
+        "value": 83
+      },
+      {
+        "year": 1998,
+        "value": 89.5
+      },
+      {
+        "year": 1999,
+        "value": 88
+      },
+      {
+        "year": 2000,
+        "value": 93.5
+      },
+      {
+        "year": 2001,
+        "value": 96
+      },
+      {
+        "year": 2002,
+        "value": 95.5
+      },
+      {
+        "year": 2003,
+        "value": 102
+      },
+      {
+        "year": 2004,
+        "value": 100.5
+      },
+      {
+        "year": 2005,
+        "value": 103
+      },
+      {
+        "year": 2006,
+        "value": 108.5
+      },
+      {
+        "year": 2007,
+        "value": 110
+      },
+      {
+        "year": 2008,
+        "value": 111.5
+      },
+      {
+        "year": 2009,
+        "value": 117
+      },
+      {
+        "year": 2010,
+        "value": 118.5
+      },
+      {
+        "year": 2011,
+        "value": 119
+      },
+      {
+        "year": 2012,
+        "value": 121.5
+      },
+      {
+        "year": 2013,
+        "value": 126
+      },
+      {
+        "year": 2014,
+        "value": 126.5
+      },
+      {
+        "year": 2015,
+        "value": 129
+      },
+      {
+        "year": 2016,
+        "value": 131.5
+      },
+      {
+        "year": 2017,
+        "value": 133
+      },
+      {
+        "year": 2018,
+        "value": 138.5
+      },
+      {
+        "year": 2019,
+        "value": 138
+      },
+      {
+        "year": 2020,
+        "value": 140.5
+      },
+      {
+        "year": 2021,
+        "value": 147
+      },
+      {
+        "year": 2022,
+        "value": 147.5
+      },
+      {
+        "year": 2023,
+        "value": 152
+      }
+    ]
+  },
+  {
+    "code": "WSM",
+    "name": "Samoa",
+    "lat": -13.76,
+    "lon": -172.1,
+    "latest_year": 2023,
+    "latest_value": 129,
+    "series": [
+      {
+        "year": 1993,
+        "value": 54
+      },
+      {
+        "year": 1994,
+        "value": 54.5
+      },
+      {
+        "year": 1995,
+        "value": 59
+      },
+      {
+        "year": 1996,
+        "value": 57.5
+      },
+      {
+        "year": 1997,
+        "value": 63
+      },
+      {
+        "year": 1998,
+        "value": 64.5
+      },
+      {
+        "year": 1999,
+        "value": 67
+      },
+      {
+        "year": 2000,
+        "value": 69.5
+      },
+      {
+        "year": 2001,
+        "value": 73
+      },
+      {
+        "year": 2002,
+        "value": 76.5
+      },
+      {
+        "year": 2003,
+        "value": 78
+      },
+      {
+        "year": 2004,
+        "value": 80.5
+      },
+      {
+        "year": 2005,
+        "value": 81
+      },
+      {
+        "year": 2006,
+        "value": 85.5
+      },
+      {
+        "year": 2007,
+        "value": 87
+      },
+      {
+        "year": 2008,
+        "value": 87.5
+      },
+      {
+        "year": 2009,
+        "value": 94
+      },
+      {
+        "year": 2010,
+        "value": 93.5
+      },
+      {
+        "year": 2011,
+        "value": 99
+      },
+      {
+        "year": 2012,
+        "value": 100.5
+      },
+      {
+        "year": 2013,
+        "value": 101
+      },
+      {
+        "year": 2014,
+        "value": 105.5
+      },
+      {
+        "year": 2015,
+        "value": 106
+      },
+      {
+        "year": 2016,
+        "value": 107.5
+      },
+      {
+        "year": 2017,
+        "value": 111
+      },
+      {
+        "year": 2018,
+        "value": 113.5
+      },
+      {
+        "year": 2019,
+        "value": 116
+      },
+      {
+        "year": 2020,
+        "value": 120.5
+      },
+      {
+        "year": 2021,
+        "value": 120
+      },
+      {
+        "year": 2022,
+        "value": 126.5
+      },
+      {
+        "year": 2023,
+        "value": 129
+      }
+    ]
+  },
+  {
+    "code": "COK",
+    "name": "Cook Islands",
+    "lat": -21.24,
+    "lon": -159.78,
+    "latest_year": 2023,
+    "latest_value": 126,
+    "series": [
+      {
+        "year": 1993,
+        "value": 48
+      },
+      {
+        "year": 1994,
+        "value": 51.5
+      },
+      {
+        "year": 1995,
+        "value": 53
+      },
+      {
+        "year": 1996,
+        "value": 59.5
+      },
+      {
+        "year": 1997,
+        "value": 62
+      },
+      {
+        "year": 1998,
+        "value": 62.5
+      },
+      {
+        "year": 1999,
+        "value": 64
+      },
+      {
+        "year": 2000,
+        "value": 68.5
+      },
+      {
+        "year": 2001,
+        "value": 70
+      },
+      {
+        "year": 2002,
+        "value": 73.5
+      },
+      {
+        "year": 2003,
+        "value": 76
+      },
+      {
+        "year": 2004,
+        "value": 76.5
+      },
+      {
+        "year": 2005,
+        "value": 81
+      },
+      {
+        "year": 2006,
+        "value": 81.5
+      },
+      {
+        "year": 2007,
+        "value": 86
+      },
+      {
+        "year": 2008,
+        "value": 85.5
+      },
+      {
+        "year": 2009,
+        "value": 92
+      },
+      {
+        "year": 2010,
+        "value": 93.5
+      },
+      {
+        "year": 2011,
+        "value": 97
+      },
+      {
+        "year": 2012,
+        "value": 97.5
+      },
+      {
+        "year": 2013,
+        "value": 102
+      },
+      {
+        "year": 2014,
+        "value": 100.5
+      },
+      {
+        "year": 2015,
+        "value": 103
+      },
+      {
+        "year": 2016,
+        "value": 107.5
+      },
+      {
+        "year": 2017,
+        "value": 109
+      },
+      {
+        "year": 2018,
+        "value": 114.5
+      },
+      {
+        "year": 2019,
+        "value": 115
+      },
+      {
+        "year": 2020,
+        "value": 118.5
+      },
+      {
+        "year": 2021,
+        "value": 119
+      },
+      {
+        "year": 2022,
+        "value": 121.5
+      },
+      {
+        "year": 2023,
+        "value": 126
+      }
+    ]
+  },
+  {
+    "code": "NIU",
+    "name": "Niue",
+    "lat": -19.05,
+    "lon": -169.87,
+    "latest_year": 2023,
+    "latest_value": 161,
+    "series": [
+      {
+        "year": 1993,
+        "value": 89
+      },
+      {
+        "year": 1994,
+        "value": 87.5
+      },
+      {
+        "year": 1995,
+        "value": 90
+      },
+      {
+        "year": 1996,
+        "value": 96.5
+      },
+      {
+        "year": 1997,
+        "value": 98
+      },
+      {
+        "year": 1998,
+        "value": 101.5
+      },
+      {
+        "year": 1999,
+        "value": 102
+      },
+      {
+        "year": 2000,
+        "value": 105.5
+      },
+      {
+        "year": 2001,
+        "value": 107
+      },
+      {
+        "year": 2002,
+        "value": 109.5
+      },
+      {
+        "year": 2003,
+        "value": 111
+      },
+      {
+        "year": 2004,
+        "value": 113.5
+      },
+      {
+        "year": 2005,
+        "value": 117
+      },
+      {
+        "year": 2006,
+        "value": 118.5
+      },
+      {
+        "year": 2007,
+        "value": 123
+      },
+      {
+        "year": 2008,
+        "value": 124.5
+      },
+      {
+        "year": 2009,
+        "value": 129
+      },
+      {
+        "year": 2010,
+        "value": 130.5
+      },
+      {
+        "year": 2011,
+        "value": 130
+      },
+      {
+        "year": 2012,
+        "value": 136.5
+      },
+      {
+        "year": 2013,
+        "value": 139
+      },
+      {
+        "year": 2014,
+        "value": 141.5
+      },
+      {
+        "year": 2015,
+        "value": 141
+      },
+      {
+        "year": 2016,
+        "value": 144.5
+      },
+      {
+        "year": 2017,
+        "value": 146
+      },
+      {
+        "year": 2018,
+        "value": 148.5
+      },
+      {
+        "year": 2019,
+        "value": 152
+      },
+      {
+        "year": 2020,
+        "value": 152.5
+      },
+      {
+        "year": 2021,
+        "value": 159
+      },
+      {
+        "year": 2022,
+        "value": 159.5
+      },
+      {
+        "year": 2023,
+        "value": 161
+      }
+    ]
+  },
+  {
+    "code": "TKL",
+    "name": "Tokelau",
+    "lat": -9.17,
+    "lon": -171.82,
+    "latest_year": 2023,
+    "latest_value": 150,
+    "series": [
+      {
+        "year": 1993,
+        "value": 73
+      },
+      {
+        "year": 1994,
+        "value": 78.5
+      },
+      {
+        "year": 1995,
+        "value": 81
+      },
+      {
+        "year": 1996,
+        "value": 84.5
+      },
+      {
+        "year": 1997,
+        "value": 86
+      },
+      {
+        "year": 1998,
+        "value": 87.5
+      },
+      {
+        "year": 1999,
+        "value": 92
+      },
+      {
+        "year": 2000,
+        "value": 93.5
+      },
+      {
+        "year": 2001,
+        "value": 95
+      },
+      {
+        "year": 2002,
+        "value": 98.5
+      },
+      {
+        "year": 2003,
+        "value": 99
+      },
+      {
+        "year": 2004,
+        "value": 104.5
+      },
+      {
+        "year": 2005,
+        "value": 107
+      },
+      {
+        "year": 2006,
+        "value": 106.5
+      },
+      {
+        "year": 2007,
+        "value": 111
+      },
+      {
+        "year": 2008,
+        "value": 113.5
+      },
+      {
+        "year": 2009,
+        "value": 113
+      },
+      {
+        "year": 2010,
+        "value": 115.5
+      },
+      {
+        "year": 2011,
+        "value": 120
+      },
+      {
+        "year": 2012,
+        "value": 123.5
+      },
+      {
+        "year": 2013,
+        "value": 124
+      },
+      {
+        "year": 2014,
+        "value": 129.5
+      },
+      {
+        "year": 2015,
+        "value": 131
+      },
+      {
+        "year": 2016,
+        "value": 132.5
+      },
+      {
+        "year": 2017,
+        "value": 137
+      },
+      {
+        "year": 2018,
+        "value": 139.5
+      },
+      {
+        "year": 2019,
+        "value": 139
+      },
+      {
+        "year": 2020,
+        "value": 140.5
+      },
+      {
+        "year": 2021,
+        "value": 143
+      },
+      {
+        "year": 2022,
+        "value": 149.5
+      },
+      {
+        "year": 2023,
+        "value": 150
+      }
+    ]
+  },
+  {
+    "code": "PYF",
+    "name": "French Polynesia",
+    "lat": -17.66,
+    "lon": -149.43,
+    "latest_year": 2023,
+    "latest_value": 126,
+    "series": [
+      {
+        "year": 1993,
+        "value": 50
+      },
+      {
+        "year": 1994,
+        "value": 50.5
+      },
+      {
+        "year": 1995,
+        "value": 55
+      },
+      {
+        "year": 1996,
+        "value": 54.5
+      },
+      {
+        "year": 1997,
+        "value": 59
+      },
+      {
+        "year": 1998,
+        "value": 62.5
+      },
+      {
+        "year": 1999,
+        "value": 66
+      },
+      {
+        "year": 2000,
+        "value": 67.5
+      },
+      {
+        "year": 2001,
+        "value": 69
+      },
+      {
+        "year": 2002,
+        "value": 71.5
+      },
+      {
+        "year": 2003,
+        "value": 76
+      },
+      {
+        "year": 2004,
+        "value": 78.5
+      },
+      {
+        "year": 2005,
+        "value": 78
+      },
+      {
+        "year": 2006,
+        "value": 82.5
+      },
+      {
+        "year": 2007,
+        "value": 82
+      },
+      {
+        "year": 2008,
+        "value": 84.5
+      },
+      {
+        "year": 2009,
+        "value": 91
+      },
+      {
+        "year": 2010,
+        "value": 93.5
+      },
+      {
+        "year": 2011,
+        "value": 96
+      },
+      {
+        "year": 2012,
+        "value": 97.5
+      },
+      {
+        "year": 2013,
+        "value": 97
+      },
+      {
+        "year": 2014,
+        "value": 99.5
+      },
+      {
+        "year": 2015,
+        "value": 104
+      },
+      {
+        "year": 2016,
+        "value": 106.5
+      },
+      {
+        "year": 2017,
+        "value": 109
+      },
+      {
+        "year": 2018,
+        "value": 113.5
+      },
+      {
+        "year": 2019,
+        "value": 113
+      },
+      {
+        "year": 2020,
+        "value": 116.5
+      },
+      {
+        "year": 2021,
+        "value": 121
+      },
+      {
+        "year": 2022,
+        "value": 120.5
+      },
+      {
+        "year": 2023,
+        "value": 126
+      }
+    ]
+  },
+  {
+    "code": "NCL",
+    "name": "New Caledonia",
+    "lat": -20.91,
+    "lon": 165.4,
+    "latest_year": 2023,
+    "latest_value": 135,
+    "series": [
+      {
+        "year": 1993,
+        "value": 62
+      },
+      {
+        "year": 1994,
+        "value": 61.5
+      },
+      {
+        "year": 1995,
+        "value": 64
+      },
+      {
+        "year": 1996,
+        "value": 68.5
+      },
+      {
+        "year": 1997,
+        "value": 71
+      },
+      {
+        "year": 1998,
+        "value": 70.5
+      },
+      {
+        "year": 1999,
+        "value": 73
+      },
+      {
+        "year": 2000,
+        "value": 78.5
+      },
+      {
+        "year": 2001,
+        "value": 79
+      },
+      {
+        "year": 2002,
+        "value": 80.5
+      },
+      {
+        "year": 2003,
+        "value": 83
+      },
+      {
+        "year": 2004,
+        "value": 88.5
+      },
+      {
+        "year": 2005,
+        "value": 91
+      },
+      {
+        "year": 2006,
+        "value": 91.5
+      },
+      {
+        "year": 2007,
+        "value": 94
+      },
+      {
+        "year": 2008,
+        "value": 95.5
+      },
+      {
+        "year": 2009,
+        "value": 98
+      },
+      {
+        "year": 2010,
+        "value": 100.5
+      },
+      {
+        "year": 2011,
+        "value": 106
+      },
+      {
+        "year": 2012,
+        "value": 108.5
+      },
+      {
+        "year": 2013,
+        "value": 110
+      },
+      {
+        "year": 2014,
+        "value": 110.5
+      },
+      {
+        "year": 2015,
+        "value": 113
+      },
+      {
+        "year": 2016,
+        "value": 119.5
+      },
+      {
+        "year": 2017,
+        "value": 120
+      },
+      {
+        "year": 2018,
+        "value": 121.5
+      },
+      {
+        "year": 2019,
+        "value": 127
+      },
+      {
+        "year": 2020,
+        "value": 127.5
+      },
+      {
+        "year": 2021,
+        "value": 129
+      },
+      {
+        "year": 2022,
+        "value": 133.5
+      },
+      {
+        "year": 2023,
+        "value": 135
+      }
+    ]
+  },
+  {
+    "code": "GUM",
+    "name": "Guam",
+    "lat": 13.44,
+    "lon": 144.79,
+    "latest_year": 2023,
+    "latest_value": 148,
+    "series": [
+      {
+        "year": 1993,
+        "value": 71
+      },
+      {
+        "year": 1994,
+        "value": 74.5
+      },
+      {
+        "year": 1995,
+        "value": 76
+      },
+      {
+        "year": 1996,
+        "value": 76.5
+      },
+      {
+        "year": 1997,
+        "value": 81
+      },
+      {
+        "year": 1998,
+        "value": 85.5
+      },
+      {
+        "year": 1999,
+        "value": 85
+      },
+      {
+        "year": 2000,
+        "value": 90.5
+      },
+      {
+        "year": 2001,
+        "value": 89
+      },
+      {
+        "year": 2002,
+        "value": 95.5
+      },
+      {
+        "year": 2003,
+        "value": 97
+      },
+      {
+        "year": 2004,
+        "value": 96.5
+      },
+      {
+        "year": 2005,
+        "value": 102
+      },
+      {
+        "year": 2006,
+        "value": 101.5
+      },
+      {
+        "year": 2007,
+        "value": 108
+      },
+      {
+        "year": 2008,
+        "value": 107.5
+      },
+      {
+        "year": 2009,
+        "value": 110
+      },
+      {
+        "year": 2010,
+        "value": 114.5
+      },
+      {
+        "year": 2011,
+        "value": 115
+      },
+      {
+        "year": 2012,
+        "value": 120.5
+      },
+      {
+        "year": 2013,
+        "value": 123
+      },
+      {
+        "year": 2014,
+        "value": 121.5
+      },
+      {
+        "year": 2015,
+        "value": 124
+      },
+      {
+        "year": 2016,
+        "value": 127.5
+      },
+      {
+        "year": 2017,
+        "value": 133
+      },
+      {
+        "year": 2018,
+        "value": 135.5
+      },
+      {
+        "year": 2019,
+        "value": 138
+      },
+      {
+        "year": 2020,
+        "value": 140.5
+      },
+      {
+        "year": 2021,
+        "value": 140
+      },
+      {
+        "year": 2022,
+        "value": 143.5
+      },
+      {
+        "year": 2023,
+        "value": 148
+      }
+    ]
+  },
+  {
+    "code": "MNP",
+    "name": "Northern Mariana Islands",
+    "lat": 15.19,
+    "lon": 145.75,
+    "latest_year": 2023,
+    "latest_value": 159,
+    "series": [
+      {
+        "year": 1993,
+        "value": 86
+      },
+      {
+        "year": 1994,
+        "value": 88.5
+      },
+      {
+        "year": 1995,
+        "value": 87
+      },
+      {
+        "year": 1996,
+        "value": 91.5
+      },
+      {
+        "year": 1997,
+        "value": 96
+      },
+      {
+        "year": 1998,
+        "value": 97.5
+      },
+      {
+        "year": 1999,
+        "value": 97
+      },
+      {
+        "year": 2000,
+        "value": 103.5
+      },
+      {
+        "year": 2001,
+        "value": 106
+      },
+      {
+        "year": 2002,
+        "value": 105.5
+      },
+      {
+        "year": 2003,
+        "value": 110
+      },
+      {
+        "year": 2004,
+        "value": 113.5
+      },
+      {
+        "year": 2005,
+        "value": 116
+      },
+      {
+        "year": 2006,
+        "value": 114.5
+      },
+      {
+        "year": 2007,
+        "value": 118
+      },
+      {
+        "year": 2008,
+        "value": 123.5
+      },
+      {
+        "year": 2009,
+        "value": 122
+      },
+      {
+        "year": 2010,
+        "value": 124.5
+      },
+      {
+        "year": 2011,
+        "value": 130
+      },
+      {
+        "year": 2012,
+        "value": 132.5
+      },
+      {
+        "year": 2013,
+        "value": 133
+      },
+      {
+        "year": 2014,
+        "value": 138.5
+      },
+      {
+        "year": 2015,
+        "value": 141
+      },
+      {
+        "year": 2016,
+        "value": 140.5
+      },
+      {
+        "year": 2017,
+        "value": 142
+      },
+      {
+        "year": 2018,
+        "value": 144.5
+      },
+      {
+        "year": 2019,
+        "value": 149
+      },
+      {
+        "year": 2020,
+        "value": 151.5
+      },
+      {
+        "year": 2021,
+        "value": 152
+      },
+      {
+        "year": 2022,
+        "value": 155.5
+      },
+      {
+        "year": 2023,
+        "value": 159
+      }
+    ]
+  },
+  {
+    "code": "ASM",
+    "name": "American Samoa",
+    "lat": -14.27,
+    "lon": -170.71,
+    "latest_year": 2023,
+    "latest_value": 142,
+    "series": [
+      {
+        "year": 1993,
+        "value": 68
+      },
+      {
+        "year": 1994,
+        "value": 71.5
+      },
+      {
+        "year": 1995,
+        "value": 76
+      },
+      {
+        "year": 1996,
+        "value": 74.5
+      },
+      {
+        "year": 1997,
+        "value": 79
+      },
+      {
+        "year": 1998,
+        "value": 81.5
+      },
+      {
+        "year": 1999,
+        "value": 84
+      },
+      {
+        "year": 2000,
+        "value": 88.5
+      },
+      {
+        "year": 2001,
+        "value": 87
+      },
+      {
+        "year": 2002,
+        "value": 91.5
+      },
+      {
+        "year": 2003,
+        "value": 94
+      },
+      {
+        "year": 2004,
+        "value": 94.5
+      },
+      {
+        "year": 2005,
+        "value": 100
+      },
+      {
+        "year": 2006,
+        "value": 103.5
+      },
+      {
+        "year": 2007,
+        "value": 105
+      },
+      {
+        "year": 2008,
+        "value": 104.5
+      },
+      {
+        "year": 2009,
+        "value": 110
+      },
+      {
+        "year": 2010,
+        "value": 111.5
+      },
+      {
+        "year": 2011,
+        "value": 113
+      },
+      {
+        "year": 2012,
+        "value": 114.5
+      },
+      {
+        "year": 2013,
+        "value": 120
+      },
+      {
+        "year": 2014,
+        "value": 123.5
+      },
+      {
+        "year": 2015,
+        "value": 126
+      },
+      {
+        "year": 2016,
+        "value": 127.5
+      },
+      {
+        "year": 2017,
+        "value": 131
+      },
+      {
+        "year": 2018,
+        "value": 131.5
+      },
+      {
+        "year": 2019,
+        "value": 132
+      },
+      {
+        "year": 2020,
+        "value": 137.5
+      },
+      {
+        "year": 2021,
+        "value": 141
+      },
+      {
+        "year": 2022,
+        "value": 139.5
+      },
+      {
+        "year": 2023,
+        "value": 142
+      }
+    ]
+  },
+  {
+    "code": "NFK",
+    "name": "Norfolk Island",
+    "lat": -29.03,
+    "lon": 167.96,
+    "latest_year": 2023,
+    "latest_value": 143,
+    "series": [
+      {
+        "year": 1993,
+        "value": 69
+      },
+      {
+        "year": 1994,
+        "value": 71.5
+      },
+      {
+        "year": 1995,
+        "value": 74
+      },
+      {
+        "year": 1996,
+        "value": 75.5
+      },
+      {
+        "year": 1997,
+        "value": 76
+      },
+      {
+        "year": 1998,
+        "value": 80.5
+      },
+      {
+        "year": 1999,
+        "value": 84
+      },
+      {
+        "year": 2000,
+        "value": 83.5
+      },
+      {
+        "year": 2001,
+        "value": 86
+      },
+      {
+        "year": 2002,
+        "value": 88.5
+      },
+      {
+        "year": 2003,
+        "value": 90
+      },
+      {
+        "year": 2004,
+        "value": 96.5
+      },
+      {
+        "year": 2005,
+        "value": 96
+      },
+      {
+        "year": 2006,
+        "value": 98.5
+      },
+      {
+        "year": 2007,
+        "value": 102
+      },
+      {
+        "year": 2008,
+        "value": 102.5
+      },
+      {
+        "year": 2009,
+        "value": 109
+      },
+      {
+        "year": 2010,
+        "value": 111.5
+      },
+      {
+        "year": 2011,
+        "value": 111
+      },
+      {
+        "year": 2012,
+        "value": 113.5
+      },
+      {
+        "year": 2013,
+        "value": 119
+      },
+      {
+        "year": 2014,
+        "value": 119.5
+      },
+      {
+        "year": 2015,
+        "value": 123
+      },
+      {
+        "year": 2016,
+        "value": 122.5
+      },
+      {
+        "year": 2017,
+        "value": 125
+      },
+      {
+        "year": 2018,
+        "value": 128.5
+      },
+      {
+        "year": 2019,
+        "value": 130
+      },
+      {
+        "year": 2020,
+        "value": 134.5
+      },
+      {
+        "year": 2021,
+        "value": 136
+      },
+      {
+        "year": 2022,
+        "value": 137.5
+      },
+      {
+        "year": 2023,
+        "value": 143
+      }
+    ]
+  }
+]
