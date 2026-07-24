@@ -181,7 +181,7 @@ export default function Part2Chart1() {
               years={cleanWaterYears}
               year={year}
               onChange={setYear}
-              speedMs={2000}
+              speedMs={1000}
               variant="vertical"
             />
           </div>
@@ -214,7 +214,7 @@ export default function Part2Chart1() {
 
           {/* Horizontal YearScrubber (mobile only) */}
           <div className="lg:hidden col-span-full">
-            <YearScrubber years={cleanWaterYears} year={year} onChange={setYear} speedMs={2000} />
+            <YearScrubber years={cleanWaterYears} year={year} onChange={setYear} speedMs={1000} />
           </div>
         </div>
       </div>

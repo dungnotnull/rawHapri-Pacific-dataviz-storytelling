@@ -263,7 +263,7 @@ export default function Part1Chart1() {
               years={seaLevelYears}
               year={year}
               onChange={setYear}
-              speedMs={2000}
+              speedMs={1000}
               variant="vertical"
             />
           </div>
@@ -319,7 +319,7 @@ export default function Part1Chart1() {
 
           {/* Horizontal YearScrubber (mobile only) */}
           <div className="lg:hidden col-span-full">
-            <YearScrubber years={seaLevelYears} year={year} onChange={setYear} speedMs={2000} />
+            <YearScrubber years={seaLevelYears} year={year} onChange={setYear} speedMs={1000} />
           </div>
         </div>
       </div>
