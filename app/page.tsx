@@ -2,6 +2,10 @@ import { TideRail } from "@/components/ui/TideRail";
 import { Hero } from "@/components/sections/Hero";
 import { Cause } from "@/components/sections/Cause";
 import { Result } from "@/components/sections/Result";
+import Part1Chart1 from "@/components/sections/part1/Chart1";
+import Part1Chart2 from "@/components/sections/part1/Chart2";
+import Part2Chart1 from "@/components/sections/part2/Chart1";
+import Part2Chart2 from "@/components/sections/part2/Chart2";
 import { BackToTop } from "@/components/ui/BackToTop";
 
 const MARKS = [
@@ -26,6 +30,10 @@ export default function Home() {
       <Hero />
       <Cause />
       <Result />
+      <Part1Chart1 />
+      <Part1Chart2 />
+      <Part2Chart1 />
+      <Part2Chart2 />
 
       <footer
         id="closing"
