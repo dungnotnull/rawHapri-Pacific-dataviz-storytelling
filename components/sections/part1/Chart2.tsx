@@ -43,8 +43,9 @@ export default function Part1Chart2() {
 
   const x0 = xScale(0);
 
-  const rows = useMemo(() => {
-    const data = seaLevelCountries
+  // Calculate each country's rank for current year, but keep consistent array order
+  const countryRanks = useMemo(() => {
+    const ranked = seaLevelCountries
       .map((name) => {
         const c = seaLevelData[name];
         const pt = c.series.find((s) => s.year === year);
@@ -55,13 +56,17 @@ export default function Part1Chart2() {
         };
       })
       .sort((a, b) => b.value - a.value);
-    return data.map((d, i) => ({ ...d, rank: i }));
+    const rankMap: Record<string, number> = {};
+    ranked.forEach((c, i) => {
+      rankMap[c.name] = i;
+    });
+    return rankMap;
   }, [year]);
 
-  const height = rows.length * (ROW_H + ROW_GAP);
+  const height = seaLevelCountries.length * (ROW_H + ROW_GAP);
 
   return (
-        <section id="part1-chart2" className="relative bg-foam px-6 py-28 md:px-16">
+        <section id="part1-chart2" className="relative bg-foam px-6 py-14 md:px-16">
     <div className="mx-auto max-w-6xl">
       <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
         Sea level race over years
@@ -71,8 +76,9 @@ export default function Part1Chart2() {
         Play to see how rankings change from 1993 to 2023.
       </p>
 
-      <div className="mt-8">
-        <div className="chart-paper rounded-lg p-3 sm:p-5 overflow-x-auto">
+      <div className="mt-8 grid lg:grid-cols-[1fr_auto] gap-4 items-start">
+        {/* Chart */}
+        <div className="chart-paper rounded-lg pr-3 sm:pr-5 overflow-x-auto">
           <svg width="100%" height={40} viewBox={`0 0 ${width} 40`} className="min-w-[640px]">
             <g transform={`translate(${innerLeft},20)`}>
               {xScale.ticks(6).map((t) => (
@@ -109,21 +115,25 @@ export default function Part1Chart2() {
               className="absolute top-0 bottom-0 border-l border-dashed border-ink-faint/40"
               style={{ left: innerLeft + x0 }}
             />
-            {rows.map((r) => {
-              const barLeft = innerLeft + xScale(Math.min(0, r.value));
+            {seaLevelCountries.map((name) => {
+              const c = seaLevelData[name];
+              const pt = c.series.find((s) => s.year === year);
+              const value = pt ? pt.value * 1000 : 0;
+              const rank = countryRanks[name];
+              const barLeft = innerLeft + xScale(Math.min(0, value));
               const barW = Math.max(
-                Math.abs(xScale(r.value) - xScale(0)),
+                Math.abs(xScale(value) - xScale(0)),
                 1.5
               );
-              const positive = r.value >= 0;
+              const positive = value >= 0;
               return (
                 <div
-                  key={r.name}
+                  key={name}
                   className="absolute left-0 right-0 flex items-center"
                   style={{
-                    top: r.rank * (ROW_H + ROW_GAP),
+                    top: rank * (ROW_H + ROW_GAP),
                     height: ROW_H,
-                    transition: "top 550ms cubic-bezier(.4,0,.2,1)",
+                    transition: "top 700ms cubic-bezier(.4,0,.2,1)",
                   }}
                 >
                   <div
@@ -131,11 +141,11 @@ export default function Part1Chart2() {
                     style={{ left: 0, width: innerLeft - 10 }}
                   >
                     <span className="font-mono text-[10px] text-ink-faint w-5 text-right shrink-0">
-                      {r.rank + 1}
+                      {rank + 1}
                     </span>
-                    <Flag iso2={r.iso2} className="w-4 h-3 shrink-0" />
+                    <Flag iso2={c.iso2} className="w-4 h-3 shrink-0" />
                     <span className="font-mono text-[11px] text-ink truncate">
-                      {shortName(r.name)}
+                      {shortName(name)}
                     </span>
                   </div>
                   <div
@@ -144,10 +154,10 @@ export default function Part1Chart2() {
                       left: barLeft,
                       width: barW,
                       height: ROW_H - 10,
-                      background: palette.get(r.name),
+                      background: palette.get(name),
                       opacity: 0.88,
                       transition:
-                        "left 550ms cubic-bezier(.4,0,.2,1), width 550ms cubic-bezier(.4,0,.2,1), background 300ms",
+                        "left 700ms cubic-bezier(.4,0,.2,1), width 700ms cubic-bezier(.4,0,.2,1), background 300ms",
                     }}
                   />
                   <div
@@ -157,12 +167,12 @@ export default function Part1Chart2() {
                         ? barLeft + barW + 6
                         : barLeft - 6,
                       transform: positive ? "none" : "translateX(-100%)",
-                      color: "var(--brass-bright)",
-                      transition: "left 550ms cubic-bezier(.4,0,.2,1)",
+                      color: "var(--gold)",
+                      transition: "left 700ms cubic-bezier(.4,0,.2,1)",
                     }}
                   >
-                    {r.value >= 0 ? "+" : ""}
-                    {r.value.toFixed(0)}
+                    {value >= 0 ? "+" : ""}
+                    {value.toFixed(0)}
                   </div>
                 </div>
               );
@@ -170,7 +180,19 @@ export default function Part1Chart2() {
           </div>
         </div>
 
-        <div className="mt-6">
+        {/* Vertical YearScrubber for desktop */}
+        <div className="hidden lg:block">
+          <YearScrubber
+            years={seaLevelYears}
+            year={year}
+            onChange={setYear}
+            speedMs={2000}
+            variant="vertical"
+          />
+        </div>
+
+        {/* Horizontal YearScrubber for mobile */}
+        <div className="lg:hidden col-span-full mt-6">
           <YearScrubber years={seaLevelYears} year={year} onChange={setYear} speedMs={2000} />
         </div>
       </div>

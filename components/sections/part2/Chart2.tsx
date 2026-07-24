@@ -52,7 +52,7 @@ export default function Part2Chart2() {
     cleanWaterData[name][kind].find((s) => s.year === yr)?.value;
 
   return (
-    <section id="part2-chart2" className="relative bg-foam px-6 py-28 md:px-16">
+    <section id="part2-chart2" className="relative bg-foam px-6 py-14 md:px-16">
     <div className="mx-auto max-w-6xl">
       <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
         Drinking water: Rural &mdash; Urban divide
@@ -63,8 +63,10 @@ export default function Part2Chart2() {
         Drag the slider to see the gap change over years.
       </p>
 
-      <div className="mt-8 chart-paper rounded-lg p-3 sm:p-5 overflow-x-auto">
-        <div className="flex items-center justify-center gap-8 mb-3 font-mono text-[11px]">
+      <div className="mt-8 grid lg:grid-cols-[1fr_auto] gap-4 items-start">
+        <div>
+          <div className="chart-paper rounded-lg p-3 sm:p-5 overflow-x-auto">
+          <div className="flex items-center justify-center gap-8 mb-3 font-mono text-[11px]">
           <span className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded-sm inline-block" style={{ background: "var(--coral)" }} />
             Rural
@@ -192,9 +194,9 @@ export default function Part2Chart2() {
             })}
           </g>
         </svg>
-      </div>
+          </div>
 
-      <div className="mt-4 flex flex-wrap gap-3 font-mono text-[10px] text-ink-faint">
+          <div className="mt-4 flex flex-wrap gap-3 font-mono text-[10px] text-ink-faint">
         {ordered.map((name) => (
           <span key={name} className="flex items-center gap-1">
             <Flag iso2={cleanWaterData[name].iso2} className="w-3.5 h-2.5" />
@@ -202,10 +204,24 @@ export default function Part2Chart2() {
           </span>
         ))}
       </div>
+        </div>
 
-      <div className="mt-6">
-        <YearScrubber years={cleanWaterYears} year={year} onChange={setYear} speedMs={2000} />
+      {/* Vertical YearScrubber (desktop only) */}
+      <div className="hidden lg:block">
+        <YearScrubber
+          years={cleanWaterYears}
+          year={year}
+          onChange={setYear}
+          speedMs={1100}
+          variant="vertical"
+        />
       </div>
+    </div>
+
+    {/* Horizontal YearScrubber (mobile only) */}
+    <div className="lg:hidden mt-4">
+      <YearScrubber years={cleanWaterYears} year={year} onChange={setYear} speedMs={1100} />
+    </div>
     </div>
     </section>
   );

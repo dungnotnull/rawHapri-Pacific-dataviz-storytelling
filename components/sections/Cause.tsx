@@ -20,7 +20,7 @@ export function Cause() {
   const [selectedYear, setSelectedYear] = useState(MAX_YEAR);
 
   return (
-    <section id="cause" className="relative bg-foam px-6 py-28 md:px-16">
+    <section id="cause" className="relative bg-foam px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
         <ScrollReveal animation="fade-down" delay={200}>
           <p className="eyebrow text-lagoon">A Pacific climate story </p>

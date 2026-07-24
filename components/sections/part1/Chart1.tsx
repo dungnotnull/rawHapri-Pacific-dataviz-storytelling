@@ -108,20 +108,20 @@ export default function Part1Chart1() {
     selected.size > 0 ? Array.from(selected) : seaLevelCountries;
 
   return (
-    <section id="part1-chart1" className="relative bg-foam px-6 py-28 md:px-16">
-    <div className="mx-auto max-w-6xl">
-      <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
-        Sea level rise, by year &amp; country
-      </h1>
-      <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-        Sea level anomalies (relative to baseline) measured by satellite,
-        1993–2023. Drag the slider or press Play to watch the measurement line
-        &ldquo;draw&rdquo; over time — select countries below to compare.
-      </p>
+    <section id="part1-chart1" className="relative bg-foam px-6 py-14 md:px-16">
+      <div className="mx-auto max-w-6xl">
+        <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
+          Sea level rise, by year &amp; country
+        </h1>
+        <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
+          Sea level anomalies (relative to baseline) measured by satellite,
+          1993–2023. Drag the slider or press Play to watch the measurement line
+          &ldquo;draw&rdquo; over time — select countries below to compare.
+        </p>
 
-      <div className="mt-8 grid lg:grid-cols-[1fr_260px] gap-6">
-        <div>
-          <div ref={containerRef} className="chart-paper rounded-lg p-3 sm:p-5">
+        <div className="mt-8 grid lg:grid-cols-[1fr_auto_260px] gap-4 items-start">
+          {/* Chart */}
+          <div ref={containerRef} className="chart-paper rounded-lg pr-3 sm:pr-5">
             <svg ref={svgRef} width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
               <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
                 {/* horizontal gridlines at 0 emphasized */}
@@ -193,31 +193,46 @@ export default function Part1Chart1() {
                         onMouseLeave={() => setHover(null)}
                         style={{ cursor: "pointer" }}
                       />
+                    </g>
+                  );
+                })}
+
+                {/* Popovers - positioned at chart level */}
+                {seaLevelCountries.map((name) => {
+                  const d = seaLevelData[name];
+                  const pt = d.series.find((s) => s.year === year);
+                  if (!pt) return null;
+                  const isActive = activeList.includes(name);
+                  if (!isActive) return null;
+                  const isHover = hover === name;
+                  return (
+                    <g key={`tooltip-${name}`}>
                       {isHover && (
-                        <g transform="translate(8,-10)">
+                        <g transform={`translate(${innerW / 2},${MARGIN.top - 25})`}>
                           <rect
-                            x={0}
+                            x={-Math.max(shortName(name).length * 6.2 + 44, 90) / 2}
                             y={-14}
                             width={Math.max(shortName(name).length * 6.2 + 44, 90)}
                             height={24}
                             rx={4}
-                            fill="var(--paper)"
+                            fill="white"
                             stroke="var(--grid)"
+                            strokeWidth={1}
                           />
                           <text
-                            x={8}
+                            x={-Math.max(shortName(name).length * 6.2 + 44, 90) / 2 + 8}
                             y={2}
-                            fill="white"
+                            fill="var(--ink)"
                             fontSize={11}
                             fontFamily="var(--font-body)"
                           >
                             {shortName(name)}
                           </text>
                           <text
-                            x={Math.max(shortName(name).length * 6.2 + 44, 90) - 8}
+                            x={Math.max(shortName(name).length * 6.2 + 44, 90) / 2 - 8}
                             y={2}
                             textAnchor="end"
-                            fill="white"
+                            fill="var(--gold)"
                             fontSize={11}
                             fontFamily="var(--font-mono)"
                           >
@@ -242,61 +257,72 @@ export default function Part1Chart1() {
             </svg>
           </div>
 
-          <div className="mt-6">
+          {/* Vertical YearScrubber (desktop only) */}
+          <div className="hidden lg:block">
+            <YearScrubber
+              years={seaLevelYears}
+              year={year}
+              onChange={setYear}
+              speedMs={2000}
+              variant="vertical"
+            />
+          </div>
+
+          {/* Country picker */}
+          <div className="chart-paper rounded-lg p-4 h-fit sticky top-24">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-faint">
+                Countries ({activeList.length}/{seaLevelCountries.length})
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setSelected(new Set(seaLevelCountries))}
+                  className="font-mono text-[10px] text-tide hover:text-tide-2"
+                >
+                  all
+                </button>
+                <button
+                  onClick={() => setSelected(new Set())}
+                  className="font-mono text-[10px] text-coral hover:opacity-80"
+                >
+                  clear
+                </button>
+              </div>
+            </div>
+            <div className="max-h-[440px] lg:max-h-[500px] overflow-y-auto pr-1 flex flex-col gap-0.5">
+              {seaLevelCountries.map((name) => {
+                const isActive = activeList.includes(name);
+                const d = seaLevelData[name];
+                return (
+                  <button
+                    key={name}
+                    onClick={() => toggle(name)}
+                    onMouseEnter={() => setHover(name)}
+                    onMouseLeave={() => setHover(null)}
+                    className={`flex items-center gap-2 px-2 py-1.5 rounded text-left transition-colors ${
+                      isActive ? "bg-paper-raised-2" : "opacity-45 hover:opacity-80"
+                    }`}
+                  >
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ background: palette.get(name) }}
+                    />
+                    <Flag iso2={d.iso2} className="w-4 h-3 shrink-0" />
+                    <span className="font-mono text-[11px] text-ink truncate">
+                      {shortName(name)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Horizontal YearScrubber (mobile only) */}
+          <div className="lg:hidden col-span-full">
             <YearScrubber years={seaLevelYears} year={year} onChange={setYear} speedMs={2000} />
           </div>
         </div>
-
-        {/* legend / country picker */}
-        <div className="chart-paper rounded-lg p-4 h-fit lg:sticky lg:top-24">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-faint">
-              Countries ({activeList.length}/{seaLevelCountries.length})
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setSelected(new Set(seaLevelCountries))}
-                className="font-mono text-[10px] text-tide hover:text-tide-2"
-              >
-                all
-              </button>
-              <button
-                onClick={() => setSelected(new Set())}
-                className="font-mono text-[10px] text-coral hover:opacity-80"
-              >
-                clear
-              </button>
-            </div>
-          </div>
-          <div className="max-h-[440px] overflow-y-auto pr-1 flex flex-col gap-0.5">
-            {seaLevelCountries.map((name) => {
-              const isActive = activeList.includes(name);
-              const d = seaLevelData[name];
-              return (
-                <button
-                  key={name}
-                  onClick={() => toggle(name)}
-                  onMouseEnter={() => setHover(name)}
-                  onMouseLeave={() => setHover(null)}
-                  className={`flex items-center gap-2 px-2 py-1.5 rounded text-left transition-colors ${
-                    isActive ? "bg-paper-raised-2" : "opacity-45 hover:opacity-80"
-                  }`}
-                >
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ background: palette.get(name) }}
-                  />
-                  <Flag iso2={d.iso2} className="w-4 h-3 shrink-0" />
-                  <span className="font-mono text-[11px] text-ink truncate">
-                    {shortName(name)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
       </div>
-    </div>
     </section>
   );
 }
