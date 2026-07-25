@@ -79,16 +79,40 @@ export default function Part2Chart2() {
 
         <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} className="min-w-[600px]">
           <g transform="translate(0,10)">
-            {/* axis ticks */}
+            {/* X axis line and ticks */}
+            <line x1={innerLeft} x2={innerLeft + innerW} y1={height - 10} y2={height - 10} stroke="var(--grid)" strokeWidth={1.2} />
+            {[0, 25, 50, 75, 100].map((t) => (
+              <g key={`tick-${t}`}>
+                <line
+                  x1={innerLeft + center - xScale(t)}
+                  y1={height - 10}
+                  x2={innerLeft + center - xScale(t)}
+                  y2={height - 6}
+                  stroke="var(--grid)"
+                  strokeWidth={1}
+                />
+                <line
+                  x1={innerLeft + center + xScale(t)}
+                  y1={height - 10}
+                  x2={innerLeft + center + xScale(t)}
+                  y2={height - 6}
+                  stroke="var(--grid)"
+                  strokeWidth={1}
+                />
+              </g>
+            ))}
+
+            {/* axis ticks (top) */}
             {[0, 25, 50, 75, 100].map((t) => (
               <g key={`u-${t}`}>
                 <text
                   x={innerLeft + center + xScale(t)}
                   y={12}
                   textAnchor="middle"
-                  fontSize={9}
+                  fontSize={11}
                   fontFamily="var(--font-mono)"
-                  fill="var(--ink-faint)"
+                  fill="var(--ink-dim)"
+                  fontWeight={500}
                 >
                   {t}
                 </text>
@@ -96,9 +120,10 @@ export default function Part2Chart2() {
                   x={innerLeft + center - xScale(t)}
                   y={12}
                   textAnchor="middle"
-                  fontSize={9}
+                  fontSize={11}
                   fontFamily="var(--font-mono)"
-                  fill="var(--ink-faint)"
+                  fill="var(--ink-dim)"
+                  fontWeight={500}
                 >
                   {t}
                 </text>
@@ -110,6 +135,7 @@ export default function Part2Chart2() {
               y1={22}
               y2={height - 10}
               stroke="var(--grid)"
+              strokeWidth={1.2}
             />
 
             {ordered.map((name, i) => {
@@ -212,7 +238,7 @@ export default function Part2Chart2() {
           years={cleanWaterYears}
           year={year}
           onChange={setYear}
-          speedMs={1100}
+          speedMs={1000}
           variant="vertical"
         />
       </div>
@@ -220,7 +246,7 @@ export default function Part2Chart2() {
 
     {/* Horizontal YearScrubber (mobile only) */}
     <div className="lg:hidden mt-4">
-      <YearScrubber years={cleanWaterYears} year={year} onChange={setYear} speedMs={1100} />
+      <YearScrubber years={cleanWaterYears} year={year} onChange={setYear} speedMs={1000} />
     </div>
     </div>
     </section>

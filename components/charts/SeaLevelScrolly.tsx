@@ -8,7 +8,14 @@ import seaLevelAvg from "@/data/sea_level_pacific_avg.json";
 import seaLevelCountries from "@/data/sea_level.json";
 
 const HIGHLIGHT_CODE = "TV"; // Tuvalu - the emblematic low-lying atoll nation
-const countries = seaLevelCountries as SeaLevelCountry[];
+// Convert the country dictionary to an array of SeaLevelCountry
+const countries = Object.entries(seaLevelCountries).map(([name, data]) => ({
+  code: data.iso2,
+  name,
+  lat: 0,
+  lon: 0,
+  series: data.series,
+})) as SeaLevelCountry[];
 const avg = seaLevelAvg as YearValue[];
 
 export function SeaLevelScrolly({ step }: { step: number }) {
