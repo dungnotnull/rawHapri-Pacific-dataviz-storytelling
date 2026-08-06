@@ -48,7 +48,7 @@ export function YearControl({
         }
         return nextYear;
       });
-    }, 4000); // 4 seconds per year
+    }, 1500); // 1.5 seconds per year
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, maxYear]);

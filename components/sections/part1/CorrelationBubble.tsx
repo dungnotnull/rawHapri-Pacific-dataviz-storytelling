@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import {
   ghgData,
@@ -13,600 +13,747 @@ import { makePalette } from "@/lib/colors";
 import Flag from "@/components/ui/Flag";
 import YearScrubber from "@/components/ui/YearScrubber";
 
-// ─── helpers ────────────────────────────────────────────────────────────────
+// ─── Data helpers ────────────────────────────────────────────────────────────
 
-/** sea-level name → GHG/temp name */
 const SL_TO_NORM: Record<string, string> = {
   "Micronesia, Federated State of": "Micronesia",
 };
 
-/** Countries present in all three datasets */
-const COUNTRIES: Array<{
-  slName: string;  // key in seaLevelData
-  normName: string; // key in ghg/temp
-  iso2: string;
-}> = (() => {
-  const ghgByName = new Map(ghgData.map((d) => [d.name, d]));
-  const tempByName = new Map(tempAnomalyData.map((d) => [d.name, d]));
-  const result = [];
-  for (const slName of Object.keys(seaLevelData)) {
-    const normName = SL_TO_NORM[slName] ?? slName;
-    if (ghgByName.has(normName) && tempByName.has(normName)) {
-      result.push({ slName, normName, iso2: seaLevelData[slName].iso2 });
-    }
-  }
-  return result;
+const COUNTRIES = (() => {
+  const ghgMap = new Map(ghgData.map((d) => [d.name, d]));
+  const tMap = new Map(tempAnomalyData.map((d) => [d.name, d]));
+  return Object.keys(seaLevelData)
+    .filter((sl) => {
+      const n = SL_TO_NORM[sl] ?? sl;
+      return ghgMap.has(n) && tMap.has(n);
+    })
+    .map((sl) => ({
+      slName: sl,
+      normName: SL_TO_NORM[sl] ?? sl,
+      iso2: seaLevelData[sl].iso2,
+    }));
 })();
 
 const COUNTRY_NAMES = COUNTRIES.map((c) => c.slName);
 
-/** Lookup helpers */
-const ghgByName = new Map(ghgData.map((d) => [d.name, d]));
-const tempByName = new Map(tempAnomalyData.map((d) => [d.name, d]));
+const _ghg = new Map(ghgData.map((d) => [d.name, d]));
+const _tmp = new Map(tempAnomalyData.map((d) => [d.name, d]));
 
-function getGhg(normName: string, year: number): number | null {
-  const series = ghgByName.get(normName)?.series ?? [];
-  return series.find((s) => s.year === year)?.value ?? null;
-}
+const getGhg = (n: string, y: number) =>
+  _ghg.get(n)?.series.find((s) => s.year === y)?.value ?? null;
+const getTmp = (n: string, y: number) =>
+  _tmp.get(n)?.series.find((s) => s.year === y)?.value ?? null;
+const getSl = (n: string, y: number) => {
+  const pt = seaLevelData[n]?.series.find((s) => s.year === y);
+  return pt !== undefined ? pt.value * 1000 : null;
+};
 
-function getTemp(normName: string, year: number): number | null {
-  const series = tempByName.get(normName)?.series ?? [];
-  return series.find((s) => s.year === year)?.value ?? null;
-}
+// ─── Pearson r (module-level, never recreated) ───────────────────────────────
+// r(X,Y) = Σ(xi − x̄)(yi − ȳ) / sqrt[Σ(xi−x̄)² · Σ(yi−ȳ)²]
 
-function getSeaLevel(slName: string, year: number): number | null {
-  const series = seaLevelData[slName]?.series ?? [];
-  const pt = series.find((s) => s.year === year);
-  return pt !== undefined ? pt.value * 1000 : null; // convert m → mm
-}
-
-// ─── Pearson r (pure function, outside component) ───────────────────────────
-// Formula: r(X,Y) = Σ(xi - x̄)(yi - ȳ) / sqrt[Σ(xi-x̄)² · Σ(yi-ȳ)²]
-// Inputs must be raw linear values (not scaled/transformed).
 function pearsonR(xs: number[], ys: number[]): number {
   const n = xs.length;
   if (n < 3) return NaN;
-  const meanX = xs.reduce((s, x) => s + x, 0) / n;
-  const meanY = ys.reduce((s, y) => s + y, 0) / n;
-  let num = 0, denX = 0, denY = 0;
+  const mx = xs.reduce((s, x) => s + x, 0) / n;
+  const my = ys.reduce((s, y) => s + y, 0) / n;
+  let num = 0, dx2 = 0, dy2 = 0;
   for (let i = 0; i < n; i++) {
-    const dx = xs[i] - meanX;
-    const dy = ys[i] - meanY;
-    num  += dx * dy;
-    denX += dx * dx;
-    denY += dy * dy;
+    const dx = xs[i] - mx, dy = ys[i] - my;
+    num += dx * dy; dx2 += dx * dx; dy2 += dy * dy;
   }
-  return denX === 0 || denY === 0 ? 0 : num / Math.sqrt(denX * denY);
+  return dx2 === 0 || dy2 === 0 ? 0 : num / Math.sqrt(dx2 * dy2);
 }
 
-// ─── component ──────────────────────────────────────────────────────────────
+// ─── Linear Regression (normalized) ─────────────────────────────────────────
+function linearRegression(xs: number[], ys: number[]) {
+  const n = xs.length;
+  if (n < 2) return null;
+  const mx = xs.reduce((s, x) => s + x, 0) / n;
+  const my = ys.reduce((s, y) => s + y, 0) / n;
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = xs[i] - mx;
+    const dy = ys[i] - my;
+    num += dx * dy;
+    den += dx * dx;
+  }
+  if (den === 0) return null;
+  const m = num / den;
+  const b = my - m * mx;
+  
+  const pts: {x: number, y: number}[] = [];
+  if (b >= 0 && b <= 1) pts.push({x: 0, y: b});
+  if (m + b >= 0 && m + b <= 1) pts.push({x: 1, y: m + b});
+  if (m !== 0) {
+    const x0 = -b / m;
+    if (x0 > 0 && x0 < 1) pts.push({x: x0, y: 0});
+    const x1 = (1 - b) / m;
+    if (x1 > 0 && x1 < 1) pts.push({x: x1, y: 1});
+  }
+  
+  if (pts.length >= 2) return [pts[0], pts[1]];
+  return null;
+}
 
-const MARGIN = { top: 32, right: 32, bottom: 58, left: 68 };
-const TRAIL_LEN = 6; // number of trail positions to show
+// ─── 3-D perspective projection ──────────────────────────────────────────────
+// Inputs: normalized coordinates in [0, 1]³
+// az  = azimuth  (rotation around world-Y)
+// el  = elevation (tilt around world-X)
+// Returns 2-D screen position + depth for z-sorting.
+
+function project(
+  nx: number, ny: number, nz: number,
+  az: number, el: number,
+  cx: number, cy: number, scale: number
+): { sx: number; sy: number; depth: number } {
+  // Centre cube at origin
+  const x = nx - 0.5, y = ny - 0.5, z = nz - 0.5;
+
+  // Rotate around world-Y (azimuth)
+  const cosA = Math.cos(az), sinA = Math.sin(az);
+  const rx = x * cosA + z * sinA;
+  const rz1 = -x * sinA + z * cosA;
+
+  // Rotate around world-X (elevation)
+  const cosE = Math.cos(el), sinE = Math.sin(el);
+  const ry = y * cosE - rz1 * sinE;
+  const rz = y * sinE + rz1 * cosE;
+
+  // Mild perspective divide
+  const d = 3.5;
+  const persp = d / (d + rz + 0.5);
+
+  return {
+    sx: cx + rx * scale * persp,
+    sy: cy - ry * scale * persp,
+    depth: rz,
+  };
+}
+
+const TRAIL_LEN = 8;
+
+// Bounding cube vertices (8 corners) and the 12 edges connecting them
+const CUBE_VERTS: [number, number, number][] = [
+  [0,0,0],[1,0,0],[1,1,0],[0,1,0],
+  [0,0,1],[1,0,1],[1,1,1],[0,1,1],
+];
+const CUBE_EDGES = [
+  [0,1],[1,2],[2,3],[3,0], // bottom face
+  [4,5],[5,6],[6,7],[7,4], // top face
+  [0,4],[1,5],[2,6],[3,7], // vertical pillars
+];
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export default function CorrelationBubble() {
   const palette = useMemo(() => makePalette(COUNTRY_NAMES), []);
   const [year, setYear] = useState(CORRELATION_YEARS[CORRELATION_YEARS.length - 1]);
   const [hover, setHover] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(820);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ w: 700, h: 460 });
+
+  // Rotation state
+  const [az, setAz] = useState(-0.55);   // azimuth  (radians)
+  const [el, setEl] = useState(0.42);    // elevation (radians)
+  const [autoRot, setAutoRot] = useState(true);
+  const dragging = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
+  const resumeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── Resize observer ─────────────────────────────────────────────────────────
   useEffect(() => {
-    const ro = new ResizeObserver((entries) => {
-      for (const e of entries) setWidth(e.contentRect.width);
+    const ro = new ResizeObserver((es) => {
+      for (const e of es) {
+        const w = e.contentRect.width;
+        setSize({ w, h: Math.min(520, Math.max(340, w * 0.62)) });
+      }
     });
     if (containerRef.current) ro.observe(containerRef.current);
     return () => ro.disconnect();
   }, []);
 
-  // ── scales (stable across years) ──────────────────────────────────────────
-  const height = Math.min(500, Math.max(340, width * 0.56));
-  const innerW = width - MARGIN.left - MARGIN.right;
-  const innerH = height - MARGIN.top - MARGIN.bottom;
+  // ── Auto-rotation (~20 fps to keep React happy) ──────────────────────────
+  useEffect(() => {
+    if (!autoRot) return;
+    let id: number;
+    let lastT = 0;
+    const tick = (t: number) => {
+      if (t - lastT > 50) {
+        lastT = t;
+        setAz((a) => a + 0.012);
+      }
+      id = requestAnimationFrame(tick);
+    };
+    id = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(id);
+  }, [autoRot]);
 
-  const { xScale, yScale, rScale } = useMemo(() => {
-    // collect all data points across all years for stable axes
-    const ghgVals: number[] = [];
-    const slVals: number[] = [];
-    const tempVals: number[] = [];
+  // ── Drag to rotate ───────────────────────────────────────────────────────
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    dragging.current = true;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    if (resumeRef.current) clearTimeout(resumeRef.current);
+    setAutoRot(false);
+  }, []);
 
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!dragging.current) return;
+    const dx = e.clientX - lastPos.current.x;
+    const dy = e.clientY - lastPos.current.y;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    setAz((a) => a + dx * 0.011);
+    setEl((ev) => Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, ev - dy * 0.011)));
+  }, []);
+
+  const onMouseUp = useCallback(() => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    resumeRef.current = setTimeout(() => setAutoRot(true), 3000);
+  }, []);
+
+  // ── Touch to rotate (mobile) ─────────────────────────────────────────────
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0];
+    dragging.current = true;
+    lastPos.current = { x: t.clientX, y: t.clientY };
+    if (resumeRef.current) clearTimeout(resumeRef.current);
+    setAutoRot(false);
+  }, []);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!dragging.current) return;
+    const t = e.touches[0];
+    const dx = t.clientX - lastPos.current.x;
+    const dy = t.clientY - lastPos.current.y;
+    lastPos.current = { x: t.clientX, y: t.clientY };
+    setAz((a) => a + dx * 0.011);
+    setEl((ev) => Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, ev - dy * 0.011)));
+  }, []);
+
+  const onTouchEnd = useCallback(() => {
+    dragging.current = false;
+    resumeRef.current = setTimeout(() => setAutoRot(true), 3000);
+  }, []);
+
+  // ── Stable scales (normalise raw values → [0, 1]) ───────────────────────
+  const { xNorm, yNorm, zNorm, xTicks, yTicks, zTicks } = useMemo(() => {
+    const gs: number[] = [], ss: number[] = [], ts: number[] = [];
     for (const yr of CORRELATION_YEARS) {
       for (const { slName, normName } of COUNTRIES) {
         const g = getGhg(normName, yr);
-        const s = getSeaLevel(slName, yr);
-        const t = getTemp(normName, yr);
-        if (g !== null) ghgVals.push(g);
-        if (s !== null) slVals.push(s);
-        if (t !== null) tempVals.push(t);
+        const s = getSl(slName, yr);
+        const t = getTmp(normName, yr);
+        if (g !== null) gs.push(g);
+        if (s !== null) ss.push(s);
+        if (t !== null) ts.push(t);
       }
     }
+    const xNorm = d3.scaleLinear().domain([0, (d3.max(gs) ?? 10) * 1.04]).range([0, 1]);
+    const [sMin, sMax] = d3.extent(ss) as [number, number];
+    const pad = (sMax - sMin) * 0.08 || 5;
+    const yNorm = d3.scaleLinear().domain([sMin - pad, sMax + pad]).range([0, 1]);
+    const [tMin, tMax] = d3.extent(ts) as [number, number];
+    const zNorm = d3.scaleLinear().domain([tMin, tMax]).range([0, 1]);
+    return {
+      xNorm, yNorm, zNorm,
+      xTicks: xNorm.ticks(5),
+      yTicks: yNorm.ticks(5),
+      zTicks: zNorm.ticks(4),
+    };
+  }, []);
 
-    const xScale = d3
-      .scalePow()
-      .exponent(0.45)  // sqrt-like, spreads small values while keeping outliers visible
-      .domain([0, (d3.max(ghgVals) ?? 5) * 1.05])
-      .range([0, innerW])
-      .nice();
+  // ── Projection helper for current rotation ───────────────────────────────
+  const { w, h } = size;
+  const cx = w / 2 + 10;
+  const cy = h / 2 + 30;
+  const scale = Math.min(w, h) * 0.67;
 
-    const [slMin, slMax] = d3.extent(slVals) as [number, number];
-    const yPad = (slMax - slMin) * 0.15 || 5;
-    const yScale = d3
-      .scaleLinear()
-      .domain([slMin - yPad, slMax + yPad])
-      .range([innerH, 0]);
+  const p = useCallback(
+    (nx: number, ny: number, nz: number) =>
+      project(nx, ny, nz, az, el, cx, cy, scale),
+    [az, el, cx, cy, scale]
+  );
 
-    const [tMin, tMax] = d3.extent(tempVals) as [number, number];
-    const rScale = d3
-      .scaleSqrt()
-      .domain([tMin, tMax])
-      .range([5, 22]);
-
-    return { xScale, yScale, rScale };
-  }, [innerW, innerH]);
-
-  // ── per-frame data ──────────────────────────────────────────────────────────
-  const points = useMemo(() => {
-    return COUNTRIES.map(({ slName, normName, iso2 }) => {
+  // ── Per-frame data ───────────────────────────────────────────────────────
+  const rawPoints = useMemo(() =>
+    COUNTRIES.map(({ slName, normName, iso2 }) => {
       const ghg = getGhg(normName, year);
-      const sl = getSeaLevel(slName, year);
-      const temp = getTemp(normName, year);
-
-      // trail: last TRAIL_LEN years
-      const trail = CORRELATION_YEARS.filter((y) => y <= year)
+      const sl = getSl(slName, year);
+      const temp = getTmp(normName, year);
+      const trail = CORRELATION_YEARS
+        .filter((y) => y <= year)
         .slice(-TRAIL_LEN)
-        .map((y) => ({
-          year: y,
-          ghg: getGhg(normName, y),
-          sl: getSeaLevel(slName, y),
-        }))
-        .filter((pt) => pt.ghg !== null && pt.sl !== null);
-
+        .flatMap((y) => {
+          const g = getGhg(normName, y);
+          const s = getSl(slName, y);
+          const t = getTmp(normName, y);
+          return g !== null && s !== null && t !== null
+            ? [{ g, s, t, year: y }]
+            : [];
+        });
       return { slName, normName, iso2, ghg, sl, temp, trail };
-    });
-  }, [year]);
+    }),
+    [year]
+  );
 
-  // ── tooltip format ─────────────────────────────────────────────────────────
-  const hovered = hover ? points.find((p) => p.slName === hover) : null;
+  // ── Project & depth-sort (far first so near renders on top) ─────────────
+  const pts = useMemo(() => {
+    return rawPoints
+      .map((rp) => {
+        const trailPjs = rp.trail.map((tr) =>
+          p(xNorm(tr.g), yNorm(tr.s), zNorm(tr.t))
+        );
+        if (rp.ghg === null || rp.sl === null || rp.temp === null) {
+          return { ...rp, pj: null as null, trailPjs };
+        }
+        const pj = p(xNorm(rp.ghg), yNorm(rp.sl), zNorm(rp.temp));
+        return { ...rp, pj, trailPjs };
+      })
+      .sort((a, b) => (a.pj?.depth ?? 0) - (b.pj?.depth ?? 0));
+  }, [rawPoints, p, xNorm, yNorm, zNorm]);
 
-
-  // ── All-pairs correlations + OLS regression line for GHG ↔ Sea Level ───────
-
-  const correlation = useMemo(() => {
-    // Only observations where ALL three values exist
-    const full = points.filter(
-      (p) => p.ghg !== null && p.sl !== null && p.temp !== null
-    ) as Array<{ ghg: number; sl: number; temp: number; slName: string }>;
-    const n = full.length;
-    if (n < 3) return null;
-
-    const ghgArr  = full.map((p) => p.ghg);
-    const slArr   = full.map((p) => p.sl);
-    const tempArr = full.map((p) => p.temp);
-
-    const rGhgSl   = pearsonR(ghgArr,  slArr);
-    const rGhgTemp = pearsonR(ghgArr,  tempArr);
-    const rTempSl  = pearsonR(tempArr, slArr);
-
-    // OLS for GHG → Sea Level (to draw the regression line on the scatter axes)
-    const meanGhg = ghgArr.reduce((s, x) => s + x, 0) / n;
-    const meanSl  = slArr.reduce((s, y) => s + y, 0) / n;
-    let numGS = 0, denGS = 0;
-    for (let i = 0; i < n; i++) {
-      const dx = ghgArr[i] - meanGhg;
-      numGS += dx * (slArr[i] - meanSl);
-      denGS += dx * dx;
-    }
-    const slope     = denGS === 0 ? 0 : numGS / denGS;
-    const intercept = meanSl - slope * meanGhg;
-
-    const xMin = Math.max(0, (d3.min(ghgArr) ?? 0) - 0.2);
-    const xMax = (d3.max(ghgArr) ?? 5) + 0.5;
-    const [domainMin, domainMax] = yScale.domain();
-    const clamp = (v: number) => Math.max(domainMin, Math.min(domainMax, v));
+  // ── Pearson r and Linear Regression for all 3 pairs ──────────────────────
+  const corr = useMemo(() => {
+    const full = rawPoints.filter(
+      (rp) => rp.ghg !== null && rp.sl !== null && rp.temp !== null
+    ) as Array<{ ghg: number; sl: number; temp: number }>;
+    if (full.length < 3) return null;
+    const g = full.map((p) => p.ghg);
+    const s = full.map((p) => p.sl);
+    const t = full.map((p) => p.temp);
+    
+    const ng = g.map(xNorm);
+    const ns = s.map(yNorm);
+    const nt = t.map(zNorm);
 
     return {
-      rGhgSl,
-      rGhgTemp,
-      rTempSl,
-      n,
-      line: {
-        x1: xScale(xMin), y1: yScale(clamp(slope * xMin + intercept)),
-        x2: xScale(xMax), y2: yScale(clamp(slope * xMax + intercept)),
+      rGhgSl: pearsonR(g, s),
+      rGhgTemp: pearsonR(g, t),
+      rTempSl: pearsonR(t, s),
+      regs: {
+        ghgSl: linearRegression(ng, ns),
+        ghgTemp: linearRegression(ng, nt),
+        tempSl: linearRegression(nt, ns),
       },
+      n: full.length,
     };
-  }, [points, xScale, yScale]);
+  }, [rawPoints, xNorm, yNorm, zNorm]);
 
+  // ── Derived 3-D geometry ─────────────────────────────────────────────────
+  // Cube corners
+  const cube = CUBE_VERTS.map(([x, y, z]) => p(x, y, z));
+
+  // Axis endpoints
+  const o = p(0, 0, 0);
+  const eX = p(1, 0, 0);
+  const eY = p(0, 1, 0);
+  const eZ = p(0, 0, 1);
+
+  // Y=0 baseline plane polygon
+  const yZero = yNorm(0);
+  const baseVerts = [[0, yZero, 0], [1, yZero, 0], [1, yZero, 1], [0, yZero, 1]].map(
+    ([x, y, z]) => p(x, y, z)
+  );
+  const basePath =
+    `M${baseVerts[0].sx},${baseVerts[0].sy}` +
+    baseVerts.slice(1).map((v) => ` L${v.sx},${v.sy}`).join("") +
+    " Z";
+
+  // Floor grid (XZ plane at Y=0)
+  const floorLines: { x1:number; y1:number; x2:number; y2:number }[] = [];
+  for (let i = 0; i <= 5; i++) {
+    const t = i / 5;
+    const a = p(t, 0, 0), b = p(t, 0, 1);
+    const c = p(0, 0, t), dd = p(1, 0, t);
+    floorLines.push({ x1: a.sx, y1: a.sy, x2: b.sx, y2: b.sy });
+    floorLines.push({ x1: c.sx, y1: c.sy, x2: dd.sx, y2: dd.sy });
+  }
+
+  // Axis labels (slightly beyond endpoints)
+  const lbX = p(1.14, -0.02, 0);
+  const lbY = p(0, 1.14, 0);
+  const lbZ = p(0, -0.02, 1.14);
+
+  // Tooltip
+  const hoveredPt = hover ? pts.find((pt) => pt.slName === hover) : null;
+
+  // ── Badge helper ──────────────────────────────────────────────────────────
+  const badge = (r: number) => ({
+    val: `${r >= 0 ? "+" : ""}${r.toFixed(3)}`,
+    label:
+      Math.abs(r) > 0.7 ? "strong"
+      : Math.abs(r) > 0.4 ? "moderate"
+      : Math.abs(r) > 0.2 ? "weak"
+      : "negligible",
+    dir: r >= 0 ? "↑" : "↓",
+    color:
+      Math.abs(r) > 0.6 ? "#4ade80"
+      : Math.abs(r) > 0.3 ? "var(--gold)"
+      : "var(--ink-dim)",
+  });
 
   return (
-    <section
-      id="part1-correlation"
-      className="relative px-6 py-14 md:px-16"
-    >
+    <section id="part1-correlation" className="relative px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
-        {/* Header */}
+        {/* ── Header ── */}
         <div className="flex flex-wrap gap-6 items-start justify-between">
           <div>
-            <h2 className="font-display text-3xl sm:text-4xl  max-w-3xl">
+            <h2 className="font-display text-3xl sm:text-4xl max-w-3xl">
               The Climate Triangle
             </h2>
-            <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed">
-              How GHG emissions, sea‑level rise and temperature anomaly move
-              together across Pacific nations. Bubble size encodes temperature
-              anomaly (°C above pre‑industrial). Press&nbsp;
+            <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
+              Three climate indicators per Pacific nation in 3-D space.{" "}
+              <span className="font-semibold" style={{ color: "var(--gold)" }}>X</span>{" "}
+              = GHG/cap ·{" "}
+              <span className="font-semibold text-lagoon">Y</span> = Sea level (mm) ·{" "}
+              <span className="font-semibold" style={{ color: "#f87171" }}>Z</span>{" "}
+              = Temp anomaly (°C). Drag to rotate · Press{" "}
               <span className="text-lagoon font-semibold">Play</span> to animate
               1993 → 2023.
             </p>
-            {/* ── Three-pair correlation badges ── */}
-            {correlation && (
+
+            {/* ── 3-pair Pearson r badges ── */}
+            {corr && (
               <div className="mt-4 flex flex-wrap gap-2">
-                {([
-                  { label: "GHG ↔ Sea Level", r: correlation.rGhgSl,   note: "(axes)" },
-                  { label: "GHG ↔ Temp",      r: correlation.rGhgTemp, note: "(color)" },
-                  { label: "Temp ↔ Sea Level", r: correlation.rTempSl,  note: "" },
-                ] as const).map(({ label, r, note }) => (
-                  <div
-                    key={label}
-                    className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-paper/60 px-3 py-1 backdrop-blur"
-                  >
-                    <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-ink-faint">
-                      {label}
-                    </span>
-                    <span
-                      className="font-mono text-[13px] font-bold tabular-nums"
-                      style={{
-                        color:
-                          Math.abs(r) > 0.6 ? "#4ade80"
-                          : Math.abs(r) > 0.3 ? "var(--gold)"
-                          : "var(--ink-dim)",
-                      }}
+                {(
+                  [
+                    { label: "GHG ↔ Sea Level", r: corr.rGhgSl },
+                    { label: "GHG ↔ Temp",      r: corr.rGhgTemp },
+                    { label: "Temp ↔ Sea Level", r: corr.rTempSl },
+                  ] as const
+                ).map(({ label, r }) => {
+                  const b = badge(r);
+                  return (
+                    <div
+                      key={label}
+                      className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-paper/60 px-3 py-1 backdrop-blur"
                     >
-                      {r >= 0 ? "+" : ""}{r.toFixed(3)}
-                    </span>
-                    <span className="font-mono text-[9px] text-ink-faint">
-                      {Math.abs(r) > 0.7 ? "strong"
-                        : Math.abs(r) > 0.4 ? "moderate"
-                        : Math.abs(r) > 0.2 ? "weak"
-                        : "negligible"}{" "}
-                      {r > 0 ? "↑" : "↓"}
-                      {note && <span className="text-ink-faint/60 ml-1">{note}</span>}
-                    </span>
-                  </div>
-                ))}
+                      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-ink-faint">
+                        {label}
+                      </span>
+                      <span
+                        className="font-mono text-[13px] font-bold tabular-nums"
+                        style={{ color: b.color }}
+                      >
+                        {b.val}
+                      </span>
+                      <span className="font-mono text-[9px] text-ink-faint">
+                        {b.label} {b.dir}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
-
-          {/* Legend: bubble size */}
-          <div className="chart-paper rounded-lg px-4 py-3 flex flex-col gap-2 shrink-0">
-            <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-faint">
-              Bubble size = Temp anomaly
-            </span>
-            <div className="flex items-end gap-3">
-              {[2.5, 3.0, 3.5, 4.0].map((t) => {
-                const r = rScale(t);
-                return (
-                  <div key={t} className="flex flex-col items-center gap-1">
-                    <svg width={r * 2} height={r * 2}>
-                      <circle
-                        cx={r}
-                        cy={r}
-                        r={r - 1}
-                        fill="none"
-                        stroke="var(--lagoon)"
-                        strokeWidth={1.5}
-                        opacity={0.7}
-                      />
-                    </svg>
-                    <span className="font-mono text-[9px] text-ink-faint">
-                      {t}°
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
         </div>
 
+        {/* ── Main grid ── */}
         <div className="mt-8 grid lg:grid-cols-[1fr_auto_200px] gap-4 items-start">
-          {/* ── Chart ── */}
-          <div ref={containerRef} className="chart-paper rounded-xl overflow-hidden relative">
-            {/* Tooltip card */}
-            {hovered && hovered.ghg !== null && hovered.sl !== null && (
-              <div className="absolute top-3 left-3 z-10 rounded-lg bg-ocean-deep/90 border border-foam/10 px-3 py-2 backdrop-blur-sm pointer-events-none">
+
+          {/* ── 3-D Chart ── */}
+          <div
+            ref={containerRef}
+            className="chart-paper rounded-xl overflow-hidden relative select-none cursor-grab active:cursor-grabbing"
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={onMouseUp}
+            onMouseLeave={onMouseUp}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            {/* Drag hint */}
+            <div className="absolute top-3 right-3 z-10 font-mono text-[9px] text-ink-faint/50 uppercase tracking-widest pointer-events-none">
+              ⟲ drag to rotate
+            </div>
+
+            {/* Hover tooltip */}
+            {hoveredPt?.pj && (
+              <div className="absolute top-3 left-3 z-10 rounded-lg bg-paper-raised/95 border border-ink/10 px-3 py-2 backdrop-blur-sm pointer-events-none">
                 <div className="flex items-center gap-2 mb-1">
-                  <Flag iso2={hovered.iso2} className="w-5 h-3.5 shrink-0" />
-                  <span className="font-mono text-xs font-semibold text-foam">
-                    {shortName(hovered.slName)}
+                  <Flag iso2={hoveredPt.iso2} className="w-5 h-3.5 shrink-0" />
+                  <span className="font-mono text-xs font-semibold text-ink">
+                    {shortName(hoveredPt.slName)}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
-                  <span className="font-mono text-[10px] text-foam/50">GHG</span>
-                  <span className="font-mono text-[10px] text-gold tabular-nums">
-                    {hovered.ghg!.toFixed(2)} t CO₂eq
+                  <span className="font-mono text-[10px] text-ink-faint">GHG/cap</span>
+                  <span className="font-mono text-[10px] tabular-nums" style={{ color: "var(--gold)" }}>
+                    {hoveredPt.ghg?.toFixed(2)} t
                   </span>
-                  <span className="font-mono text-[10px] text-foam/50">Sea level</span>
+                  <span className="font-mono text-[10px] text-ink-faint">Sea level</span>
                   <span className="font-mono text-[10px] text-lagoon tabular-nums">
-                    {hovered.sl! >= 0 ? "+" : ""}{hovered.sl!.toFixed(0)} mm
+                    {hoveredPt.sl !== null
+                      ? `${hoveredPt.sl >= 0 ? "+" : ""}${hoveredPt.sl.toFixed(0)} mm`
+                      : "—"}
                   </span>
-                  {hovered.temp !== null && (
-                    <>
-                      <span className="font-mono text-[10px] text-foam/50">Temp Δ</span>
-                      <span className="font-mono text-[10px] text-coral tabular-nums">
-                        {hovered.temp!.toFixed(2)} °C
-                      </span>
-                    </>
-                  )}
+                  <span className="font-mono text-[10px] text-ink-faint">Temp Δ</span>
+                  <span
+                    className="font-mono text-[10px] tabular-nums"
+                    style={{ color: "#f87171" }}
+                  >
+                    {hoveredPt.temp?.toFixed(2)} °C
+                  </span>
                 </div>
               </div>
             )}
 
             <svg
               width="100%"
-              height={height}
-              viewBox={`0 0 ${width} ${height}`}
+              height={h}
+              viewBox={`0 0 ${w} ${h}`}
               preserveAspectRatio="xMidYMid meet"
             >
               <defs>
-                <radialGradient id="bubble-glow" cx="35%" cy="30%" r="60%">
-                  <stop offset="0%" stopColor="white" stopOpacity={0.25} />
+                <radialGradient id="bubble3d-glow" cx="35%" cy="30%" r="60%">
+                  <stop offset="0%" stopColor="white" stopOpacity={0.3} />
                   <stop offset="100%" stopColor="white" stopOpacity={0} />
                 </radialGradient>
+                <filter id="soft-glow">
+                  <feGaussianBlur stdDeviation="2.5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
 
-              <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
-                {/* ── Grid ── */}
-                {yScale.ticks(5).map((t) => (
-                  <line
-                    key={`gy-${t}`}
-                    x1={0}
-                    x2={innerW}
-                    y1={yScale(t)}
-                    y2={yScale(t)}
-                    stroke="var(--ink-faint)"
-                    strokeWidth={0.4}
-                    opacity={0.3}
-                  />
-                ))}
-                {xScale.ticks(5).map((t) => (
-                  <line
-                    key={`gx-${t}`}
-                    x1={xScale(t)}
-                    x2={xScale(t)}
-                    y1={0}
-                    y2={innerH}
-                    stroke="var(--ink-faint)"
-                    strokeWidth={0.4}
-                    opacity={0.3}
-                  />
-                ))}
-
-                {/* ── Zero lines ── */}
+              {/* ── Floor grid (Y-min plane) ── */}
+              {floorLines.map((l, i) => (
                 <line
-                  x1={0}
-                  x2={innerW}
-                  y1={yScale(0)}
-                  y2={yScale(0)}
-                  stroke="var(--lagoon)"
-                  strokeWidth={1}
-                  strokeDasharray="4,5"
-                  opacity={0.35}
+                  key={i}
+                  x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
+                  stroke="var(--ink-faint)" strokeWidth={0.4} opacity={0.2}
                 />
-                <text
-                  x={innerW + 4}
-                  y={yScale(0) + 4}
-                  fontSize={9}
-                  fontFamily="var(--font-mono)"
-                  fill="var(--lagoon)"
-                  opacity={0.6}
-                >
-                  baseline
-                </text>
+              ))}
 
-                {/* ── X Axis ── */}
-                <g transform={`translate(0,${innerH})`}>
-                  <line x1={0} x2={innerW} stroke="var(--ink-faint)" strokeWidth={0.6} opacity={0.5} />
-                  {xScale.ticks(5).map((t) => (
-                    <g key={t} transform={`translate(${xScale(t)},0)`}>
-                      <line y1={0} y2={5} stroke="var(--ink-faint)" strokeWidth={0.6} opacity={0.5} />
-                      <text
-                        y={16}
-                        textAnchor="middle"
-                        fontSize={9}
-                        fontFamily="var(--font-mono)"
-                        fill="var(--ink-faint)"
-                      >
-                        {t}
-                      </text>
-                    </g>
-                  ))}
-                  <text
-                    x={innerW / 2}
-                    y={38}
-                    textAnchor="middle"
-                    fontSize={10}
-                    fontFamily="var(--font-mono)"
-                    fill="var(--ink-faint)"
-                  >
-                    GHG per capita (t CO₂ eq · power scale)
-                  </text>
-                </g>
+              {/* ── Bounding cube (12 edges) ── */}
+              {CUBE_EDGES.map(([a, b], i) => {
+                const pa = cube[a], pb = cube[b];
+                const avgD = (pa.depth + pb.depth) / 2;
+                return (
+                  <line
+                    key={i}
+                    x1={pa.sx} y1={pa.sy} x2={pb.sx} y2={pb.sy}
+                    stroke="var(--ink-faint)"
+                    strokeWidth={0.5}
+                    opacity={0.07 + Math.max(0, avgD + 0.5) * 0.1}
+                  />
+                );
+              })}
 
-                {/* ── Y Axis ── */}
+              {/* ── Sea-level = 0 baseline plane ── */}
+              <path
+                d={basePath}
+                fill="var(--lagoon)"
+                fillOpacity={0.04}
+                stroke="var(--lagoon)"
+                strokeWidth={0.8}
+                strokeOpacity={0.2}
+                strokeDasharray="4,6"
+              />
+              {/* ── Regression Lines ── */}
+              {corr?.regs && (
                 <g>
-                  <line y1={0} y2={innerH} stroke="var(--ink-faint)" strokeWidth={0.6} opacity={0.5} />
-                  {yScale.ticks(5).map((t) => (
-                    <g key={t} transform={`translate(0,${yScale(t)})`}>
-                      <line x1={-5} x2={0} stroke="var(--ink-faint)" strokeWidth={0.6} opacity={0.5} />
-                      <text
-                        x={-10}
-                        y={4}
-                        textAnchor="end"
-                        fontSize={9}
-                        fontFamily="var(--font-mono)"
-                        fill="var(--ink-faint)"
-                      >
-                        {t >= 0 ? "+" : ""}{t}
-                      </text>
-                    </g>
-                  ))}
-                  <text
-                    transform={`rotate(-90) translate(${-innerH / 2},${-52})`}
-                    textAnchor="middle"
-                    fontSize={10}
-                    fontFamily="var(--font-mono)"
-                    fill="var(--ink-faint)"
-                  >
-                    Sea level anomaly (mm)
-                  </text>
-                </g>
-
-                {/* ── Year watermark ── */}
-                <text
-                  x={innerW - 8}
-                  y={innerH - 8}
-                  textAnchor="end"
-                  fontSize={48}
-                  fontFamily="var(--font-display)"
-                  fill="var(--lagoon)"
-                  opacity={0.07}
-                  fontWeight={700}
-                  style={{ userSelect: "none" }}
-                >
-                  {year}
-                </text>
-
-                {/* ── Trails ── */}
-                {points.map(({ slName, trail }) => {
-                  const color = palette.get(slName) ?? "#888";
-                  const trailPts = trail.filter(
-                    (pt) => pt.ghg !== null && pt.sl !== null
-                  );
-                  if (trailPts.length < 2) return null;
-                  const pathD = d3
-                    .line<(typeof trailPts)[0]>()
-                    .x((pt) => xScale(pt.ghg!))
-                    .y((pt) => yScale(pt.sl!))
-                    .curve(d3.curveCatmullRom.alpha(0.5))(trailPts);
-                  return (
-                    <path
-                      key={`trail-${slName}`}
-                      d={pathD ?? ""}
-                      fill="none"
-                      stroke={color}
-                      strokeWidth={hover === slName ? 2 : 1}
-                      opacity={hover && hover !== slName ? 0.05 : hover === slName ? 0.7 : 0.25}
-                      strokeLinecap="round"
-                      style={{ transition: "opacity 200ms" }}
-                    />
-                  );
-                })}
-
-                {/* ── Regression line (OLS: GHG → Sea Level) ── */}
-                {correlation && (
-                  <g style={{ transition: "opacity 300ms" }} opacity={hover ? 0.2 : 1}>
-                    <line
-                      x1={correlation.line.x1}
-                      y1={correlation.line.y1}
-                      x2={correlation.line.x2}
-                      y2={correlation.line.y2}
-                      stroke="#f87171"
-                      strokeWidth={1.5}
-                      strokeDasharray="6,4"
-                      opacity={0.65}
-                      style={{ transition: "x1 700ms ease, y1 700ms ease, x2 700ms ease, y2 700ms ease" }}
-                    />
-                    <text
-                      x={(correlation.line.x1 + correlation.line.x2) / 2 + 8}
-                      y={(correlation.line.y1 + correlation.line.y2) / 2 - 8}
-                      fontSize={9}
-                      fontFamily="var(--font-mono)"
-                      fill="#f87171"
-                      opacity={0.75}
-                      style={{ transition: "x 700ms ease, y 700ms ease" }}
-                    >
-                      OLS · r={correlation.rGhgSl >= 0 ? "+" : ""}{correlation.rGhgSl.toFixed(2)}
-                    </text>
-                  </g>
-                )}
-
-                {/* ── Bubbles ── */}
-                {points
-                  .slice()
-                  .sort((a, b) => {
-                    // render hovered last (on top)
-                    if (a.slName === hover) return 1;
-                    if (b.slName === hover) return -1;
-                    return (b.temp ?? 0) - (a.temp ?? 0); // larger → render first
-                  })
-                  .map(({ slName, iso2, ghg, sl, temp }) => {
-                    if (ghg === null || sl === null) return null;
-                    const cx = xScale(ghg);
-                    const cy = yScale(sl);
-                    const r = temp !== null ? rScale(temp) : 8;
-                    const color = palette.get(slName) ?? "#888";
-                    const isHover = hover === slName;
-
+                  {corr.regs.ghgSl && (() => {
+                    const [p1, p2] = corr.regs.ghgSl;
+                    const a = p(p1.x, p1.y, 0), b = p(p2.x, p2.y, 0);
+                    const bColor = badge(corr.rGhgSl).color;
+                    const c = bColor === "var(--ink-dim)" ? "var(--ink)" : bColor;
+                    const o = bColor === "var(--ink-dim)" ? 0.35 : 0.85;
                     return (
-                      <g
-                        key={slName}
-                        transform={`translate(${cx},${cy})`}
-                        style={{
-                          transition: "transform 700ms cubic-bezier(.4,0,.2,1)",
-                          cursor: "pointer",
-                        }}
-                        onMouseEnter={() => setHover(slName)}
-                        onMouseLeave={() => setHover(null)}
-                      >
-                        {/* Glow ring for hovered */}
-                        {isHover && (
-                          <circle
-                            r={r + 8}
-                            fill="none"
-                            stroke={color}
-                            strokeWidth={1.5}
-                            opacity={0.35}
-                            style={{ transition: "r 250ms" }}
-                          />
-                        )}
-                        {/* Main bubble */}
-                        <circle
-                          r={isHover ? r + 3 : r}
-                          fill={color}
-                          fillOpacity={isHover ? 0.92 : hover ? 0.2 : 0.75}
-                          stroke={color}
-                          strokeWidth={isHover ? 2 : 1}
-                          strokeOpacity={isHover ? 1 : 0.6}
-                          style={{ transition: "r 350ms ease, fill-opacity 180ms" }}
-                        />
-                        {/* Shine */}
-                        <circle
-                          r={isHover ? r + 3 : r}
-                          fill="url(#bubble-glow)"
-                          style={{ transition: "r 350ms ease" }}
-                          pointerEvents="none"
-                        />
-                        {/* Country label (show when hovered or zoom big enough) */}
-                        {(isHover || r > 14) && (
-                          <text
-                            y={-r - 5}
-                            textAnchor="middle"
-                            fontSize={isHover ? 11 : 9}
-                            fontFamily="var(--font-mono)"
-                            fill={color}
-                            opacity={hover && !isHover ? 0.2 : 1}
-                            style={{ pointerEvents: "none", transition: "opacity 180ms" }}
-                          >
-                            {shortName(slName)}
-                          </text>
-                        )}
+                      <g>
+                        <line x1={a.sx} y1={a.sy} x2={b.sx} y2={b.sy} stroke={c} strokeWidth={1} strokeDasharray="6,5" opacity={o} />
+                        <text x={b.sx} y={b.sy - 8} fontSize={9} fontFamily="var(--font-mono)" fill={c} opacity={o + 0.1} fontWeight={600} textAnchor="middle">
+                          r={corr.rGhgSl.toFixed(2)}
+                        </text>
                       </g>
                     );
-                  })}
-              </g>
+                  })()}
+                  {corr.regs.ghgTemp && (() => {
+                    const [p1, p2] = corr.regs.ghgTemp;
+                    const a = p(p1.x, 0, p1.y), b = p(p2.x, 0, p2.y);
+                    const bColor = badge(corr.rGhgTemp).color;
+                    const c = bColor === "var(--ink-dim)" ? "var(--ink)" : bColor;
+                    const o = bColor === "var(--ink-dim)" ? 0.35 : 0.85;
+                    return (
+                      <g>
+                        <line x1={a.sx} y1={a.sy} x2={b.sx} y2={b.sy} stroke={c} strokeWidth={1} strokeDasharray="6,5" opacity={o} />
+                        <text x={b.sx} y={b.sy - 8} fontSize={9} fontFamily="var(--font-mono)" fill={c} opacity={o + 0.1} fontWeight={600} textAnchor="middle">
+                          r={corr.rGhgTemp.toFixed(2)}
+                        </text>
+                      </g>
+                    );
+                  })()}
+                  {corr.regs.tempSl && (() => {
+                    const [p1, p2] = corr.regs.tempSl;
+                    const a = p(0, p1.y, p1.x), b = p(0, p2.y, p2.x);
+                    const bColor = badge(corr.rTempSl).color;
+                    const c = bColor === "var(--ink-dim)" ? "var(--ink)" : bColor;
+                    const o = bColor === "var(--ink-dim)" ? 0.35 : 0.85;
+                    return (
+                      <g>
+                        <line x1={a.sx} y1={a.sy} x2={b.sx} y2={b.sy} stroke={c} strokeWidth={1} strokeDasharray="6,5" opacity={o} />
+                        <text x={b.sx} y={b.sy - 8} fontSize={9} fontFamily="var(--font-mono)" fill={c} opacity={o + 0.1} fontWeight={600} textAnchor="middle">
+                          r={corr.rTempSl.toFixed(2)}
+                        </text>
+                      </g>
+                    );
+                  })()}
+                </g>
+              )}
+              {/* ── 3 Axes ── */}
+              {/* X: GHG — gold */}
+              <line x1={o.sx} y1={o.sy} x2={eX.sx} y2={eX.sy}
+                stroke="var(--gold)" strokeWidth={1.8} opacity={0.85} />
+              {/* Y: Sea Level — lagoon */}
+              <line x1={o.sx} y1={o.sy} x2={eY.sx} y2={eY.sy}
+                stroke="var(--lagoon)" strokeWidth={1.8} opacity={0.85} />
+              {/* Z: Temperature — coral */}
+              <line x1={o.sx} y1={o.sy} x2={eZ.sx} y2={eZ.sy}
+                stroke="#f87171" strokeWidth={1.8} opacity={0.85} />
+
+              {/* ── Axis labels ── */}
+              <text x={lbX.sx} y={lbX.sy + 4} textAnchor="middle"
+                fontSize={11} fontFamily="var(--font-mono)" fontWeight={600}
+                fill="var(--gold)" opacity={0.9}>
+                GHG/cap
+              </text>
+              <text x={lbY.sx} y={lbY.sy - 10} textAnchor="middle"
+                fontSize={11} fontFamily="var(--font-mono)" fontWeight={600}
+                fill="var(--lagoon)" opacity={0.9}>
+                Sea Level
+              </text>
+              <text x={lbZ.sx + 8} y={lbZ.sy + 4} textAnchor="start"
+                fontSize={11} fontFamily="var(--font-mono)" fontWeight={600}
+                fill="#f87171" opacity={0.9}>
+                Temp Δ
+              </text>
+
+              {/* ── X-axis ticks (GHG) ── */}
+              {xTicks.map((v) => {
+                const pt = p(xNorm(v), 0, 0);
+                return (
+                  <g key={`xt${v}`}>
+                    <circle cx={pt.sx} cy={pt.sy} r={2} fill="var(--gold)" opacity={0.55} />
+                    <text x={pt.sx} y={pt.sy + 14} textAnchor="middle"
+                      fontSize={8} fontFamily="var(--font-mono)" fill="var(--gold)" opacity={0.6}>
+                      {v}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* ── Y-axis ticks (Sea Level) ── */}
+              {yTicks.map((v) => {
+                const pt = p(0, yNorm(v), 0);
+                return (
+                  <g key={`yt${v}`}>
+                    <circle cx={pt.sx} cy={pt.sy} r={2} fill="var(--lagoon)" opacity={0.55} />
+                    <text x={pt.sx - 8} y={pt.sy + 4} textAnchor="end"
+                      fontSize={8} fontFamily="var(--font-mono)" fill="var(--lagoon)" opacity={0.6}>
+                      {v >= 0 ? "+" : ""}{v}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* ── Z-axis ticks (Temperature) ── */}
+              {zTicks.map((v) => {
+                const pt = p(0, 0, zNorm(v));
+                return (
+                  <g key={`zt${v}`}>
+                    <circle cx={pt.sx} cy={pt.sy} r={2} fill="#f87171" opacity={0.55} />
+                    <text x={pt.sx + 8} y={pt.sy + 4} textAnchor="start"
+                      fontSize={8} fontFamily="var(--font-mono)" fill="#f87171" opacity={0.6}>
+                      {v.toFixed(1)}°
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* ── Year watermark ── */}
+              <text x={w - 14} y={h - 14} textAnchor="end" fontSize={52}
+                fontFamily="var(--font-display)" fill="var(--lagoon)" opacity={0.06}
+                fontWeight={700} style={{ userSelect: "none", pointerEvents: "none" }}>
+                {year}
+              </text>
+
+              {/* ── 3-D trail paths ── */}
+              {pts.map(({ slName, trailPjs }) => {
+                if (!trailPjs || trailPjs.length < 2) return null;
+                const color = palette.get(slName) ?? "#888";
+                const isHov = hover === slName;
+                const d =
+                  "M" + trailPjs.map((pt) => `${pt.sx},${pt.sy}`).join(" L");
+                return (
+                  <path
+                    key={`trail-${slName}`}
+                    d={d}
+                    fill="none"
+                    stroke={color}
+                    strokeWidth={isHov ? 2 : 1}
+                    opacity={
+                      hover && !isHov ? 0.04
+                      : isHov ? 0.75
+                      : 0.28
+                    }
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ transition: "opacity 200ms" }}
+                  />
+                );
+              })}
+
+              {/* ── Bubbles (depth-sorted, farthest first) ── */}
+              {pts.map(({ slName, pj }) => {
+                if (!pj) return null;
+                const color = palette.get(slName) ?? "#888";
+                const isHov = hover === slName;
+                const R = 7;
+                return (
+                  <g
+                    key={slName}
+                    transform={`translate(${pj.sx},${pj.sy})`}
+                    style={{ cursor: "pointer" }}
+                    onMouseEnter={() => setHover(slName)}
+                    onMouseLeave={() => setHover(null)}
+                  >
+                    {/* Glow ring on hover */}
+                    {isHov && (
+                      <circle r={R + 10} fill="none" stroke={color}
+                        strokeWidth={1.5} opacity={0.3} />
+                    )}
+                    {/* Main sphere */}
+                    <circle
+                      r={isHov ? R + 3 : R}
+                      fill={color}
+                      fillOpacity={isHov ? 0.95 : hover ? 0.18 : 0.82}
+                      stroke={isHov ? "white" : color}
+                      strokeWidth={isHov ? 1.5 : 0.5}
+                      strokeOpacity={0.7}
+                      style={{ transition: "r 250ms, fill-opacity 180ms" }}
+                    />
+                    {/* Highlight shine */}
+                    <circle r={isHov ? R + 3 : R} fill="url(#bubble3d-glow)"
+                      pointerEvents="none" style={{ transition: "r 250ms" }} />
+                    {/* Label on hover */}
+                    {isHov && (
+                      <text y={-R - 6} textAnchor="middle" fontSize={10}
+                        fontFamily="var(--font-mono)" fill={color}
+                        style={{ pointerEvents: "none", fontWeight: 600 }}>
+                        {shortName(slName)}
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
             </svg>
           </div>
 
-          {/* ── Vertical YearScrubber (desktop) ── */}
+          {/* ── Year scrubber (desktop) ── */}
           <div className="hidden lg:block">
             <YearScrubber
               years={CORRELATION_YEARS}
@@ -617,7 +764,7 @@ export default function CorrelationBubble() {
             />
           </div>
 
-          {/* ── Country legend (desktop) ── */}
+          {/* ── Country legend ── */}
           <div className="chart-paper rounded-xl p-4 h-fit lg:sticky lg:top-24">
             <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-faint block mb-3">
               Countries
@@ -642,33 +789,44 @@ export default function CorrelationBubble() {
               ))}
             </div>
 
-            {/* Global trend mini stats */}
+            {/* Pacific avg stats */}
             <div className="mt-4 pt-3 border-t border-ink/10 grid gap-2">
               <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-faint">
                 Pacific avg · {year}
               </span>
               {(() => {
-                const seaAvgPts = points.filter((p) => p.sl !== null);
-                const ghgAvgPts = points.filter((p) => p.ghg !== null);
-                const tempAvgPts = points.filter((p) => p.temp !== null);
-                const seaAvg =
-                  seaAvgPts.reduce((s, p) => s + p.sl!, 0) / (seaAvgPts.length || 1);
-                const ghgAvg =
-                  ghgAvgPts.reduce((s, p) => s + p.ghg!, 0) / (ghgAvgPts.length || 1);
-                const tempAvg =
-                  tempAvgPts.reduce((s, p) => s + p.temp!, 0) / (tempAvgPts.length || 1);
+                const valid = rawPoints.filter(
+                  (rp) => rp.ghg !== null && rp.sl !== null && rp.temp !== null
+                ) as Array<{ ghg: number; sl: number; temp: number }>;
+                if (!valid.length) return null;
+                const n = valid.length;
+                const avgG = valid.reduce((s, p) => s + p.ghg, 0) / n;
+                const avgS = valid.reduce((s, p) => s + p.sl, 0) / n;
+                const avgT = valid.reduce((s, p) => s + p.temp, 0) / n;
                 return (
                   <>
-                    <StatRow label="Sea level" value={`${seaAvg >= 0 ? "+" : ""}${seaAvg.toFixed(0)} mm`} color="var(--lagoon)" />
-                    <StatRow label="GHG/cap" value={`${ghgAvg.toFixed(2)} t`} color="var(--gold)" />
-                    <StatRow label="Temp Δ" value={`${tempAvg.toFixed(2)} °C`} color="#f87171" />
+                    <StatRow
+                      label="Sea level"
+                      value={`${avgS >= 0 ? "+" : ""}${avgS.toFixed(0)} mm`}
+                      color="var(--lagoon)"
+                    />
+                    <StatRow
+                      label="GHG/cap"
+                      value={`${avgG.toFixed(2)} t`}
+                      color="var(--gold)"
+                    />
+                    <StatRow
+                      label="Temp Δ"
+                      value={`${avgT.toFixed(2)} °C`}
+                      color="#f87171"
+                    />
                   </>
                 );
               })()}
             </div>
           </div>
 
-          {/* ── Horizontal YearScrubber (mobile) ── */}
+          {/* ── Year scrubber (mobile) ── */}
           <div className="lg:hidden col-span-full">
             <YearScrubber
               years={CORRELATION_YEARS}
