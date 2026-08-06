@@ -18,7 +18,7 @@ const ROW_GAP = 6;
 
 export default function Part1Chart2() {
   const palette = useMemo(() => makePalette(seaLevelCountries), []);
-  const [year, setYear] = useState(seaLevelYears[0]);
+  const [year, setYear] = useState(seaLevelYears[seaLevelYears?.length - 1]);
 
   const allValuesMm = useMemo(
     () =>
@@ -31,7 +31,7 @@ export default function Part1Chart2() {
   const domainMin = Math.min(minV, 0);
   const domainMax = Math.max(maxV, 1);
 
-  const width = 900;
+  const width = 993;
   const innerLeft = 190; // space for flag + name
   const innerRight = 60; // space for value label
   const innerW = width - innerLeft - innerRight;

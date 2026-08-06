@@ -2,6 +2,10 @@ import seaLevelRaw from "@/data/sea_level.json";
 import cleanWaterRaw from "@/data/clean_water.json";
 import cleanWaterFullRaw from "@/data/clean_water_full.json";
 import correlationRaw from "@/data/correlation_matrix.json";
+import ghgRaw from "@/data/ghg_per_capita.json";
+import tempAnomalyRaw from "@/data/temperature_anomaly.json";
+import seaLevelPacificAvgRaw from "@/data/sea_level_pacific_avg.json";
+import tempPacificAvgRaw from "@/data/temperature_pacific_avg.json";
 
 export interface YearValue {
   year: number;
@@ -141,4 +145,36 @@ export const wwdsYears = Array.from(new Set(wwdsSnapshot.map((r) => r.year))).so
   (a, b) => a - b
 );
 
+// ---- GHG per capita dataset ----
+export interface GhgCountry {
+  code: string;
+  name: string;
+  lat: number;
+  lon: number;
+  latest_year: number;
+  latest_value: number;
+  series: YearValue[];
+}
 
+export const ghgData = ghgRaw as GhgCountry[];
+
+// ---- Temperature anomaly dataset (per country, yearly series) ----
+export interface TempCountry {
+  code: string;
+  name: string;
+  lat: number;
+  lon: number;
+  latest_year: number;
+  latest_value: number;
+  decades: { decade: number; value: number }[];
+  series: YearValue[];
+}
+
+export const tempAnomalyData = tempAnomalyRaw as TempCountry[];
+
+// ---- Pacific-wide averages ----
+export const seaLevelPacificAvg = seaLevelPacificAvgRaw as YearValue[];
+export const tempPacificAvg = tempPacificAvgRaw as YearValue[];
+
+// Common years across sea level, GHG, temperature (1993–2023)
+export const CORRELATION_YEARS = Array.from({ length: 31 }, (_, i) => 1993 + i);
