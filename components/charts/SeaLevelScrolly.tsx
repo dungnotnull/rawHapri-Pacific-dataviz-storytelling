@@ -173,7 +173,7 @@ export function SeaLevelScrolly({ step }: { step: number }) {
       g.append("text")
         .attr("class", "tv-label")
         .attr("x", tvLabelX)
-        .attr("y", y(lastTv.value))
+        .attr("y", y(lastTv.value) - 10)
         .attr("text-anchor", tvLabelAnchor)
         .attr("fill", "var(--coral)")
         .attr("font-family", "var(--font-data)")

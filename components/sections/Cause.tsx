@@ -10,8 +10,8 @@ import { WarmingStripes } from "./WarningStripes";
 import { CountryModal } from "../ui/CountryModal";
 import { YearControl } from "../ui/YearControl";
 
-const MIN_YEAR = 1970; // GHG data starts from 1970
-const MAX_YEAR = 2024; // Latest available year in data
+const MIN_YEAR = 1993; // Data available for all 3 metrics starting 1993
+const MAX_YEAR = 2023; // Latest available year in data
 
 export function Cause() {
   const [contrastVisible, setContrastVisible] = useState(false);
@@ -23,7 +23,7 @@ export function Cause() {
     <section id="cause" className="relative bg-foam px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
         <ScrollReveal animation="fade-down" delay={200}>
-          <p className="eyebrow text-lagoon">A Pacific climate story </p>
+          <p className="eyebrow text-lagoon">The emissions disparity</p>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
           <h2 className="prose-col mt-4 max-w-2xl font-display text-[clamp(1.9rem,4vw,3rem)] font-medium leading-[1.1] text-ink">
@@ -57,7 +57,7 @@ export function Cause() {
           <div className="flex flex-col justify-between gap-10">
             <ScrollReveal animation="fade-left" delay={400}>
               <div>
-                <p className="eyebrow text-ink/50">Regional warming, 1850–2025</p>
+                <p className="eyebrow text-ink/50">Regional warming, 1993–2023</p>
                 <div className="mt-3">
                   <WarmingStripes />
                 </div>
@@ -70,7 +70,7 @@ export function Cause() {
 
             <ScrollReveal animation="fade-left" delay={600}>
               <div ref={contrastRef}>
-                <p className="eyebrow text-ink/50">For scale: per-capita CO₂, 2023–24</p>
+                <p className="eyebrow text-ink/50">For scale: per-capita CO₂, 2023</p>
                 <div className="mt-3" onMouseEnter={() => setContrastVisible(true)}>
                   <EmittersContrastBar
                     active={true}
@@ -79,8 +79,7 @@ export function Cause() {
                   />
                 </div>
                 <SourceNote className="mt-3">
-                  <span>Pacific figure: Pacific Data Hub, CLIMATE_CHANGE_GHG_INDICATORS (avg. of 15 PICTs, excl. outliers).</span>
-                  <span>Other countries: Global Carbon Project / Our World in Data, 2023 (approx., for context only).</span>
+                  <span>Source: Pacific Data Hub, CLIMATE_CHANGE_GHG_INDICATORS.</span>
                 </SourceNote>
               </div>
             </ScrollReveal>

@@ -13,35 +13,26 @@ const ghg = ghgData as any[];
 
 // Combine major emitters and Pacific countries for comparison
 const getEmittersData = (year: number) => {
-  const majorEmitters = emittersContextRaw.major_emitters.map((e: any) => ({
-    label: e.label,
-    value: e.value,
-    group: e.group
-  }));
-
-  const pacificCountries = emittersContextRaw.pacific_countries.map((c: any) => {
-    const countryCode = getCountryCode(c.label);
-    const countryData = ghg.find((g) => g.code === countryCode);
-
-    let value = c.value; // Default to 2023-2024 value
+  const pacificCountries = ghg.map((g: any) => {
+    let value = g.latest_value;
 
     // Try to get year-specific data
-    if (countryData && countryData.series) {
-      const yearData = countryData.series.find((s: any) => s.year === year);
+    if (g.series) {
+      const yearData = g.series.find((s: any) => s.year === year);
       if (yearData) {
         value = yearData.value;
       }
     }
 
     return {
-      label: c.label,
+      label: g.name,
       value: value,
-      group: c.group,
-      note: c.note
+      group: "pacific",
+      note: ""
     };
   });
 
-  return [...majorEmitters, ...pacificCountries] as EmitterContext[];
+  return pacificCountries as EmitterContext[];
 };
 
 interface EmittersContrastBarProps {

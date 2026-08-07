@@ -118,9 +118,7 @@ export default function Part2Chart2V2() {
   return (
     <section id="part1-chart1" className="relative bg-foam px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
-        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-tide mb-3">
-          Part 2 &middot; Chart 2
-        </p>
+        
         <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
           Safe drinking water: Rural &mdash; Urban divide
         </h1>
@@ -405,7 +403,7 @@ export default function Part2Chart2V2() {
         ))}
       </div>
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-12 sm:py-16">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-3 sm:py-5">
         <p className="font-mono text-[11px] text-ink-faint leading-relaxed max-w-2xl">
           Note: Nauru has urban-only data, Wallis &amp; Futuna has rural-only
           data, so neither qualifies for this scatter plot. Remaining

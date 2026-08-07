@@ -31,13 +31,13 @@ export default function Home() {
       </div>
 
       <Hero />
+      <Part1Chart2 />
       <Cause />
       {/* <Result /> */}
       {/* <Part1Chart1 /> */}
-      <Part1Chart2 />
       <CorrelationBubble />
       <Part2Chart1 />
-      <Part2Chart2 />
+      {/* <Part2Chart2 /> */}
       <Part2Chart2V2 />
       <IndicatorsHub />
 

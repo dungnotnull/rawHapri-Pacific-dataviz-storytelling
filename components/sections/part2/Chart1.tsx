@@ -164,7 +164,7 @@ export default function Part2Chart1() {
                         {shortName(name)}
                         {val !== undefined && (
                           <tspan fill="var(--gold)" dx={6}>
-                            {val.toFixed(0)}%
+                            {val.toFixed(1)}%
                           </tspan>
                         )}
                       </text>

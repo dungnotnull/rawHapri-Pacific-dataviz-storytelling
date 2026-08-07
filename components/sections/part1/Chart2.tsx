@@ -11,6 +11,7 @@ import {
 import { makePalette } from "@/lib/colors";
 import Flag from "@/components/ui/Flag";
 import YearScrubber from "@/components/ui/YearScrubber";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 
 const ROW_H = 34;
@@ -68,16 +69,25 @@ export default function Part1Chart2() {
   return (
         <section id="part1-chart2" className="relative bg-foam px-6 py-14 md:px-16">
     <div className="mx-auto max-w-6xl">
+       <ScrollReveal animation="fade-down" delay={200}>
+                <p className="eyebrow text-lagoon">A Pacific climate story </p>
+              </ScrollReveal>
+      <ScrollReveal animation="fade-down" delay={200}>
       <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
         Sea level race over years
       </h1>
+      </ScrollReveal>
+      <ScrollReveal animation="fade-up" delay={400}>
       <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
         Ranking of island nations by sea level anomaly (mm) each year. Press
-        Play to see how rankings change from 1993 to 2023.
+        {" "}<span className="text-lagoon font-semibold">Play</span> to see how rankings change from 1993 to 2023.
       </p>
+      </ScrollReveal>
 
+          <ScrollReveal animation="fade-right" delay={200}>
       <div className="mt-8 grid lg:grid-cols-[1fr_auto] gap-4 items-start">
         {/* Chart */}
+
         <div className="chart-paper rounded-lg pr-3 sm:pr-5 overflow-x-auto">
           <svg width="100%" height={40} viewBox={`0 0 ${width} 40`} className="min-w-[640px]">
             <g transform={`translate(${innerLeft},20)`}>
@@ -196,6 +206,7 @@ export default function Part1Chart2() {
           <YearScrubber years={seaLevelYears} year={year} onChange={setYear} speedMs={1000} />
         </div>
       </div>
+        </ScrollReveal>
     </div>
         </section>
   );

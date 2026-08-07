@@ -9,6 +9,7 @@ import ghgData from "@/data/ghg_per_capita.json";
 import tempData from "@/data/temperature_anomaly.json";
 import picCountries from "@/data/pic_countries.json";
 import countriesTopo from "@/data/countries-50m.json";
+import seaLevelData from "@/data/sea_level.json";
 
 
 const ghg = ghgData as GhgCountry[];
@@ -22,6 +23,7 @@ type Merged = {
   lon: number;
   ghg: number;
   tempAnomaly: number | null;
+  seaLevel: number | null;
   isOutlier: boolean;
 };
 
@@ -37,6 +39,10 @@ const merged: Merged[] = ghg.map((g) => {
   const lon = picCoord?.lon ?? g.lon;
   const name = picCoord?.name ?? g.name;
 
+  const slName = name === 'Micronesia' ? 'Micronesia, Federated State of' : name;
+  const sl = (seaLevelData as any)[slName];
+  const latestSl = sl && sl.series && sl.series.length > 0 ? sl.series[sl.series.length - 1].value : null;
+
   return {
     code: g.code,
     name: name,
@@ -44,6 +50,7 @@ const merged: Merged[] = ghg.map((g) => {
     lon: lon,
     ghg: g.latest_value,
     tempAnomaly: t ? t.latest_value : null,
+    seaLevel: latestSl,
     isOutlier: OUTLIERS.has(g.code),
   };
 });
@@ -82,7 +89,16 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
         if (decadeData) tempValue = decadeData.value;
       }
 
-      return { ghg: ghgValue, temp: tempValue };
+      let slValue = null;
+      const slName = g?.name === 'Micronesia' ? 'Micronesia, Federated State of' : g?.name;
+      const sl = slName ? (seaLevelData as any)[slName] : null;
+      if (sl && sl.series) {
+        // Find closest year or exact year
+        const slData = sl.series.find((s: any) => s.year === year);
+        if (slData) slValue = slData.value;
+      }
+
+      return { ghg: ghgValue, temp: tempValue, seaLevel: slValue };
     };
   }, []);
 
@@ -102,6 +118,7 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
         lon: lon,
         ghg: yearData.ghg,
         tempAnomaly: yearData.temp,
+        seaLevel: yearData.seaLevel,
         isOutlier: OUTLIERS.has(g.code),
       };
     });
@@ -177,6 +194,25 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
       .ease(d3.easeBackOut)
       .attr("r", (d) => radius(Math.min(d.ghg, 20)));
 
+    // Outer ring for Sea Level
+    nodes
+      .append("circle")
+      .attr("r", 0)
+      .attr("fill", "none")
+      .attr("stroke", "#3b82f6") // blue-500
+      .attr("stroke-width", 1.5)
+      .attr("stroke-opacity", (d) => d.seaLevel !== null ? 0.6 : 0)
+      .transition()
+      .delay((_, i) => i * 25 + 300)
+      .duration(700)
+      .ease(d3.easeBackOut)
+      .attr("r", (d) => {
+        const baseR = radius(Math.min(d.ghg, 20));
+        // map seaLevel (-0.2 to 0.3) to extra radius (0 to 12)
+        const extraR = d.seaLevel !== null ? Math.max(2, (d.seaLevel + 0.2) * 20) : 0;
+        return baseR + extraR;
+      });
+
     nodes
       .on("mousemove", (event, d) => {
         const [x, y] = d3.pointer(event, wrapRef.current);
@@ -232,6 +268,12 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
             <p className="stat-figure text-ink/70">
               {tooltip.d.tempAnomaly > 0 ? "+" : ""}
               {tooltip.d.tempAnomaly.toFixed(1)}°C vs. baseline
+            </p>
+          )}
+          {tooltip.d.seaLevel !== null && (
+            <p className="stat-figure text-[#3b82f6]">
+              {tooltip.d.seaLevel > 0 ? "+" : ""}
+              {(tooltip.d.seaLevel * 1000).toFixed(0)} mm sea level
             </p>
           )}
         </div>

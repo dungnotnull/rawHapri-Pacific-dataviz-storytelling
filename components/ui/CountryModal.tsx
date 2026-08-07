@@ -7,6 +7,7 @@ import { GhgCountry, TempCountry } from "@/types";
 import ghgData from "@/data/ghg_per_capita.json";
 import tempData from "@/data/temperature_anomaly.json";
 import picCountries from "@/data/pic_countries.json";
+import seaLevelData from "@/data/sea_level.json";
 import { getFlagClass } from "@/lib/flags";
 import { createPortal } from "react-dom";
 
@@ -35,6 +36,12 @@ export function CountryModal({
   const countryGhg = ghg.find((c) => c.code === countryCode);
   const countryTemp = temp.find((c) => c.code === countryCode);
   const countryPic = picCoords.find((p) => p.code === countryCode);
+
+  const slName = countryName === 'Micronesia' ? 'Micronesia, Federated State of' : countryName;
+  const countrySl = (seaLevelData as any)[slName];
+  const latestSl = countrySl && countrySl.series && countrySl.series.length > 0
+    ? countrySl.series[countrySl.series.length - 1]
+    : null;
 
   const flagClass = getFlagClass(countryCode);
 
@@ -119,7 +126,7 @@ export function CountryModal({
         </div>
 
         {/* Current Stats */}
-        <div className="mt-6 grid grid-cols-2 gap-4">
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="rounded-xl border border-ink/8 bg-white/40 p-4">
             <p className="eyebrow text-ink/60">CO₂ per capita (Latest)</p>
             <p className="mt-2 font-display text-3xl font-medium text-coral">
@@ -144,12 +151,25 @@ export function CountryModal({
             </p>
             <p className="mt-1 text-xs text-ink/50">vs. baseline period</p>
           </div>
+          <div className="rounded-xl border border-ink/8 bg-white/40 p-4">
+            <p className="eyebrow text-ink/60">Sea Level (Latest)</p>
+            <p className="mt-2 font-display text-3xl font-medium text-[#3b82f6]">
+              {latestSl !== null
+                ? (latestSl.value > 0 ? "+" : "") +
+                  (latestSl.value * 1000).toFixed(0) +
+                  "mm"
+                : "N/A"}
+            </p>
+            <p className="mt-1 text-xs text-ink/50">
+              Data from {latestSl?.year || "N/A"}
+            </p>
+          </div>
         </div>
 
         {/* Historical Chart - Combined */}
         <div className="mt-6">
           <p className="mb-2 text-sm font-medium text-ink/70">
-            CO₂ Emissions & Temperature Anomaly (1850–2025)
+            CO₂, Temperature & Sea Level (1993–2023)
           </p>
           <CombinedChart countryCode={countryCode} />
         </div>
@@ -181,8 +201,11 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
 
     const countryGhg = ghg.find((c) => c.code === countryCode);
     const countryTemp = temp.find((c) => c.code === countryCode);
+    const countryNameMap = countryGhg?.name || "";
+    const slName = countryNameMap === 'Micronesia' ? 'Micronesia, Federated State of' : countryNameMap;
+    const countrySl = (seaLevelData as any)[slName];
 
-    const margin = { top: 20, right: 60, bottom: 40, left: 55 };
+    const margin = { top: 20, right: 100, bottom: 40, left: 55 };
     const w = width - margin.left - margin.right;
     const h = height - margin.top - margin.bottom;
 
@@ -190,8 +213,8 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // X scale - years from 1850 to 2025
-    const x = d3.scaleLinear().domain([1850, 2025]).range([0, w]);
+    // X scale - years from 1993 to 2023
+    const x = d3.scaleLinear().domain([1993, 2023]).range([0, w]);
 
     // Left Y scale - CO2 (0 to max)
     const maxGhg =
@@ -209,6 +232,16 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
     const yTemp = d3
       .scaleLinear()
       .domain([tempExtent[0] - 0.5, tempExtent[1] + 0.5])
+      .range([h, 0]);
+
+    // Right-Right Y scale - Sea Level (min to max)
+    const allSl = countrySl && countrySl.series
+      ? countrySl.series.map((d: any) => d.value)
+      : [-0.2, 0.5];
+    const slExtent = d3.extent(allSl) as unknown as [number, number];
+    const ySl = d3
+      .scaleLinear()
+      .domain([(slExtent[0] ?? -0.2) - 0.1, (slExtent[1] ?? 0.5) + 0.2])
       .range([h, 0]);
 
     // Draw grid lines
@@ -279,6 +312,48 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       }
     }
 
+    // Draw Sea Level line
+    if (countrySl && countrySl.series && countrySl.series.length > 0) {
+      const slLine = d3
+        .line<(typeof countrySl.series)[0]>()
+        .x((d) => x(d.year))
+        .y((d) => ySl(d.value))
+        .curve(d3.curveMonotoneX);
+
+      // Add a subtle area under the sea level line
+      const slArea = d3
+        .area<(typeof countrySl.series)[0]>()
+        .x((d) => x(d.year))
+        .y0(h)
+        .y1((d) => ySl(d.value))
+        .curve(d3.curveMonotoneX);
+
+      g.append("path")
+        .datum(countrySl.series)
+        .attr("d", slArea)
+        .attr("fill", "#3b82f6")
+        .attr("fill-opacity", 0.1);
+
+      g.append("path")
+        .datum(countrySl.series)
+        .attr("d", slLine)
+        .attr("fill", "none")
+        .attr("stroke", "#3b82f6")
+        .attr("stroke-width", 2);
+
+      // Sea Level dot at latest year
+      const lastSl = countrySl.series[countrySl.series.length - 1];
+      if (lastSl) {
+        g.append("circle")
+          .attr("cx", x(lastSl.year))
+          .attr("cy", ySl(lastSl.value))
+          .attr("r", 4)
+          .attr("fill", "#3b82f6")
+          .attr("stroke", "#fff")
+          .attr("stroke-width", 2);
+      }
+    }
+
     // X axis
     g.append("g")
       .attr("transform", `translate(0,${h})`)
@@ -319,15 +394,34 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
 
     g.append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", w + 45)
+      .attr("y", w + 35)
       .attr("x", -h / 2)
       .attr("text-anchor", "middle")
       .attr("font-size", 11)
       .attr("fill", "var(--lagoon)")
       .text("Temp Anomaly (°C)");
 
+    // Right-Right Y axis - Sea Level
+    const yAxisSl = d3.axisRight(ySl).ticks(5);
+    g.append("g")
+      .attr("transform", `translate(${w + 50},0)`)
+      .call(yAxisSl)
+      .selectAll("text")
+      .attr("font-size", 10)
+      .attr("fill", "#3b82f6");
+    g.selectAll(".domain").attr("stroke", "rgba(14,42,44,0.2)");
+
+    g.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", w + 85)
+      .attr("x", -h / 2)
+      .attr("text-anchor", "middle")
+      .attr("font-size", 11)
+      .attr("fill", "#3b82f6")
+      .text("Sea Level (m)");
+
     // Legend
-    const legend = g.append("g").attr("transform", `translate(${w - 120}, 10)`);
+    const legend = g.append("g").attr("transform", `translate(${w - 180}, 10)`);
 
     legend.append("circle").attr("r", 4).attr("fill", "var(--coral)");
 
@@ -352,6 +446,20 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       .attr("font-size", 10)
       .attr("fill", "rgba(14,42,44,0.7)")
       .text("Temp");
+
+    legend
+      .append("circle")
+      .attr("cx", 105)
+      .attr("r", 4)
+      .attr("fill", "#3b82f6");
+
+    legend
+      .append("text")
+      .attr("x", 115)
+      .attr("y", 4)
+      .attr("font-size", 10)
+      .attr("fill", "rgba(14,42,44,0.7)")
+      .text("Sea Level");
   }, [width, height, countryCode]);
 
   return (
