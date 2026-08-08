@@ -101,7 +101,7 @@ export default function RadarPage() {
           WASH profiles by country, across years
         </h2>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-          Four axes represent four SDG 6 indicators (safe drinking water, basic hand
+          Four axes represent four clean water indicators (safe drinking water, basic hand
           washing, safe sanitation, and <em>not</em> practicing open defecation — this
           axis is inverted so "outward is better" for consistency). Only 6 countries
           have complete data across all four indicators for fair comparison. Select

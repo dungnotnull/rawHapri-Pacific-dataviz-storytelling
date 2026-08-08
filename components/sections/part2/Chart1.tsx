@@ -74,7 +74,7 @@ export default function Part2Chart1() {
           Drinking water ranking, by year &amp; country
         </h1>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-          Ranking of population with safely managed drinking water (SDG 6.1.1),
+          Ranking of population with safely managed drinking water,
           2016–2024. Rank 1 (top) is the country with highest access rate. Connecting
           lines show position changes across years.
         </p>

@@ -33,7 +33,7 @@ export default function IndicatorsHub() {
           Extended Analysis Station
         </p>
         <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
-          Comprehensive clean water indicators (SDG 6)
+          Comprehensive clean water indicators
         </h1>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
           The analysis stations below explore the full range of indicators in the
@@ -70,7 +70,7 @@ export default function IndicatorsHub() {
       {/* Supplementary WASH Snapshot */}
       <section className="mx-auto max-w-7xl px-5 sm:px-8 py-10 sm:py-14">
         <h2 className="font-display text-2xl text-ink mb-3">
-          Appendix &middot; Safely treated wastewater [6.3.1]
+          Appendix &middot; Safely treated wastewater
         </h2>
         <p className="max-w-2xl text-sm text-ink-dim leading-relaxed mb-5">
           The indicator <span className="font-mono text-ink-dim">EN_WWT_WWDS</span> only
@@ -133,7 +133,7 @@ export default function IndicatorsHub() {
             Data scope notes
           </h3>
           <p className="text-sm text-ink-dim leading-relaxed">
-            Three other 6.3.1 indicators (wastewater treatment rate, total wastewater
+            Three other indicators (wastewater treatment rate, total wastewater
             generated, total wastewater treated) each have exactly{" "}
             <strong className="text-ink">one data point</strong> (Samoa, 2022) in the
             source dataset — insufficient for country comparison or time series analysis,

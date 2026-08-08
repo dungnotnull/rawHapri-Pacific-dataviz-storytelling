@@ -123,7 +123,7 @@ export default function Part2Chart2V2() {
           Safe drinking water: Rural &mdash; Urban divide
         </h1>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-          Scatter plot comparing access to safely managed drinking water (SDG 6.1.1)
+          Scatter plot comparing access to safely managed drinking water
           between rural and urban areas, for 7 countries with full disaggregated
           data. Scroll to explore each story layer — the chart stays pinned while
           you read.
@@ -403,11 +403,11 @@ export default function Part2Chart2V2() {
         ))}
       </div>
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-3 sm:py-5">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-10 sm:pt-18">
         <p className="font-mono text-[11px] text-ink-faint leading-relaxed max-w-2xl">
           Note: Nauru has urban-only data, Wallis &amp; Futuna has rural-only
           data, so neither qualifies for this scatter plot. Remaining
-          countries/territories have no disaggregated reporting for SDG 6.1.1
+          countries/territories have no disaggregated reporting for safely managed drinking water
           in the source dataset.
         </p>
       </div>

@@ -58,7 +58,7 @@ export default function Part2Chart2() {
         Drinking water: Rural &mdash; Urban divide
       </h1>
       <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-        Population using safely managed drinking water (SDG 6.1.1), separated
+        Population using safely managed drinking water, separated
         by rural and urban regions. Only shows countries with disaggregated data.
         Drag the slider to see the gap change over years.
       </p>
