@@ -7,7 +7,7 @@ import { useDimensions } from "@/hooks/useDimensions";
 import tempAvg from "@/data/temperature_pacific_avg.json";
 
 const rawData = tempAvg as YearValue[];
-const data = rawData.filter((d) => d.year >= 1993 && d.year <= 2023);
+const data = rawData.filter((d) => d.year >= 2016 && d.year <= 2023);
 
 export function WarmingStripes() {
   const wrapRef = useRef<HTMLDivElement>(null);

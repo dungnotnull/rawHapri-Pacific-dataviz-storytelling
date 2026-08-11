@@ -1,7 +1,7 @@
 "use client";
 
 const subLinks = [
-  { id: "radar-section", label: "Radar" },
+  // { id: "radar-section", label: "Radar" },
   { id: "correlation-section", label: "Correlation" },
   { id: "change-section", label: "Change" },
   { id: "distribution-section", label: "Distribution" },

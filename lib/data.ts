@@ -38,7 +38,7 @@ export const seaLevelYears = Array.from(
   new Set(
     Object.values(seaLevelData).flatMap((c) => c.series.map((s) => s.year))
   )
-).sort((a, b) => a - b);
+).filter((y) => y >= 2016).sort((a, b) => a - b);
 
 export const cleanWaterYears = Array.from(
   new Set(
@@ -176,5 +176,5 @@ export const tempAnomalyData = tempAnomalyRaw as TempCountry[];
 export const seaLevelPacificAvg = seaLevelPacificAvgRaw as YearValue[];
 export const tempPacificAvg = tempPacificAvgRaw as YearValue[];
 
-// Common years across sea level, GHG, temperature (1993–2023)
-export const CORRELATION_YEARS = Array.from({ length: 31 }, (_, i) => 1993 + i);
+// Common years across sea level, GHG, temperature (2016–2023)
+export const CORRELATION_YEARS = Array.from({ length: 8 }, (_, i) => 2016 + i);

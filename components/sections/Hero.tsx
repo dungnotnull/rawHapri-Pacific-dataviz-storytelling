@@ -10,7 +10,7 @@ import { useStepObserver } from "@/hooks/useStepObserver";
 
 const STEPS = [
   {
-    kicker: "1993 → 2023",
+    kicker: "2016 → 2023",
     text: "Across the Pacific, sea levels have climbed almost every single year for three decades.",
   },
   {
@@ -105,49 +105,19 @@ export function Hero() {
               <div className="h-[54vh] w-full overflow-hidden">
                 <SeaLevelScrolly step={step} />
               </div>
-              <ShorelineStrip retreat={step >= 1 ? 1 : 0} />
-              <SourceNote className="text-white text-xs">
-                <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 1993–2023.</span>
-                <span>Line shows unweighted average across 21 PICTs; Tuvalu shown individually.</span>
-              </SourceNote>
+              
             </div>
           </div>
         </div>
       </div>
 
-      {/* ---- illustrative images ---- */}
+      {/* ---- Shoreline strip simulate ---- */}
       <div className="relative mx-auto max-w-6xl px-6 pb-20 md:px-16">
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Image 1 - Pacific Island coastline */}
-          <ScrollReveal animation="fade-right" delay={200}>
-            <div className="relative overflow-hidden rounded-2xl shadow-xl">
-              <img
-                src="https://images.unsplash.com/photo-1682832920244-78123cc71cfa?q=80&w=1075&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Pacific Island coastline showing the delicate relationship between land and sea"
-                className="h-64 w-full object-cover md:h-80"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                <p className="text-sm font-medium text-foam">Where land meets ocean</p>
-                <p className="text-xs text-foam/70">Pacific Island coastline</p>
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Image 2 - Rising tide impact */}
-          <ScrollReveal animation="fade-left" delay={400}>
-            <div className="relative overflow-hidden rounded-2xl shadow-xl md:mt-12">
-              <img
-                src="https://images.unsplash.com/photo-1776267195984-a6bb22048cea?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Coastal erosion showing the impact of rising seas on shorelines"
-                className="h-64 w-full object-cover md:h-80"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                <p className="text-sm font-medium text-foam">The rising tide</p>
-                <p className="text-xs text-foam/70">Shorelines transformed over time</p>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
+      <ShorelineStrip retreat={step >= 1 ? 1 : 0} />
+              <SourceNote className="text-white text-xs">
+                <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2023.</span>
+                <span>Line shows unweighted average across 21 PICTs; Tuvalu shown individually.</span>
+              </SourceNote>
       </div>
 
       {/* ---- closing quote ---- */}

@@ -43,9 +43,9 @@ export default function IndicatorsHub() {
       </section>
 
       {/* Radar Section */}
-      <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
+      {/* <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
         <RadarPage />
-      </section>
+      </section> */}
 
       {/* Correlation Section */}
       <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
@@ -74,7 +74,7 @@ export default function IndicatorsHub() {
         </h2>
         <p className="max-w-2xl text-sm text-ink-dim leading-relaxed mb-5">
           The indicator <span className="font-mono text-ink-dim">EN_WWT_WWDS</span> only
-          has sparse data across 3 years (2020, 2022, 2024) with different country
+          has sparse data across {wwdsYears.length} years ({wwdsYears.join(", ")}) with different country
           reporting each year — insufficient continuity for a reliable trend chart,
           so we present it as annual snapshots instead of a full animated visualization.
         </p>

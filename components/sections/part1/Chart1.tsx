@@ -115,7 +115,7 @@ export default function Part1Chart1() {
         </h1>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
           Sea level anomalies (relative to baseline) measured by satellite,
-          1993–2023. Drag the slider or press Play to watch the measurement line
+          2016–2023. Drag the slider or press Play to watch the measurement line
           &ldquo;draw&rdquo; over time — select countries below to compare.
         </p>
 

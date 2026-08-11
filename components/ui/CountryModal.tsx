@@ -169,7 +169,7 @@ export function CountryModal({
         {/* Historical Chart - Combined */}
         <div className="mt-6">
           <p className="mb-2 text-sm font-medium text-ink/70">
-            CO₂, Temperature & Sea Level (1993–2023)
+            CO₂, Temperature & Sea Level (2016–2023)
           </p>
           <CombinedChart countryCode={countryCode} />
         </div>
@@ -213,8 +213,8 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // X scale - years from 1993 to 2023
-    const x = d3.scaleLinear().domain([1993, 2023]).range([0, w]);
+    // X scale - years from 2016 to 2023
+    const x = d3.scaleLinear().domain([2016, 2023]).range([0, w]);
 
     // Left Y scale - CO2 (0 to max)
     const maxGhg =

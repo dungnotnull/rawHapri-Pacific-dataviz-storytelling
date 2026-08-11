@@ -10,7 +10,7 @@ import { WarmingStripes } from "./WarningStripes";
 import { CountryModal } from "../ui/CountryModal";
 import { YearControl } from "../ui/YearControl";
 
-const MIN_YEAR = 1993; // Data available for all 3 metrics starting 1993
+const MIN_YEAR = 2016; // Data available for all 3 metrics starting 1993, synced to 2016
 const MAX_YEAR = 2023; // Latest available year in data
 
 export function Cause() {
@@ -57,7 +57,7 @@ export function Cause() {
           <div className="flex flex-col justify-between gap-10">
             <ScrollReveal animation="fade-left" delay={400}>
               <div>
-                <p className="eyebrow text-ink/50">Regional warming, 1993–2023</p>
+                <p className="eyebrow text-ink/50">Regional warming, {MIN_YEAR}–{MAX_YEAR}</p>
                 <div className="mt-3">
                   <WarmingStripes />
                 </div>
@@ -70,7 +70,7 @@ export function Cause() {
 
             <ScrollReveal animation="fade-left" delay={600}>
               <div ref={contrastRef}>
-                <p className="eyebrow text-ink/50">For scale: per-capita CO₂, 2023</p>
+                <p className="eyebrow text-ink/50">For scale: per-capita CO₂, {MAX_YEAR}</p>
                 <div className="mt-3" onMouseEnter={() => setContrastVisible(true)}>
                   <EmittersContrastBar
                     active={true}

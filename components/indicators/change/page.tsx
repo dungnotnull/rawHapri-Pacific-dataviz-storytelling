@@ -92,7 +92,7 @@ export default function ChangePage() {
           Bars show change from the previous year (percentage points or relative
           percent); the line shows actual values over years; the dashed horizontal
           line is the average over the selected year range. Filter by time range
-          available in the dataset (2016–2024).
+          available in the dataset ({years[0]}–{years[years.length - 1]}).
         </p>
 
         <div className="mt-8 flex flex-col gap-4">

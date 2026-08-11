@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { cleanWaterData, shortName } from "@/lib/data";
+import { cleanWaterData, shortName, cleanWaterYears } from "@/lib/data";
 import { makePalette, NEUTRAL_LINE } from "@/lib/colors";
 import Flag from "@/components/ui/Flag";
 
@@ -11,8 +11,8 @@ const SCATTER_COUNTRIES = Object.keys(cleanWaterData).filter(
     cleanWaterData[name].urban.length > 0 && cleanWaterData[name].rural.length > 0
 );
 
-const YEAR_EARLY = 2016;
-const YEAR_LATE = 2024;
+const YEAR_EARLY = cleanWaterYears[0];
+const YEAR_LATE = cleanWaterYears[cleanWaterYears.length - 1];
 
 interface Step {
   kicker: string;
@@ -23,7 +23,7 @@ interface Step {
 const steps: Step[] = [
   {
     kicker: "01 — HOW TO READ",
-    text: "Each dot is one country. X-axis shows rural population with safely managed drinking water, Y-axis shows urban — both in %, year 2024.",
+    text: `Each dot is one country. X-axis shows rural population with safely managed drinking water, Y-axis shows urban — both in %, year ${YEAR_LATE}.`,
     align: "left",
   },
   {
@@ -33,7 +33,7 @@ const steps: Step[] = [
   },
   {
     kicker: "03 — LARGEST GAP",
-    text: "Palau: 97.7% of urban population had safe drinking water in 2024, compared to just 57.3% in rural areas — a 40+ point gap, the widest in the region.",
+    text: `Palau: 97.7% of urban population had safe drinking water in ${YEAR_LATE}, compared to just 57.3% in rural areas — a 40+ point gap, the widest in the region.`,
     align: "left",
   },
   {
@@ -42,8 +42,8 @@ const steps: Step[] = [
     align: "right",
   },
   {
-    kicker: "05 — TRAJECTORY 2016 → 2024",
-    text: "From 2016 to 2024, the gap barely narrowed. In Palau and Samoa it even widened, because urban areas improved much faster than rural areas.",
+    kicker: `05 — TRAJECTORY ${YEAR_EARLY} → ${YEAR_LATE}`,
+    text: `From ${YEAR_EARLY} to ${YEAR_LATE}, the gap barely narrowed. In Palau and Samoa it even widened, because urban areas improved much faster than rural areas.`,
     align: "left",
   },
 ];

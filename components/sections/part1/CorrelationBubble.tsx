@@ -409,8 +409,8 @@ export default function CorrelationBubble() {
               <span className="font-semibold text-lagoon">Y</span> = Sea level (mm) ·{" "}
               <span className="font-semibold" style={{ color: "#f87171" }}>Z</span>{" "}
               = Temp anomaly (°C). Drag to rotate · Press{" "}
-              <span className="text-lagoon font-semibold">Play</span> to animate
-              1993 → 2023.
+              <span className="text-lagoon font-semibold">Play</span> to animate{" "}
+              {CORRELATION_YEARS[0]} → {CORRELATION_YEARS[CORRELATION_YEARS.length - 1]}.
             </p>
 
             {/* ── 3-pair Pearson r badges ── */}

@@ -78,10 +78,10 @@ export default function Part1Chart2() {
       </h1>
       </ScrollReveal>
       <ScrollReveal animation="fade-up" delay={400}>
-      <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-        Ranking of island nations by sea level anomaly (mm) each year. Press
-        {" "}<span className="text-lagoon font-semibold">Play</span> to see how rankings change from 1993 to 2023.
-      </p>
+        <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
+          Ranking of relative sea level anomalies by country. 
+          {" "}<span className="text-lagoon font-semibold">Play</span> to see how rankings change from 2016 to 2023.
+        </p>
       </ScrollReveal>
 
           <ScrollReveal animation="fade-right" delay={200}>
