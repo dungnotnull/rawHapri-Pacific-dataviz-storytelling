@@ -28,7 +28,7 @@ export default function IndicatorsHub() {
     <>
       {/* Main Indicators Hub Header */}
       <section className="mx-auto max-w-7xl px-5 sm:px-8 py-10 sm:py-14">
-        <IndicatorSubNav />
+        {/* <IndicatorSubNav /> */}
         <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-tide mb-3">
           Extended Analysis Station
         </p>
@@ -48,9 +48,9 @@ export default function IndicatorsHub() {
       </section> */}
 
       {/* Correlation Section */}
-      <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
+      {/* <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
         <CorrelationPage />
-      </section>
+      </section> */}
 
       {/* Change Section */}
       <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
@@ -58,9 +58,9 @@ export default function IndicatorsHub() {
       </section>
 
       {/* Distribution Section */}
-      <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
+      {/* <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
         <DistributionPage />
-      </section>
+      </section> */}
 
       {/* Composition Section */}
       <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
@@ -68,7 +68,7 @@ export default function IndicatorsHub() {
       </section>
 
       {/* Supplementary WASH Snapshot */}
-      <section className="mx-auto max-w-7xl px-5 sm:px-8 py-10 sm:py-14">
+      {/* <section className="mx-auto max-w-7xl px-5 sm:px-8 py-10 sm:py-14">
         <h2 className="font-display text-2xl text-ink mb-3">
           Appendix &middot; Safely treated wastewater
         </h2>
@@ -141,7 +141,7 @@ export default function IndicatorsHub() {
             misleading representation.
           </p>
         </div>
-      </section>
+      </section> */}
     </>
   );
 }

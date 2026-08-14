@@ -4,10 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useDimensions } from "@/hooks/useDimensions";
 import { GhgCountry, TempCountry } from "@/types";
-import ghgData from "@/data/ghg_per_capita.json";
-import tempData from "@/data/temperature_anomaly.json";
-import picCountries from "@/data/pic_countries.json";
-import seaLevelData from "@/data/sea_level.json";
+import { ghgData as ghg, tempAnomalyData as temp, picCoords, seaLevelData } from "@/lib/data";
 import { getFlagClass } from "@/lib/flags";
 import { createPortal } from "react-dom";
 
@@ -18,14 +15,7 @@ interface CountryModalProps {
   countryName: string;
 }
 
-const ghg = ghgData as GhgCountry[];
-const temp = tempData as TempCountry[];
-const picCoords = picCountries as Array<{
-  code: string;
-  name: string;
-  lat: number;
-  lon: number;
-}>;
+
 
 export function CountryModal({
   isOpen,

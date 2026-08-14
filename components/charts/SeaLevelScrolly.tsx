@@ -5,7 +5,7 @@ import * as d3 from "d3";
 import { YearValue, SeaLevelCountry } from "@/types";
 import { useDimensions } from "@/hooks/useDimensions";
 import seaLevelAvg from "@/data/sea_level_pacific_avg.json";
-import seaLevelCountries from "@/data/sea_level.json";
+import { seaLevelData as seaLevelCountries } from "@/lib/data";
 
 const HIGHLIGHT_CODE = "TV"; // Tuvalu - the emblematic low-lying atoll nation
 // Convert the country dictionary to an array of SeaLevelCountry

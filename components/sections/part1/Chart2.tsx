@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import * as d3 from "d3";
 import {
   seaLevelData,
@@ -10,204 +10,229 @@ import {
 } from "@/lib/data";
 import { makePalette } from "@/lib/colors";
 import Flag from "@/components/ui/Flag";
-import YearScrubber from "@/components/ui/YearScrubber";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-
-
-const ROW_H = 34;
-const ROW_GAP = 6;
+import { useDimensions } from "@/hooks/useDimensions";
+import { YearValue } from "@/types";
 
 export default function Part1Chart2() {
   const palette = useMemo(() => makePalette(seaLevelCountries), []);
-  const [year, setYear] = useState(seaLevelYears[seaLevelYears?.length - 1]);
+  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [hoverData, setHoverData] = useState<{ year: number, value: number, x: number, y: number } | null>(null);
+
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const { width } = useDimensions(wrapRef);
+  const height = 500;
 
   const allValuesMm = useMemo(
     () =>
       Object.values(seaLevelData).flatMap((c) =>
-        c.series.map((s) => s.value * 1000)
+        c.series
+          .filter(s => s.year >= seaLevelYears[0] && s.year <= seaLevelYears[seaLevelYears.length - 1])
+          .map((s) => s.value * 1000)
       ),
     []
   );
-  const [minV, maxV] = d3.extent(allValuesMm) as [number, number];
-  const domainMin = Math.min(minV, 0);
-  const domainMax = Math.max(maxV, 1);
-
-  const width = 993;
-  const innerLeft = 190; // space for flag + name
-  const innerRight = 60; // space for value label
-  const innerW = width - innerLeft - innerRight;
+  
+  const margin = { top: 40, right: 40, bottom: 40, left: 50 };
+  const innerW = width > 0 ? width - margin.left - margin.right : 0;
+  const innerH = height - margin.top - margin.bottom;
 
   const xScale = useMemo(
-    () => d3.scaleLinear().domain([domainMin, domainMax]).range([0, innerW]).nice(),
-    [domainMin, domainMax, innerW]
+    () => d3.scaleLinear().domain([seaLevelYears[0], seaLevelYears[seaLevelYears.length - 1]]).range([0, innerW]),
+    [innerW]
   );
 
-  const x0 = xScale(0);
+  const yScale = useMemo(
+    () => d3.scaleLinear().domain(d3.extent(allValuesMm) as [number, number]).nice().range([innerH, 0]),
+    [allValuesMm, innerH]
+  );
 
-  // Calculate each country's rank for current year, but keep consistent array order
-  const countryRanks = useMemo(() => {
-    const ranked = seaLevelCountries
-      .map((name) => {
-        const c = seaLevelData[name];
-        const pt = c.series.find((s) => s.year === year);
-        return {
-          name,
-          iso2: c.iso2,
-          value: pt ? pt.value * 1000 : 0,
-        };
-      })
-      .sort((a, b) => b.value - a.value);
-    const rankMap: Record<string, number> = {};
-    ranked.forEach((c, i) => {
-      rankMap[c.name] = i;
-    });
-    return rankMap;
-  }, [year]);
+  const lineGenerator = useMemo(
+    () => d3.line<YearValue>()
+      .x((d) => xScale(d.year))
+      .y((d) => yScale(d.value * 1000))
+      .curve(d3.curveMonotoneX),
+    [xScale, yScale]
+  );
 
-  const height = seaLevelCountries.length * (ROW_H + ROW_GAP);
+  const getTrendLine = (data: YearValue[]) => {
+    const xSeries = data.map(d => d.year);
+    const ySeries = data.map(d => d.value * 1000);
+    const xMean = d3.mean(xSeries) || 0;
+    const yMean = d3.mean(ySeries) || 0;
+    const denominator = d3.sum(xSeries.map(x => Math.pow(x - xMean, 2)));
+    const slope = denominator ? d3.sum(xSeries.map((x, i) => (x - xMean) * (ySeries[i] - yMean))) / denominator : 0;
+    const intercept = yMean - slope * xMean;
+    
+    const firstYear = xSeries[0];
+    const lastYear = xSeries[xSeries.length - 1];
+    return {
+      x1: xScale(firstYear),
+      y1: yScale(slope * firstYear + intercept),
+      x2: xScale(lastYear),
+      y2: yScale(slope * lastYear + intercept)
+    };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<SVGElement>, country: string, series: YearValue[]) => {
+    if (!wrapRef.current) return;
+    const rect = wrapRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left - margin.left;
+    const year = Math.round(xScale.invert(x));
+    
+    // Ensure year is within bounds
+    if (year >= seaLevelYears[0] && year <= seaLevelYears[seaLevelYears.length - 1]) {
+      const dataPoint = series.find(s => s.year === year);
+      if (dataPoint) {
+        setHoverData({
+          year,
+          value: dataPoint.value * 1000,
+          x: xScale(year),
+          y: yScale(dataPoint.value * 1000)
+        });
+      }
+    }
+  };
 
   return (
-        <section id="part1-chart2" className="relative bg-foam px-6 py-14 md:px-16">
-    <div className="mx-auto max-w-6xl">
-       <ScrollReveal animation="fade-down" delay={200}>
-                <p className="eyebrow text-lagoon">A Pacific climate story </p>
-              </ScrollReveal>
-      <ScrollReveal animation="fade-down" delay={200}>
-      <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
-        Sea level race over years
-      </h1>
-      </ScrollReveal>
-      <ScrollReveal animation="fade-up" delay={400}>
-        <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-          Ranking of relative sea level anomalies by country. 
-          {" "}<span className="text-lagoon font-semibold">Play</span> to see how rankings change from 2016 to 2023.
-        </p>
-      </ScrollReveal>
+    <section id="part1-chart2" className="relative bg-foam px-6 py-14 md:px-16">
+      <div className="mx-auto max-w-6xl">
+        <ScrollReveal animation="fade-down" delay={200}>
+          <p className="eyebrow text-lagoon">A Pacific climate story</p>
+        </ScrollReveal>
+        <ScrollReveal animation="fade-down" delay={200}>
+          <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
+            Sea level race over years
+          </h1>
+        </ScrollReveal>
+        <ScrollReveal animation="fade-up" delay={400}>
+          <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
+            Relative sea level anomalies by country (2016-2023).
+            Hover over a country in the legend or the chart to highlight its trend.
+          </p>
+        </ScrollReveal>
 
-          <ScrollReveal animation="fade-right" delay={200}>
-      <div className="mt-8 grid lg:grid-cols-[1fr_auto] gap-4 items-start">
-        {/* Chart */}
+        <div className="mt-10 flex flex-col lg:flex-row gap-8">
+          {/* Chart Area */}
+          <div className="flex-1 rounded-lg border border-ink/10 bg-transparent shadow-[0_8px_30px_rgba(0,0,0,0.08)]" ref={wrapRef} style={{ height }}>
+            {width > 0 && (
+              <svg width={width} height={height} className="overflow-visible block">
+                <g transform={`translate(${margin.left},${margin.top})`}>
+                  {/* Grid Lines */}
+                  {yScale.ticks(6).map(tick => (
+                    <g key={`y-${tick}`} transform={`translate(0,${yScale(tick)})`}>
+                      <line x1={0} x2={innerW} stroke="var(--ink-faint)" strokeOpacity={0.2} strokeDasharray="4 4" />
+                      <text x={-10} y={4} textAnchor="end" fill="var(--ink-faint)" fontSize={11} fontFamily="var(--font-mono)">
+                        {tick}mm
+                      </text>
+                    </g>
+                  ))}
+                  {xScale.ticks(5).map(tick => (
+                    <g key={`x-${tick}`} transform={`translate(${xScale(tick)},0)`}>
+                      <line y1={0} y2={innerH} stroke="var(--ink-faint)" strokeOpacity={0.2} strokeDasharray="4 4" />
+                      <text y={innerH + 15} textAnchor="middle" fill="var(--ink-faint)" fontSize={11} fontFamily="var(--font-mono)">
+                        {tick}
+                      </text>
+                    </g>
+                  ))}
 
-        <div className="chart-paper rounded-lg pr-3 sm:pr-5 overflow-x-auto">
-          <svg width="100%" height={40} viewBox={`0 0 ${width} 40`} className="min-w-[640px]">
-            <g transform={`translate(${innerLeft},20)`}>
-              {xScale.ticks(6).map((t) => (
-                <g key={t} transform={`translate(${xScale(t)},0)`}>
-                  <text
-                    y={-4}
-                    textAnchor="middle"
-                    fill="var(--ink-faint)"
-                    fontSize={10}
-                    fontFamily="var(--font-mono)"
-                  >
-                    {t}
-                  </text>
+                  {/* Lines */}
+                  {seaLevelCountries.map(name => {
+                    const rawSeries = seaLevelData[name].series;
+                    // Filter series to only include years in the xScale domain to prevent overflow
+                    const series = rawSeries.filter(s => s.year >= seaLevelYears[0] && s.year <= seaLevelYears[seaLevelYears.length - 1]);
+                    
+                    const isHovered = hoveredCountry === name;
+                    const isDimmed = hoveredCountry !== null && !isHovered;
+                    const color = palette.get(name) || "var(--coral)";
+                    
+                    return (
+                      <g key={name}>
+                        <path
+                          d={lineGenerator(series) || undefined}
+                          fill="none"
+                          stroke={color}
+                          strokeWidth={isHovered ? 3 : 1.5}
+                          strokeOpacity={isDimmed ? 0.03 : 0.8}
+                          style={{ transition: 'all 0.3s ease' }}
+                        />
+                        {/* Invisible thicker path for easier hover */}
+                        <path
+                          d={lineGenerator(series) || undefined}
+                          fill="none"
+                          stroke="transparent"
+                          strokeWidth={20}
+                          onMouseEnter={() => setHoveredCountry(name)}
+                          onMouseLeave={() => { setHoveredCountry(null); setHoverData(null); }}
+                          onMouseMove={(e) => handleMouseMove(e, name, series)}
+                          className="cursor-pointer"
+                        />
+                        
+                        {/* Trend line for hovered country */}
+                        {isHovered && (
+                          <line
+                            {...getTrendLine(series)}
+                            stroke={color}
+                            strokeWidth={2}
+                            strokeDasharray="6 6"
+                            opacity={0.6}
+                          />
+                        )}
+                      </g>
+                    );
+                  })}
+
+                  {/* Tooltips for all years of hovered country */}
+                  {hoveredCountry && (
+                    <g>
+                      {seaLevelData[hoveredCountry].series
+                        .filter(s => s.year >= seaLevelYears[0] && s.year <= seaLevelYears[seaLevelYears.length - 1])
+                        .map(s => {
+                          const x = xScale(s.year);
+                          const y = yScale(s.value * 1000);
+                          const color = palette.get(hoveredCountry) || "var(--coral)";
+                          return (
+                            <g key={s.year} transform={`translate(${x},${y})`}>
+                              <circle r={4} fill={color} />
+                              <rect x={-20} y={-24} width={40} height={18} fill="white" rx={3} stroke="var(--ink-faint)" strokeOpacity={0.2} className="shadow-sm" />
+                              <text x={0} y={-11} textAnchor="middle" fill="var(--ink)" fontSize={10} fontFamily="var(--font-mono)" fontWeight="bold">
+                                {(s.value * 1000) > 0 ? '+' : ''}{(s.value * 1000).toFixed(1)}
+                              </text>
+                            </g>
+                          );
+                      })}
+                    </g>
+                  )}
                 </g>
-              ))}
-              <text
-                x={innerW + 20}
-                y={-4}
-                fill="var(--ink-faint)"
-                fontSize={9}
-                fontFamily="var(--font-mono)"
-              >
-                mm
-              </text>
-            </g>
-          </svg>
+              </svg>
+            )}
+          </div>
 
-          <div
-            className="relative min-w-[640px]"
-            style={{ height, transition: "height 400ms ease" }}
-          >
-            {/* zero baseline */}
-            <div
-              className="absolute top-0 bottom-0 border-l border-dashed border-ink-faint/40"
-              style={{ left: innerLeft + x0 }}
-            />
-            {seaLevelCountries.map((name) => {
-              const c = seaLevelData[name];
-              const pt = c.series.find((s) => s.year === year);
-              const value = pt ? pt.value * 1000 : 0;
-              const rank = countryRanks[name];
-              const barLeft = innerLeft + xScale(Math.min(0, value));
-              const barW = Math.max(
-                Math.abs(xScale(value) - xScale(0)),
-                1.5
-              );
-              const positive = value >= 0;
+          {/* Legend Area */}
+          <div className="lg:w-64 shrink-0 flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-2">
+            <h3 className="text-sm font-semibold text-ink/70 mb-2 uppercase tracking-wider">Countries</h3>
+            {seaLevelCountries.map(name => {
+              const iso2 = seaLevelData[name].iso2;
+              const isHovered = hoveredCountry === name;
+              const isDimmed = hoveredCountry !== null && !isHovered;
+              const color = palette.get(name) || "var(--coral)";
+              
               return (
                 <div
                   key={name}
-                  className="absolute left-0 right-0 flex items-center"
-                  style={{
-                    top: rank * (ROW_H + ROW_GAP),
-                    height: ROW_H,
-                    transition: "top 700ms cubic-bezier(.4,0,.2,1)",
-                  }}
+                  className={`flex items-center gap-3 p-2 rounded cursor-pointer transition-all ${isHovered ? 'bg-ink/5' : ''} ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+                  onMouseEnter={() => setHoveredCountry(name)}
+                  onMouseLeave={() => { setHoveredCountry(null); setHoverData(null); }}
                 >
-                  <div
-                    className="absolute flex items-center gap-1.5"
-                    style={{ left: 0, width: innerLeft - 10 }}
-                  >
-                    <span className="font-mono text-[10px] text-ink-faint w-5 text-right shrink-0">
-                      {rank + 1}
-                    </span>
-                    <Flag iso2={c.iso2} className="w-4 h-3 shrink-0" />
-                    <span className="font-mono text-[11px] text-ink truncate">
-                      {shortName(name)}
-                    </span>
-                  </div>
-                  <div
-                    className="absolute rounded-sm"
-                    style={{
-                      left: barLeft,
-                      width: barW,
-                      height: ROW_H - 10,
-                      background: palette.get(name),
-                      opacity: 0.88,
-                      transition:
-                        "left 700ms cubic-bezier(.4,0,.2,1), width 700ms cubic-bezier(.4,0,.2,1), background 300ms",
-                    }}
-                  />
-                  <div
-                    className="absolute font-mono text-[11px] tabular-nums"
-                    style={{
-                      left: positive
-                        ? barLeft + barW + 6
-                        : barLeft - 6,
-                      transform: positive ? "none" : "translateX(-100%)",
-                      color: "var(--gold)",
-                      transition: "left 700ms cubic-bezier(.4,0,.2,1)",
-                    }}
-                  >
-                    {value >= 0 ? "+" : ""}
-                    {value.toFixed(0)}
-                  </div>
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+                  <Flag iso2={iso2} className="w-5 h-3.5 shrink-0 shadow-sm" />
+                  <span className="text-xs font-medium text-ink truncate">{shortName(name)}</span>
                 </div>
               );
             })}
           </div>
         </div>
-
-        {/* Vertical YearScrubber for desktop */}
-        <div className="hidden lg:block">
-          <YearScrubber
-            years={seaLevelYears}
-            year={year}
-            onChange={setYear}
-            speedMs={1000}
-            variant="vertical"
-          />
-        </div>
-
-        {/* Horizontal YearScrubber for mobile */}
-        <div className="lg:hidden col-span-full mt-6">
-          <YearScrubber years={seaLevelYears} year={year} onChange={setYear} speedMs={1000} />
-        </div>
       </div>
-        </ScrollReveal>
-    </div>
-        </section>
+    </section>
   );
 }

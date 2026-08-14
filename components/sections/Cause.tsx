@@ -48,26 +48,28 @@ export function Cause() {
         </ScrollReveal>
 
         <div className="mt-14 grid gap-10 lg:grid-cols-[1.3fr_0.9fr]">
-          <ScrollReveal animation="fade-right" delay={200}>
-            <div className="h-[62vh] min-h-[420px] rounded-2xl border border-ink/8 bg-white/40 p-2">
-              <CauseMap active selectedYear={selectedYear} />
-            </div>
-          </ScrollReveal>
+          <div className="flex flex-col gap-8">
+            <ScrollReveal animation="fade-right" delay={200}>
+              <div className="h-[62vh] min-h-[420px] rounded-2xl border border-ink/8 bg-white/40 p-2">
+                <CauseMap active selectedYear={selectedYear} />
+              </div>
+            </ScrollReveal>
 
-          <div className="flex flex-col justify-between gap-10">
-            <ScrollReveal animation="fade-left" delay={400}>
-              <div>
+            <ScrollReveal animation="fade-up" delay={300}>
+              <div className="px-2">
                 <p className="eyebrow text-ink/50">Regional warming, {MIN_YEAR}–{MAX_YEAR}</p>
                 <div className="mt-3">
                   <WarmingStripes />
                 </div>
-                <SourceNote className="mt-3">
+                {/* <SourceNote className="mt-3">
                   <span>Source: Pacific Data Hub, CLIMATE_CHANGE_TEMP_INDICATORS.</span>
                   <span>Unweighted average across 22 PICTs, °C vs. baseline.</span>
-                </SourceNote>
+                </SourceNote> */}
               </div>
             </ScrollReveal>
+          </div>
 
+          <div className="flex flex-col">
             <ScrollReveal animation="fade-left" delay={600}>
               <div ref={contrastRef}>
                 <p className="eyebrow text-ink/50">For scale: per-capita CO₂, {MAX_YEAR}</p>
@@ -78,22 +80,22 @@ export function Cause() {
                     onCountryClick={(name, code) => setSelectedCountry({ name, code })}
                   />
                 </div>
-                <SourceNote className="mt-3">
+                {/* <SourceNote className="mt-3">
                   <span>Source: Pacific Data Hub, CLIMATE_CHANGE_GHG_INDICATORS.</span>
-                </SourceNote>
+                </SourceNote> */}
               </div>
             </ScrollReveal>
           </div>
         </div>
 
-        <ScrollReveal animation="fade-up" delay={800}>
+        {/* <ScrollReveal animation="fade-up" delay={800}>
           <p className="prose-col mt-10 max-w-2xl text-sm text-ink/50">
             * Palau and New Caledonia report unusually high per-capita figures -
             Palau's from its large international ship registry, New
             Caledonia's from nickel processing - not from everyday household
             emissions. Both are marked with a dashed ring on the map.
           </p>
-        </ScrollReveal>
+        </ScrollReveal> */}
 
         <CountryModal
           isOpen={selectedCountry !== null}

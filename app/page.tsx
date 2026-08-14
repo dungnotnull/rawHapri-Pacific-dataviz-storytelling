@@ -24,11 +24,11 @@ export default function Home() {
       <TideRail marks={MARKS} />
       <BackToTop />
 
-      <div className="fixed right-6 top-6 z-40 hidden md:block">
+      {/* <div className="fixed right-6 top-6 z-40 hidden md:block">
         <p className="eyebrow rounded-full border border-ink/10 bg-foam/80 px-3 py-1.5 text-ink/60 backdrop-blur">
           Tides of Debt
         </p>
-      </div>
+      </div> */}
 
       <Hero />
       <Part1Chart2 />
@@ -52,13 +52,7 @@ export default function Home() {
             time.
           </p>
 
-          <div className="mt-12 grid gap-8 border-t border-foam/10 pt-8 text-sm text-foam/50 md:grid-cols-3">
-            <div>
-              <p className="eyebrow text-foam/70">Team info</p>
-              <p className="mt-2 leading-relaxed">
-                Hong Ngoc, Minh Thu, Hoang Lan, Hoang Dung
-              </p>
-            </div>
+          <div className="mt-12 grid gap-8 border-t border-foam/10 pt-8 text-sm text-foam/50 md:grid-cols-2">
             <div>
               <p className="eyebrow text-foam/70">Data</p>
               <p className="mt-2 leading-relaxed">

@@ -6,6 +6,7 @@ import ghgRaw from "@/data/ghg_per_capita.json";
 import tempAnomalyRaw from "@/data/temperature_anomaly.json";
 import seaLevelPacificAvgRaw from "@/data/sea_level_pacific_avg.json";
 import tempPacificAvgRaw from "@/data/temperature_pacific_avg.json";
+import picCountriesRaw from "@/data/pic_countries.json";
 
 export interface YearValue {
   year: number;
@@ -24,15 +25,35 @@ export interface CleanWaterCountry {
   rural: YearValue[];
 }
 
-export const seaLevelData = seaLevelRaw as Record<string, SeaLevelCountry>;
-export const cleanWaterData = cleanWaterRaw as Record<string, CleanWaterCountry>;
+export const TARGET_PICS = [
+  "Cook Islands",
+  "Fiji",
+  "Kiribati",
+  "Nauru",
+  "Niue",
+  "Palau",
+  "Marshall Islands",
+  "Samoa",
+  "Solomon Islands",
+  "Tonga",
+  "Tuvalu",
+  "Vanuatu",
+  "Micronesia",
+  "Micronesia, Federated State of",
+  "Republic of Marshall Islands"
+];
 
-export const seaLevelCountries = Object.keys(seaLevelData).sort((a, b) =>
-  a.localeCompare(b)
+export const isTargetPic = (name: string) => TARGET_PICS.includes(name);
+
+export const seaLevelData = Object.fromEntries(
+  Object.entries(seaLevelRaw as Record<string, SeaLevelCountry>).filter(([name]) => isTargetPic(name))
 );
-export const cleanWaterCountries = Object.keys(cleanWaterData).sort((a, b) =>
-  a.localeCompare(b)
+export const cleanWaterData = Object.fromEntries(
+  Object.entries(cleanWaterRaw as Record<string, CleanWaterCountry>).filter(([name]) => isTargetPic(name))
 );
+
+export const seaLevelCountries = Object.keys(seaLevelData).sort((a, b) => a.localeCompare(b));
+export const cleanWaterCountries = Object.keys(cleanWaterData).sort((a, b) => a.localeCompare(b));
 
 export const seaLevelYears = Array.from(
   new Set(
@@ -74,7 +95,14 @@ export interface IndicatorDef {
   countries: Record<string, IndicatorCountry>;
 }
 
-export const cleanWaterFull = cleanWaterFullRaw as Record<string, IndicatorDef>;
+export const cleanWaterFull = Object.fromEntries(
+  Object.entries(cleanWaterFullRaw as Record<string, IndicatorDef>).map(([id, def]) => {
+    const filteredCountries = Object.fromEntries(
+      Object.entries(def.countries).filter(([name]) => isTargetPic(name))
+    );
+    return [id, { ...def, countries: filteredCountries }];
+  })
+) as Record<string, IndicatorDef>;
 export const indicatorIds = Object.keys(cleanWaterFull);
 export const ALL_INDICATOR_YEARS = cleanWaterFull[indicatorIds[0]].years;
 
@@ -140,7 +168,7 @@ export interface WwdsRow {
   year: number;
   value: number;
 }
-export const wwdsSnapshot = wwdsRaw as WwdsRow[];
+export const wwdsSnapshot = (wwdsRaw as WwdsRow[]).filter((r) => isTargetPic(r.name));
 export const wwdsYears = Array.from(new Set(wwdsSnapshot.map((r) => r.year))).sort(
   (a, b) => a - b
 );
@@ -156,7 +184,7 @@ export interface GhgCountry {
   series: YearValue[];
 }
 
-export const ghgData = ghgRaw as GhgCountry[];
+export const ghgData = (ghgRaw as GhgCountry[]).filter((r) => isTargetPic(r.name));
 
 // ---- Temperature anomaly dataset (per country, yearly series) ----
 export interface TempCountry {
@@ -170,7 +198,7 @@ export interface TempCountry {
   series: YearValue[];
 }
 
-export const tempAnomalyData = tempAnomalyRaw as TempCountry[];
+export const tempAnomalyData = (tempAnomalyRaw as TempCountry[]).filter((r) => isTargetPic(r.name));
 
 // ---- Pacific-wide averages ----
 export const seaLevelPacificAvg = seaLevelPacificAvgRaw as YearValue[];
@@ -178,3 +206,6 @@ export const tempPacificAvg = tempPacificAvgRaw as YearValue[];
 
 // Common years across sea level, GHG, temperature (2016–2023)
 export const CORRELATION_YEARS = Array.from({ length: 8 }, (_, i) => 2016 + i);
+
+export const picCoords = (picCountriesRaw as Array<{ code: string; name: string; lat: number; lon: number }>).filter(p => isTargetPic(p.name));
+

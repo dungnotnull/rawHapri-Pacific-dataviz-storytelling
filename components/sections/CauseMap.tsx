@@ -5,16 +5,14 @@ import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import { GhgCountry, TempCountry } from "@/types";
 import { useDimensions } from "@/hooks/useDimensions";
-import ghgData from "@/data/ghg_per_capita.json";
-import tempData from "@/data/temperature_anomaly.json";
-import picCountries from "@/data/pic_countries.json";
+import ghgRaw from "@/data/ghg_per_capita.json";
+import tempRaw from "@/data/temperature_anomaly.json";
+import picCountriesRaw from "@/data/pic_countries.json";
+import { ghgData, tempAnomalyData, picCoords, seaLevelData } from "@/lib/data";
 import countriesTopo from "@/data/countries-50m.json";
-import seaLevelData from "@/data/sea_level.json";
 
-
-const ghg = ghgData as GhgCountry[];
-const temp = tempData as TempCountry[];
-const picCoords = picCountries as Array<{ code: string; name: string; lat: number; lon: number }>;
+const ghg = ghgData;
+const temp = tempAnomalyData;
 
 type Merged = {
   code: string;

@@ -5,7 +5,7 @@ import * as d3 from "d3";
 import { useDimensions } from "@/hooks/useDimensions";
 import { EmitterContext } from "@/types";
 import emittersContextRaw from "@/data/emitters_context.json";
-import ghgData from "@/data/ghg_per_capita.json";
+import { ghgData } from "@/lib/data";
 import { getFlagClass } from "@/lib/flags";
 import { getCountryCode, isPacificCountry } from "@/lib/countryMapping";
 

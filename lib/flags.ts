@@ -15,6 +15,8 @@ export function getFlagClass(countryCode: string): string {
     "TUV": "tv",
     "VUT": "vu",
     "NCL": "nc",
+    "COK": "ck",
+    "NIU": "nu",
     // Major emitters
     "QA": "qa",
     "KW": "kw",

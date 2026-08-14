@@ -43,23 +43,23 @@ export function ShorelineStrip({ retreat }: { retreat: number }) {
           100% { transform: translate3d(85px, 0, 0); }
         }
         .parallax-waves > use {
-          animation: move-forever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+          animation: move-forever 15s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
         }
         .parallax-waves > use:nth-child(1) {
           animation-delay: -2s;
-          animation-duration: 12s;
+          animation-duration: 7s;
         }
         .parallax-waves > use:nth-child(2) {
-          animation-delay: -5s;
-          animation-duration: 15s;
+          animation-delay: -3s;
+          animation-duration: 10s;
         }
         .parallax-waves > use:nth-child(3) {
-          animation-delay: -7s;
-          animation-duration: 18s;
+          animation-delay: -4s;
+          animation-duration: 13s;
         }
         .parallax-waves > use:nth-child(4) {
-          animation-delay: -1s;
-          animation-duration: 22s;
+          animation-delay: -5s;
+          animation-duration: 20s;
         }
       `}</style>
       
@@ -68,48 +68,44 @@ export function ShorelineStrip({ retreat }: { retreat: number }) {
         className="relative h-[220px] w-full overflow-hidden rounded-xl border border-foam/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
       >
         
-        {/* Dynamic Sky Background */}
+        {/* Dynamic Sky Background - Daytime */}
         <div 
           className="absolute inset-0 transition-colors duration-[1500ms]"
           style={{
             background: retreat > 0.5 
-              ? 'linear-gradient(to bottom, #1e1b4b 0%, #581c87 50%, #9f1239 100%)' // Dramatic, heating sky
-              : 'linear-gradient(to bottom, #0f172a 0%, #1e293b 50%, #0369a1 100%)'  // Normal twilight
+              ? 'linear-gradient(to bottom, #7dd3fc 0%, #38bdf8 50%, #0284c7 100%)' // Bright day sky
+              : 'linear-gradient(to bottom, #bae6fd 0%, #7dd3fc 50%, #0ea5e9 100%)'  // Clear daytime sky
           }}
         />
 
-        {/* Twinkling Stars */}
+        {/* Twinkling Stars - Removed for daytime */}
         <div 
-          className="absolute inset-[-100px] opacity-50 mix-blend-screen"
+          className="absolute inset-[-100px] opacity-0 mix-blend-screen"
           style={{ transform: 'translateY(var(--parallax-slow, 0px))' }}
         >
-          <div className="absolute top-[20%] left-[20%] w-[2px] h-[2px] bg-white rounded-full animate-pulse" />
-          <div className="absolute top-[35%] left-[65%] w-[3px] h-[3px] bg-white rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-[25%] left-[80%] w-[2px] h-[2px] bg-white rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-[45%] left-[30%] w-[2px] h-[2px] bg-white rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-          <div className="absolute top-[22%] left-[45%] w-[1.5px] h-[1.5px] bg-white rounded-full animate-pulse" style={{ animationDelay: '1.5s' }} />
+          {/* Stars hidden */}
         </div>
 
-        {/* The Setting Sun */}
+        {/* The Sun - Daytime */}
         <div 
           className="absolute left-1/2 rounded-full blur-[1px] transition-colors duration-[1500ms] ease-in-out"
           style={{
             width: '64px', height: '64px',
-            top: retreat > 0.5 ? '35%' : '15%',
+            top: retreat > 0.5 ? '25%' : '15%',
             transform: 'translateX(-50%) translateY(var(--parallax-slow, 0px))',
             background: retreat > 0.5 
-              ? 'linear-gradient(to top right, #dc2626, #f97316)' 
-              : 'linear-gradient(to top right, #f59e0b, #fef08a)',
+              ? 'linear-gradient(to top right, #fef08a, #ffffff)' 
+              : 'linear-gradient(to top right, #fde047, #fef08a)',
             boxShadow: retreat > 0.5 
-              ? '0 0 50px #dc2626, 0 0 100px #f97316' 
-              : '0 0 40px #f59e0b, 0 0 80px #fef08a'
+              ? '0 0 50px #fef08a, 0 0 100px #ffffff' 
+              : '0 0 40px #fde047, 0 0 80px #fef08a'
           }}
         />
 
         {/* Island Silhouettes (Layered Depth) */}
         {/* Back Island (Left) */}
         <div 
-          className="absolute bottom-8 left-[5%] right-[40%] h-32 bg-gradient-to-t from-[#0f172a] to-[#334155] opacity-80"
+          className="absolute bottom-8 left-[5%] right-[40%] h-32 bg-gradient-to-t from-[#ca8a04] via-[#16a34a] to-[#15803d] opacity-90"
           style={{ 
             clipPath: 'ellipse(45% 100% at 50% 100%)',
             transform: 'translateY(var(--parallax-med, 0px))'
@@ -117,15 +113,15 @@ export function ShorelineStrip({ retreat }: { retreat: number }) {
         />
         {/* Middle Island (Right) */}
         <div 
-          className="absolute bottom-6 left-[35%] right-[5%] h-26 bg-gradient-to-t from-[#0f172a] to-[#475569] opacity-90"
+          className="absolute bottom-6 left-[35%] right-[5%] h-26 bg-gradient-to-t from-[#ca8a04] via-[#15803d] to-[#166534] opacity-95"
           style={{ 
             clipPath: 'ellipse(45% 100% at 50% 100%)',
             transform: 'translateY(var(--parallax-fast, 0px))'
           }} 
         />
-        {/* Front Island (Main Sand/Land) */}
+        {/* Front Island (Main Grass/Land) */}
         <div 
-          className="absolute bottom-0 left-[-5%] right-[-5%] h-24 bg-gradient-to-t from-[#291404] via-[#59260b] to-[#92400e]"
+          className="absolute bottom-0 left-[-5%] right-[-5%] h-24 bg-gradient-to-t from-[#facc15] via-[#ca8a04] to-[#16a34a]"
           style={{ clipPath: 'ellipse(55% 100% at 50% 100%)' }} 
         />
         
@@ -136,11 +132,11 @@ export function ShorelineStrip({ retreat }: { retreat: number }) {
         >
           {/* Sun reflection on water */}
           <div 
-            className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-32 transition-all duration-[1500ms] opacity-70 blur-sm"
+            className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-32 transition-all duration-[1500ms] opacity-50 blur-sm"
             style={{
               background: retreat > 0.5 
-                ? 'linear-gradient(to right, transparent, rgba(220,38,38,0.5), transparent)' 
-                : 'linear-gradient(to right, transparent, rgba(245,158,11,0.4), transparent)'
+                ? 'linear-gradient(to right, transparent, rgba(254,240,138,0.5), transparent)' 
+                : 'linear-gradient(to right, transparent, rgba(253,224,71,0.4), transparent)'
             }}
           />
 
@@ -160,16 +156,16 @@ export function ShorelineStrip({ retreat }: { retreat: number }) {
                 />
               </defs>
               <g className="parallax-waves">
-                <use href="#gentle-wave" x="48" y="0" fill="rgba(26, 101, 117, 0.4)" />
-                <use href="#gentle-wave" x="48" y="3" fill="rgba(26, 101, 117, 0.6)" />
-                <use href="#gentle-wave" x="48" y="5" fill="rgba(26, 101, 117, 0.8)" />
-                <use href="#gentle-wave" x="48" y="7" fill="rgba(26, 101, 117, 1)" />
+                <use href="#gentle-wave" x="48" y="0" fill="rgba(2, 132, 199, 0.4)" />
+                <use href="#gentle-wave" x="48" y="3" fill="rgba(2, 132, 199, 0.6)" />
+                <use href="#gentle-wave" x="48" y="5" fill="rgba(3, 105, 161, 0.8)" />
+                <use href="#gentle-wave" x="48" y="7" fill="rgba(3, 105, 161, 1)" />
               </g>
             </svg>
           </div>
           
           {/* Main water body */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#04161c] to-[#1a6575]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0c4a6e] to-[#0284c7]" />
         </div>
       </div>
       

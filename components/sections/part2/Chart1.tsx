@@ -3,21 +3,96 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import {
-  cleanWaterData,
-  cleanWaterCountries,
-  cleanWaterYears,
+  cleanWaterFull,
+  indicatorIds,
+  getIndicatorLabel,
   shortName,
+  YearValue,
 } from "@/lib/data";
 import { makePalette } from "@/lib/colors";
 import YearScrubber from "@/components/ui/YearScrubber";
 import Flag from "@/components/ui/Flag";
+import { createPortal } from "react-dom";
 
-const MARGIN = { top: 20, right: 40, bottom: 30, left: 24 };
-const ROW_H = 30;
+const MARGIN = { top: 30, right: 140, bottom: 30, left: 24 };
+const ROW_H = 35;
+
+function ModalChart({ series, years, color }: { series: YearValue[], years: number[], color: string }) {
+  const w = 400;
+  const h = 200;
+  const m = { top: 20, right: 20, bottom: 20, left: 40 };
+  const innerW = w - m.left - m.right;
+  const innerH = h - m.top - m.bottom;
+
+  const xScale = d3.scaleLinear().domain([years[0], years[years.length - 1]]).range([0, innerW]);
+  const yExtent = d3.extent(series, d => d.value) as [number, number] || [0, 100];
+  const padding = (yExtent[1] - yExtent[0]) * 0.1 || 10;
+  const yScale = d3.scaleLinear()
+    .domain([Math.max(0, yExtent[0] - padding), Math.min(100, yExtent[1] + padding)])
+    .range([innerH, 0]);
+
+  const line = d3.line<YearValue>()
+    .x(d => xScale(d.year))
+    .y(d => yScale(d.value))
+    .curve(d3.curveMonotoneX);
+
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="100%">
+      <g transform={`translate(${m.left},${m.top})`}>
+        {/* Axes */}
+        {yScale.ticks(4).map(t => (
+          <g key={t} transform={`translate(0,${yScale(t)})`}>
+            <line x1={0} x2={innerW} stroke="var(--ink-faint)" strokeOpacity={0.2} strokeDasharray="2,2" />
+            <text x={-5} y={4} textAnchor="end" fontSize={10} fill="var(--ink-dim)">{t}%</text>
+          </g>
+        ))}
+        {years.map(y => (
+          <text key={y} x={xScale(y)} y={innerH + 15} textAnchor="middle" fontSize={10} fill="var(--ink-dim)">{y}</text>
+        ))}
+        {/* Line */}
+        <path d={line(series) || ""} fill="none" stroke={color} strokeWidth={2.5} />
+        {/* Points */}
+        {series.map(s => (
+          <circle key={s.year} cx={xScale(s.year)} cy={yScale(s.value)} r={4} fill={color} />
+        ))}
+      </g>
+    </svg>
+  );
+}
 
 export default function Part2Chart1() {
-  const palette = useMemo(() => makePalette(cleanWaterCountries), []);
-  const [year, setYear] = useState(cleanWaterYears[cleanWaterYears.length - 1]);
+  // Use a stable palette across all countries
+  const allCountries = useMemo(() => {
+    const set = new Set<string>();
+    for (const id of indicatorIds) {
+      Object.keys(cleanWaterFull[id].countries).forEach(c => set.add(c));
+    }
+    return Array.from(set).sort();
+  }, []);
+  const palette = useMemo(() => makePalette(allCountries), [allCountries]);
+
+  const [activeIndicator, setActiveIndicator] = useState(indicatorIds[0]);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+
+  // Block body scroll when modal is open
+  useEffect(() => {
+    if (selectedCountry) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => { document.body.style.overflow = ""; };
+  }, [selectedCountry]);
+
+  const indicatorDef = cleanWaterFull[activeIndicator];
+  const activeCountries = useMemo(() => Object.keys(indicatorDef.countries).sort(), [indicatorDef]);
+  const activeYears = indicatorDef.years;
+
+  const [year, setYear] = useState(activeYears[activeYears.length - 1]);
+  // Ensure year is valid for new indicator
+  useEffect(() => {
+    if (!activeYears.includes(year)) {
+      setYear(activeYears[activeYears.length - 1]);
+    }
+  }, [activeIndicator, activeYears, year]);
+
   const [hover, setHover] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(900);
@@ -33,19 +108,26 @@ export default function Part2Chart1() {
   // rank table: rankByYear[year] = ordered list of country names (rank 0 = best)
   const rankByYear = useMemo(() => {
     const table: Record<number, string[]> = {};
-    for (const yr of cleanWaterYears) {
-      const withVal = cleanWaterCountries
+    for (const yr of activeYears) {
+      const withVal = activeCountries
         .map((name) => {
-          const pt = cleanWaterData[name].total.find((s) => s.year === yr);
-          return { name, value: pt ? pt.value : -Infinity };
+          const pt = indicatorDef.countries[name].total.find((s) => s.year === yr);
+          return { name, value: pt ? pt.value : undefined };
         })
-        .sort((a, b) => b.value - a.value);
+        .map(d => ({
+          name: d.name,
+          value: d.value ?? (indicatorDef.polarity === "good" ? -Infinity : Infinity)
+        }))
+        .sort((a, b) => {
+          if (indicatorDef.polarity === "good") return b.value - a.value;
+          return a.value - b.value;
+        });
       table[yr] = withVal.map((d) => d.name);
     }
     return table;
-  }, []);
+  }, [activeIndicator, activeCountries, activeYears, indicatorDef.polarity]);
 
-  const n = cleanWaterCountries.length;
+  const n = activeCountries.length;
   const height = n * ROW_H + MARGIN.top + MARGIN.bottom;
   const innerW = Math.max(width - MARGIN.left - MARGIN.right, 200);
   const innerH = n * ROW_H;
@@ -54,45 +136,63 @@ export default function Part2Chart1() {
     () =>
       d3
         .scalePoint<number>()
-        .domain(cleanWaterYears)
+        .domain(activeYears)
         .range([0, innerW])
         .padding(0.5),
-    [innerW]
+    [innerW, activeYears]
   );
 
-  const yearIdx = cleanWaterYears.indexOf(year);
+  const yearIdx = activeYears.indexOf(year);
 
   const rankOf = (name: string, yr: number) => rankByYear[yr].indexOf(name);
-
-  const valueOf = (name: string, yr: number) =>
-    cleanWaterData[name].total.find((s) => s.year === yr)?.value;
+  const valueOf = (name: string, yr: number) => indicatorDef.countries[name].total.find((s) => s.year === yr)?.value;
 
   return (
     <section id="part2-chart1" className="relative bg-foam px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
         <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
-          Drinking water ranking, by year &amp; country
+          Clean Water &amp; Sanitation Rankings
         </h1>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-          Ranking of population with safely managed drinking water,{" "}
-          {cleanWaterYears[0]}–{cleanWaterYears[cleanWaterYears.length - 1]}. Rank 1 (top) is the country with highest access rate. Connecting
-          lines show position changes across years.
+          Select an indicator below to view the ranking of Pacific countries over time. 
+          Rank 1 (top) is the best performing country. Connecting lines show position changes. 
+          Click on a country to view its detailed trend.
         </p>
 
-        <div className="mt-8 grid lg:grid-cols-[1fr_70px_260px] gap-4 items-start">
+        {/* Indicator Selection Buttons */}
+        <div className="mt-6 inline-flex flex-wrap gap-1.5 p-1.5 bg-ink/5 rounded-2xl items-center border border-ink/10">
+          {indicatorIds.map(id => {
+            const isActive = activeIndicator === id;
+            return (
+              <button
+                key={id}
+                onClick={() => setActiveIndicator(id)}
+                className={`cursor-pointer px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 focus:outline-none ${
+                  isActive 
+                    ? "bg-white text-coral shadow-sm ring-1 ring-black/5" 
+                    : "text-ink-dim hover:text-ink hover:bg-black/5"
+                }`}
+              >
+                {getIndicatorLabel(cleanWaterFull[id].label)}
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="mt-10 grid lg:grid-cols-[1fr_70px] gap-8 items-start">
           {/* Chart */}
-          <div ref={containerRef} className="chart-paper rounded-lg p-3 sm:p-5">
-            <svg width="100%" height={height} viewBox="40 0 860 500" preserveAspectRatio="xMidYMid meet">
+          <div ref={containerRef} className="chart-paper rounded-xl p-4 sm:p-6 shadow-sm border border-ink/5">
+            <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
               <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
                 {/* year axis labels */}
-                {cleanWaterYears.map((yr) => (
+                {activeYears.map((yr) => (
                   <text
                     key={yr}
                     x={xYear(yr)}
-                    y={-6}
+                    y={-12}
                     textAnchor="middle"
                     fill={yr === year ? "var(--gold)" : "var(--ink-faint)"}
-                    fontSize={10}
+                    fontSize={11}
                     fontFamily="var(--font-mono)"
                     fontWeight={yr === year ? 600 : 400}
                   >
@@ -103,19 +203,20 @@ export default function Part2Chart1() {
                 <line
                   x1={xYear(year)}
                   x2={xYear(year)}
-                  y1={0}
-                  y2={innerH}
+                  y1={-5}
+                  y2={innerH + 10}
                   stroke="var(--gold)"
-                  strokeDasharray="3,4"
-                  opacity={0.5}
+                  strokeDasharray="4,4"
+                  opacity={0.3}
                 />
 
                 {/* rank lines, only through elapsed years */}
-                {cleanWaterCountries.map((name) => {
+                {activeCountries.map((name) => {
                   const isHover = hover === name;
-                  const pastYears = cleanWaterYears.slice(0, yearIdx + 1);
+                  const pastYears = activeYears.slice(0, Math.max(1, yearIdx + 1));
                   const pathD = d3
                     .line<number>()
+                    .defined((yr) => valueOf(name, yr) !== undefined)
                     .x((yr) => xYear(yr) ?? 0)
                     .y((yr) => rankOf(name, yr) * ROW_H + ROW_H / 2)
                     .curve(d3.curveMonotoneX)(pastYears);
@@ -125,20 +226,26 @@ export default function Part2Chart1() {
                       d={pathD ?? ""}
                       fill="none"
                       stroke={palette.get(name)}
-                      strokeWidth={isHover ? 3.5 : 2}
-                      opacity={isHover ? 1 : hover ? 0.15 : 0.75}
-                      style={{ transition: "opacity 180ms" }}
+                      strokeWidth={isHover ? 4 : 2}
+                      opacity={isHover ? 1 : hover ? 0.05 : 0.6}
+                      style={{ transition: "opacity 200ms ease, stroke-width 200ms ease" }}
                       onMouseEnter={() => setHover(name)}
                       onMouseLeave={() => setHover(null)}
+                      onClick={() => setSelectedCountry(name)}
+                      className="cursor-pointer"
                     />
                   );
                 })}
 
                 {/* nodes at current year */}
-                {cleanWaterCountries.map((name) => {
+                {activeCountries.map((name) => {
                   const rank = rankOf(name, year);
                   const val = valueOf(name, year);
                   const isHover = hover === name;
+                  
+                  // Don't render node if they have no data for this year
+                  if (val === undefined) return null;
+
                   return (
                     <g
                       key={name}
@@ -146,27 +253,29 @@ export default function Part2Chart1() {
                       style={{ transition: "transform 550ms cubic-bezier(.4,0,.2,1)" }}
                       onMouseEnter={() => setHover(name)}
                       onMouseLeave={() => setHover(null)}
+                      onClick={() => setSelectedCountry(name)}
+                      className="cursor-pointer"
                     >
                       <circle
                         r={isHover ? 7 : 5}
                         fill={palette.get(name)}
                         stroke="var(--paper-raised)"
                         strokeWidth={1.5}
-                        style={{ cursor: "pointer" }}
                       />
+                      <rect x={10} y={-10} width={120} height={20} fill="transparent" />
                       <text
-                        x={14}
+                        x={16}
                         y={4}
-                        fontSize={11}
+                        fontSize={12}
                         fontFamily="var(--font-mono)"
-                        fill="var(--ink)"
+                        fill={isHover ? "var(--ink)" : "var(--ink-dim)"}
+                        fontWeight={isHover ? 600 : 400}
+                        style={{ transition: "all 200ms ease" }}
                       >
                         {shortName(name)}
-                        {val !== undefined && (
-                          <tspan fill="var(--gold)" dx={6}>
-                            {val.toFixed(1)}%
-                          </tspan>
-                        )}
+                        <tspan fill={isHover ? "var(--coral)" : "var(--gold)"} dx={8} fontWeight={600}>
+                          {val.toFixed(1)}%
+                        </tspan>
                       </text>
                     </g>
                   );
@@ -175,49 +284,77 @@ export default function Part2Chart1() {
             </svg>
           </div>
 
-          {/* Vertical YearScrubber (desktop only) */}
-          <div className="hidden lg:block">
+          {/* Vertical YearScrubber */}
+          <div className="hidden lg:flex flex-col items-center">
             <YearScrubber
-              years={cleanWaterYears}
+              years={activeYears}
               year={year}
               onChange={setYear}
-              speedMs={1000}
+              speedMs={1200}
               variant="vertical"
             />
           </div>
 
-          {/* Country picker */}
-          <div className="chart-paper rounded-lg p-4 h-fit sticky top-24">
-            <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-faint block mb-3">
-              Countries
-            </span>
-            <div className="max-h-[220px] lg:max-h-[500px] overflow-y-auto pr-1 flex flex-col gap-0.5">
-              {cleanWaterCountries.map((name) => (
-                <button
-                  key={name}
-                  onMouseEnter={() => setHover(name)}
-                  onMouseLeave={() => setHover(null)}
-                  className="flex items-center gap-2 px-2 py-1 rounded text-left hover:bg-paper-raised-2 transition-colors"
-                >
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
-                    style={{ background: palette.get(name) }}
-                  />
-                  <Flag iso2={cleanWaterData[name].iso2} className="w-4 h-3 shrink-0" />
-                  <span className="font-mono text-[11px] text-ink truncate">
-                    {shortName(name)}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Horizontal YearScrubber (mobile only) */}
           <div className="lg:hidden col-span-full">
-            <YearScrubber years={cleanWaterYears} year={year} onChange={setYear} speedMs={1000} />
+            <YearScrubber years={activeYears} year={year} onChange={setYear} speedMs={1200} />
           </div>
         </div>
       </div>
+
+      {/* Modal Overlay */}
+      {selectedCountry && typeof document !== "undefined" && createPortal(
+        <div 
+          className="fixed inset-0 z-[100] overflow-y-auto bg-black/50 px-4 py-6 sm:px-6 transition-opacity"
+          style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setSelectedCountry(null)}
+        >
+          <div 
+            className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-ink/10 bg-foam p-6 shadow-2xl transform transition-transform" 
+            style={{ position: "relative", zIndex: 1001, margin: "auto", maxWidth: "32rem" }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-2xl font-display text-ink flex items-center gap-3">
+                  <Flag iso2={indicatorDef.countries[selectedCountry].iso2} className="w-8 h-6 rounded-sm shadow-sm" />
+                  {selectedCountry}
+                </h3>
+                <p className="text-sm text-ink-dim mt-2 font-medium">
+                  {getIndicatorLabel(indicatorDef.label)} (2016 - 2024)
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedCountry(null)}
+                className="rounded-full p-2 text-ink/60 hover:bg-ink/5"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="h-[250px] mt-4">
+              <ModalChart 
+                series={indicatorDef.countries[selectedCountry].total} 
+                years={indicatorDef.years} 
+                color={palette.get(selectedCountry) || "var(--coral)"} 
+              />
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }

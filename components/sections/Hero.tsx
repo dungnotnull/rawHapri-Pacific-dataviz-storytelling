@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 
-import { SeaLevelScrolly } from "@/components/charts/SeaLevelScrolly";
 import { ShorelineStrip } from "@/components/charts/ShorelineStrip";
 import { SourceNote } from "@/components/ui/SourceNote";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
@@ -39,51 +38,44 @@ export function Hero() {
           <div>
             <ScrollReveal animation="fade-down" delay={200}>
               <p className="eyebrow text-coral-soft">
-                A Pacific climate story 
+                xxxxxx
               </p>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={400}>
               <h1 className="mt-5 max-w-2xl font-display text-[clamp(2.4rem,6vw,4.75rem)] font-medium leading-[1.05] tracking-tight">
-                The tide that keeps rising has already been paid for -
-                <span className="italic text-lagoon-soft"> just not by the people it's rising on.</span>
+                xxxxxx
+                <span className="italic text-lagoon-soft"> xxxxxx</span>
               </h1>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={600}>
               <p className="prose-col mt-7 text-lg text-foam/70">
-                Twenty-one Pacific Island countries and territories report their
-                sea levels every year. Almost none of them produce the emissions
-                driving the rise.
+                xxxxxx
+              </p>
+              <p className="mt-4 text-sm font-medium text-foam/80">
+                created by team: Hong Ngoc, Minh Thu, Hoang Lan, Hoang Dung
               </p>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={800}>
               <div className="mt-14 flex items-center gap-3 text-foam/50">
-                <span className="eyebrow">Scroll</span>
+                <span className="eyebrow">xxxxxx</span>
                 <span className="h-8 w-px animate-pulse bg-foam/30" />
               </div>
             </ScrollReveal>
           </div>
 
-          {/* Hero Image */}
+          {/* Hero Visual */}
           <ScrollReveal animation="fade-left" delay={600}>
             <div className="relative overflow-hidden rounded-2xl shadow-2xl border border-foam/10">
-              <img
-                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Pacific Island coastline showing the delicate relationship between land and rising seas"
-                className="h-64 w-full object-cover md:h-80 lg:h-96"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent p-5">
-                <p className="text-sm font-medium text-foam">Rising seas, rising costs</p>
-                <p className="text-xs text-foam/80 mt-1">Pacific coastlines bear the brunt of climate change</p>
-              </div>
+              <ShorelineStrip retreat={1} />
             </div>
           </ScrollReveal>
         </div>
       </div>
 
       {/* ---- scrollytelling: sea level + shoreline ---- */}
+      {/*
       <div ref={containerRef} className="relative mx-auto max-w-6xl px-6 md:px-16">
         <div className="grid gap-10 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] items-start">
-          {/* text steps */}
           <div className="relative">
             {STEPS.map((s, i) => (
               <div
@@ -99,7 +91,6 @@ export function Hero() {
             ))}
           </div>
 
-          {/* sticky visual */}
           <div className="relative h-full">
             <div className="sticky top-0 flex h-screen flex-col justify-center gap-6 py-8">
               <div className="h-[54vh] w-full overflow-hidden">
@@ -110,8 +101,10 @@ export function Hero() {
           </div>
         </div>
       </div>
+      */}
 
       {/* ---- Shoreline strip simulate ---- */}
+      {/*
       <div className="relative mx-auto max-w-6xl px-6 pb-20 md:px-16">
       <ShorelineStrip retreat={step >= 1 ? 1 : 0} />
               <SourceNote className="text-white text-xs">
@@ -119,6 +112,7 @@ export function Hero() {
                 <span>Line shows unweighted average across 21 PICTs; Tuvalu shown individually.</span>
               </SourceNote>
       </div>
+      */}
 
       {/* ---- closing quote ---- */}
       <div className="relative mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-6 py-24 text-center md:px-16">
@@ -126,12 +120,10 @@ export function Hero() {
           <path d="M0 20V11.5C0 5.15 4.5 0.9 11 0L11.8 3.1C7.8 4 5.6 6.7 5.3 10.2H10V20H0ZM16.2 20V11.5C16.2 5.15 20.7 0.9 27.2 0L28 3.1C24 4 21.8 6.7 21.5 10.2H26.2V20H16.2Z" fill="currentColor"/>
         </svg>
         <p className="font-display text-2xl italic leading-relaxed text-foam md:text-3xl animate-on-scroll animate-fade-up is-visible">
-          The sea keeps us alive, but at the same time, it slowly devours us.
-          It devours our memories and our culture bit by bit. And that
-          scares me.
+          xxxxxx
         </p>
         <ScrollReveal animation="fade-up" delay={600}>
-          <p className="eyebrow mt-6 text-foam/45">— a voice from the Pacific</p>
+          <p className="eyebrow mt-6 text-foam/45">xxxxxx</p>
         </ScrollReveal>
       </div>
     </section>
