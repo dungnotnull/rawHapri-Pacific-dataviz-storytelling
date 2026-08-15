@@ -212,7 +212,7 @@ This project is developed for the Pacific Dataviz Challenge. Data sources retain
 
 ## Contact
 
-For questions about this entry, please contact [your-email@example.com] or open an issue on GitHub.
+For questions about this entry, please contact me or open an issue on GitHub.
 
 ---
 
