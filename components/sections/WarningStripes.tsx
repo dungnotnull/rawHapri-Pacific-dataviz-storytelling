@@ -6,8 +6,12 @@ import { YearValue } from "@/types";
 import { useDimensions } from "@/hooks/useDimensions";
 import tempAvg from "@/data/temperature_pacific_avg.json";
 
+import { ghgLatestYear } from "@/lib/data";
+
 const rawData = tempAvg as YearValue[];
-const data = rawData.filter((d) => d.year >= 2016 && d.year <= 2023);
+// Match the Map's MIN_YEAR and MAX_YEAR
+const MIN_YEAR = 1990;
+const data = rawData.filter((d) => d.year >= MIN_YEAR && d.year <= ghgLatestYear);
 
 export function WarmingStripes() {
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -26,9 +30,10 @@ export function WarmingStripes() {
       .padding(0);
 
     const extent = d3.extent(data, (d) => d.value) as [number, number];
+    // Use same fixed symmetrical domain as CauseMap for absolute consistency
     const color = d3
-      .scaleSequential(d3.interpolateRgbBasis(["#2c7a79", "#eef2ee", "#d99a3d", "#e2603d"]))
-      .domain(extent);
+      .scaleSequential(d3.interpolateRgbBasis(["#2c7a79", "#bcd8d3", "#d99a3d", "#e2603d"]))
+      .domain([-1.2, 1.2]);
 
     svg
       .selectAll("rect")
@@ -38,7 +43,9 @@ export function WarmingStripes() {
       .attr("y", 0)
       .attr("width", Math.max(1, x.bandwidth()))
       .attr("height", height)
-      .attr("fill", (d) => color(d.value));
+      .attr("fill", (d) => color(d.value))
+      .append("title")
+      .text((d) => `${d.year}: ${d.value > 0 ? "+" : ""}${d.value.toFixed(2)}°C`);
   }, [width, height]);
 
   const first = data[0];
@@ -46,6 +53,14 @@ export function WarmingStripes() {
 
   return (
     <div className="w-full">
+      <div className="mb-2 flex items-center justify-between text-xs text-ink/60">
+        <span className="flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-[#2c7a79]"></span> Cooler
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-[#d99a3d]"></span> Warmer
+        </span>
+      </div>
       <div ref={wrapRef} className="h-14 w-full overflow-hidden rounded-sm">
         <svg ref={svgRef} width={width} height={56} />
       </div>

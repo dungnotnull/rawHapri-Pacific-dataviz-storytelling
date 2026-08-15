@@ -25,7 +25,7 @@ type Merged = {
   isOutlier: boolean;
 };
 
-const OUTLIERS = new Set(["PW", "NC"]);
+const OUTLIERS = new Set(["PW"]); // Palau had unusually high historical data
 
 // Merge GHG data with accurate PIC coordinates
 const merged: Merged[] = ghg.map((g) => {
@@ -37,8 +37,10 @@ const merged: Merged[] = ghg.map((g) => {
   const lon = picCoord?.lon ?? g.lon;
   const name = picCoord?.name ?? g.name;
 
-  const slName = name === 'Micronesia' ? 'Micronesia, Federated State of' : name;
-  const sl = (seaLevelData as any)[slName];
+  const slName = name === 'Micronesia' || name === 'Federated States of Micronesia' 
+    ? 'Micronesia, Federated State of' 
+    : name === 'Republic of Marshall Islands' ? 'Marshall Islands' : name;
+  const sl = (seaLevelData as any)[slName] ?? (seaLevelData as any)[name];
   const latestSl = sl && sl.series && sl.series.length > 0 ? sl.series[sl.series.length - 1].value : null;
 
   return {
@@ -88,8 +90,10 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
       }
 
       let slValue = null;
-      const slName = g?.name === 'Micronesia' ? 'Micronesia, Federated State of' : g?.name;
-      const sl = slName ? (seaLevelData as any)[slName] : null;
+      const slName = g?.name === 'Micronesia' || g?.name === 'Federated States of Micronesia' 
+        ? 'Micronesia, Federated State of' 
+        : g?.name === 'Republic of Marshall Islands' ? 'Marshall Islands' : (g?.name ?? '');
+      const sl = slName ? ((seaLevelData as any)[slName] ?? (seaLevelData as any)[g?.name ?? '']) : null;
       if (sl && sl.series) {
         // Find closest year or exact year
         const slData = sl.series.find((s: any) => s.year === year);
@@ -153,17 +157,18 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
       .attr("stroke", "rgba(142,161,157,0.28)")
       .attr("stroke-width", 0.6);
 
-    const rMax = width < 480 ? 20 : 30;
+    const rMax = width < 480 ? 20 : 32;
     const radius = d3
       .scaleSqrt()
-      .domain([0, d3.max(yearMerged, (d) => Math.min(d.ghg, 20))!])
+      .domain([0, d3.max(yearMerged, (d) => d.ghg) ?? 10])
       .range([4, rMax])
       .clamp(true);
 
-    const tempExtent = d3.extent(yearMerged, (d) => d.tempAnomaly ?? 0) as [number, number];
+    // Symmetrical fixed domain (-1.2 to 1.2) so cool is always teal and warm is always red
+    // 1.2 is roughly the max temp anomaly in the dataset
     const color = d3
       .scaleSequential(d3.interpolateRgbBasis(["#2c7a79", "#bcd8d3", "#d99a3d", "#e2603d"]))
-      .domain(tempExtent);
+      .domain([-1.2, 1.2]);
 
     const gMarks = svg.append("g").attr("class", "marks");
 
@@ -257,9 +262,9 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
             <p className="text-ink/50">{selectedYear}</p>
           </div>
           <p className="stat-figure mt-1 text-ink/70">
-            {tooltip.d.ghg.toFixed(1)} t CO₂/capita
+            {tooltip.d.ghg.toFixed(3)} MtCO₂e
             {tooltip.d.isOutlier && (
-              <span className="ml-1 text-gold">· outlier - see note</span>
+              <span className="ml-1 text-gold">· see note</span>
             )}
           </p>
           {tooltip.d.tempAnomaly !== null && (

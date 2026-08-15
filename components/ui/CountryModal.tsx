@@ -27,8 +27,10 @@ export function CountryModal({
   const countryTemp = temp.find((c) => c.code === countryCode);
   const countryPic = picCoords.find((p) => p.code === countryCode);
 
-  const slName = countryName === 'Micronesia' ? 'Micronesia, Federated State of' : countryName;
-  const countrySl = (seaLevelData as any)[slName];
+  const slName = countryName === 'Micronesia' || countryName === 'Federated States of Micronesia'
+    ? 'Micronesia, Federated State of'
+    : countryName === 'Republic of Marshall Islands' ? 'Marshall Islands' : countryName;
+  const countrySl = (seaLevelData as any)[slName] ?? (seaLevelData as any)[countryName];
   const latestSl = countrySl && countrySl.series && countrySl.series.length > 0
     ? countrySl.series[countrySl.series.length - 1]
     : null;
@@ -118,12 +120,12 @@ export function CountryModal({
         {/* Current Stats */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="rounded-xl border border-ink/8 bg-white/40 p-4">
-            <p className="eyebrow text-ink/60">CO₂ per capita (Latest)</p>
+            <p className="eyebrow text-ink/60">GHG Total (Latest)</p>
             <p className="mt-2 font-display text-3xl font-medium text-coral">
               {countryGhg?.latest_value
-                ? countryGhg.latest_value.toFixed(2)
+                ? countryGhg.latest_value.toFixed(3)
                 : "N/A"}
-              <span className="ml-1 text-lg text-ink/50">t</span>
+              <span className="ml-1 text-lg text-ink/50">MtCO₂e</span>
             </p>
             <p className="mt-1 text-xs text-ink/50">
               Data from {countryGhg?.latest_year || "N/A"}
@@ -159,7 +161,7 @@ export function CountryModal({
         {/* Historical Chart - Combined */}
         <div className="mt-6">
           <p className="mb-2 text-sm font-medium text-ink/70">
-            CO₂, Temperature & Sea Level (2016–2023)
+            GHG, Temperature & Sea Level (1990–latest)
           </p>
           <CombinedChart countryCode={countryCode} />
         </div>
@@ -167,8 +169,8 @@ export function CountryModal({
         {/* Info */}
         <div className="mt-6 rounded-xl border border-ink/8 bg-white/40 p-4">
           <p className="text-sm text-ink/70">
-            <strong>Data sources:</strong> Pacific Data Hub GHG and temperature
-            indicators. CO₂ emissions shown in tonnes per capita per year.
+            <strong>Data sources:</strong> Pacific Data Hub GHG (total_ghg, MtCO₂e) and temperature
+            indicators. GHG shown as total national emissions in million tonnes CO₂ equivalent.
             Temperature anomaly shown as deviation from baseline period.
           </p>
         </div>
@@ -203,14 +205,20 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // X scale - years from 2016 to 2023
-    const x = d3.scaleLinear().domain([2016, 2023]).range([0, w]);
+    // X scale - years from 1990 to latest available (dynamic)
+    const ghgYears = countryGhg?.series?.map((d) => d.year) ?? [];
+    const tempYears = countryTemp?.series?.map((d) => d.year) ?? [];
+    const slYears = countrySl?.series?.map((d: any) => d.year) ?? [];
+    const allXYears = [...ghgYears, ...tempYears, ...slYears];
+    const xMin = allXYears.length > 0 ? Math.max(1990, Math.min(...allXYears)) : 1990;
+    const xMax = allXYears.length > 0 ? Math.max(...allXYears) : 2024;
+    const x = d3.scaleLinear().domain([xMin, xMax]).range([0, w]);
 
-    // Left Y scale - CO2 (0 to max)
+    // Left Y scale - GHG total (0 to max MtCO2e)
     const maxGhg =
       countryGhg && countryGhg.series
-        ? d3.max(countryGhg.series, (d) => d.value)! * 1.1
-        : 20;
+        ? d3.max(countryGhg.series.filter((d) => d.year >= xMin), (d) => d.value)! * 1.1
+        : 1;
     const yGhg = d3.scaleLinear().domain([0, maxGhg]).range([h, 0]);
 
     // Right Y scale - Temperature (min to max)
@@ -246,8 +254,9 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       .attr("stroke", "rgba(14,42,44,0.08)")
       .attr("stroke-width", 1);
 
-    // Draw CO2 line
+    // Draw GHG total line
     if (countryGhg && countryGhg.series && countryGhg.series.length > 0) {
+      const filteredGhg = countryGhg.series.filter((d) => d.year >= xMin);
       const ghgLine = d3
         .line<(typeof countryGhg.series)[0]>()
         .x((d) => x(d.year))
@@ -255,14 +264,14 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
         .curve(d3.curveMonotoneX);
 
       g.append("path")
-        .datum(countryGhg.series)
+        .datum(filteredGhg)
         .attr("d", ghgLine)
         .attr("fill", "none")
         .attr("stroke", "var(--coral)")
         .attr("stroke-width", 2.5);
 
-      // CO2 dot at latest year
-      const lastGhg = countryGhg.series[countryGhg.series.length - 1];
+      // GHG dot at latest year
+      const lastGhg = filteredGhg[filteredGhg.length - 1];
       if (lastGhg) {
         g.append("circle")
           .attr("cx", x(lastGhg.year))
@@ -274,26 +283,27 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       }
     }
 
-    // Draw Temperature line
-    if (countryTemp && countryTemp.decades && countryTemp.decades.length > 0) {
+    // Draw Temperature line (using yearly series filtered from xMin)
+    if (countryTemp && countryTemp.series && countryTemp.series.length > 0) {
+      const filteredTemp = countryTemp.series.filter((d) => d.year >= xMin);
       const tempLine = d3
-        .line<(typeof countryTemp.decades)[0]>()
-        .x((d) => x(d.decade))
+        .line<(typeof countryTemp.series)[0]>()
+        .x((d) => x(d.year))
         .y((d) => yTemp(d.value))
         .curve(d3.curveMonotoneX);
 
       g.append("path")
-        .datum(countryTemp.decades)
+        .datum(filteredTemp)
         .attr("d", tempLine)
         .attr("fill", "none")
         .attr("stroke", "var(--lagoon)")
-        .attr("stroke-width", 2.5);
+        .attr("stroke-width", 2);
 
-      // Temp dot at latest decade
-      const lastTemp = countryTemp.decades[countryTemp.decades.length - 1];
+      // Temp dot at latest year
+      const lastTemp = filteredTemp[filteredTemp.length - 1];
       if (lastTemp) {
         g.append("circle")
-          .attr("cx", x(lastTemp.decade))
+          .attr("cx", x(lastTemp.year))
           .attr("cy", yTemp(lastTemp.value))
           .attr("r", 4)
           .attr("fill", "var(--lagoon)")
@@ -302,15 +312,16 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       }
     }
 
-    // Draw Sea Level line
+    // Draw Sea Level line (filter from xMin)
     if (countrySl && countrySl.series && countrySl.series.length > 0) {
+      const filteredSl = countrySl.series.filter((d: any) => d.year >= xMin);
       const slLine = d3
         .line<(typeof countrySl.series)[0]>()
         .x((d) => x(d.year))
         .y((d) => ySl(d.value))
         .curve(d3.curveMonotoneX);
 
-      // Add a subtle area under the sea level line
+      // Area under sea level line
       const slArea = d3
         .area<(typeof countrySl.series)[0]>()
         .x((d) => x(d.year))
@@ -319,20 +330,20 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
         .curve(d3.curveMonotoneX);
 
       g.append("path")
-        .datum(countrySl.series)
+        .datum(filteredSl)
         .attr("d", slArea)
         .attr("fill", "#3b82f6")
         .attr("fill-opacity", 0.1);
 
       g.append("path")
-        .datum(countrySl.series)
+        .datum(filteredSl)
         .attr("d", slLine)
         .attr("fill", "none")
         .attr("stroke", "#3b82f6")
         .attr("stroke-width", 2);
 
       // Sea Level dot at latest year
-      const lastSl = countrySl.series[countrySl.series.length - 1];
+      const lastSl = filteredSl[filteredSl.length - 1];
       if (lastSl) {
         g.append("circle")
           .attr("cx", x(lastSl.year))
@@ -380,7 +391,7 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       .attr("text-anchor", "middle")
       .attr("font-size", 11)
       .attr("fill", "var(--coral)")
-      .text("CO₂ per capita (t)");
+      .text("GHG (MtCO₂e)");
 
     g.append("text")
       .attr("transform", "rotate(-90)")

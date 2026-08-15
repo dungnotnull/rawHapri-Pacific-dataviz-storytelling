@@ -13,8 +13,10 @@ import CorrelationBubble from "@/components/sections/part1/CorrelationBubble";
 
 const MARKS = [
   { id: "closing", label: "closing" },
-  { id: "result", label: "result" },
-  { id: "cause", label: "cause" },
+  { id: "indicators", label: "indicators" },
+  { id: "part2-chart1", label: "water rankings" },
+  { id: "cause", label: "emissions" },
+  { id: "part1-chart2", label: "sea level" },
   { id: "intro", label: "intro" },
 ];
 

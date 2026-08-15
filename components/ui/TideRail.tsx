@@ -7,8 +7,10 @@ type TideMark = { id: string; label: string };
 // Section background colors used to determine the most readable contrast color automatically
 const sectionBackgrounds: Record<string, string> = {
   intro: "#0a1e28",
+  "part1-chart2": "#eef2ee",
   cause: "#eef2ee",
-  result: "#123842",
+  "part2-chart1": "#eef2ee",
+  indicators: "#eef2ee",
   closing: "#0a1e28",
 };
 
@@ -140,9 +142,6 @@ export function TideRail({ marks }: { marks: TideMark[] }) {
             style={markStyle}
           >
             <span className="tide-rail-tick h-0.75 w-2.25" />
-            <span className="tide-rail-label eyebrow whitespace-nowrap [writing-mode:vertical-rl]">
-              {p.label}
-            </span>
           </div>
         );
       })}

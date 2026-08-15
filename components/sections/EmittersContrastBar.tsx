@@ -3,37 +3,7 @@
 import { useEffect, useRef, useMemo } from "react";
 import * as d3 from "d3";
 import { useDimensions } from "@/hooks/useDimensions";
-import { EmitterContext } from "@/types";
-import emittersContextRaw from "@/data/emitters_context.json";
-import { ghgData } from "@/lib/data";
-import { getFlagClass } from "@/lib/flags";
-import { getCountryCode, isPacificCountry } from "@/lib/countryMapping";
-
-const ghg = ghgData as any[];
-
-// Combine major emitters and Pacific countries for comparison
-const getEmittersData = (year: number) => {
-  const pacificCountries = ghg.map((g: any) => {
-    let value = g.latest_value;
-
-    // Try to get year-specific data
-    if (g.series) {
-      const yearData = g.series.find((s: any) => s.year === year);
-      if (yearData) {
-        value = yearData.value;
-      }
-    }
-
-    return {
-      label: g.name,
-      value: value,
-      group: "pacific",
-      note: ""
-    };
-  });
-
-  return pacificCountries as EmitterContext[];
-};
+import { ghgData, tempAnomalyData } from "@/lib/data";
 
 interface EmittersContrastBarProps {
   active: boolean;
@@ -44,27 +14,72 @@ interface EmittersContrastBarProps {
 export function EmittersContrastBar({ active, onCountryClick, selectedYear = 2024 }: EmittersContrastBarProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const { width, height } = useDimensions(wrapRef);
+  const { width } = useDimensions(wrapRef);
 
-  // Get data for selected year
+  // Build merged GHG + Temp data for selected year, sorted DESC by GHG
   const data = useMemo(() => {
-    return getEmittersData(selectedYear).sort((a, b) => a.value - b.value);
+    return ghgData
+      .map((g) => {
+        // Get GHG value for selected year (fallback to latest)
+        let ghgValue = g.latest_value;
+        if (g.series) {
+          const pt = g.series.find((s) => s.year === selectedYear);
+          if (pt) ghgValue = pt.value;
+          else {
+            // Nearest year fallback
+            const nearest = g.series.reduce((prev, curr) =>
+              Math.abs(curr.year - selectedYear) < Math.abs(prev.year - selectedYear) ? curr : prev
+            );
+            ghgValue = nearest.value;
+          }
+        }
+
+        // Get Temp value for selected year
+        const t = tempAnomalyData.find((tc) => tc.code === g.code);
+        let tempValue: number | null = null;
+        if (t && t.series) {
+          const pt = t.series.find((s) => s.year === selectedYear);
+          if (pt) tempValue = pt.value;
+          else if (t.series.length > 0) {
+            const nearest = t.series.reduce((prev, curr) =>
+              Math.abs(curr.year - selectedYear) < Math.abs(prev.year - selectedYear) ? curr : prev
+            );
+            tempValue = nearest.value;
+          }
+        }
+
+        return {
+          code: g.code,
+          name: g.name,
+          ghg: ghgValue,
+          temp: tempValue,
+        };
+      })
+      .sort((a, b) => b.ghg - a.ghg); // Sort DESC by GHG
   }, [selectedYear]);
 
   useEffect(() => {
-    if (!svgRef.current || width === 0) return;
+    if (!svgRef.current || width === 0 || data.length === 0) return;
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const margin = { top: 4, right: 46, bottom: 4, left: 190 };
+    const margin = { top: 8, right: 56, bottom: 4, left: 164 };
     const w = width - margin.left - margin.right;
-    const barH = 24;
-    const gap = 10;
+    const barH = 16;
+    const tempBarH = 12;
+    const rowGap = 10;
+    const innerGap = 3; // gap between GHG bar and Temp bar
+    const rowH = barH + innerGap + tempBarH + rowGap;
 
-    const x = d3
-      .scaleLinear()
-      .domain([0, d3.max(data, (d) => d.value)! * 1.08])
-      .range([0, w]);
+    // GHG scale (coral, left)
+    const maxGhg = d3.max(data, (d) => d.ghg) ?? 1;
+    const xGhg = d3.scaleLinear().domain([0, maxGhg * 1.1]).range([0, w]);
+
+    // Temp scale (lagoon, right) — separate scale for temp anomaly
+    const tempVals = data.map((d) => d.temp ?? 0);
+    const tempExtent = d3.extent(tempVals) as [number, number];
+    const tempMax = Math.max(Math.abs(tempExtent[0] ?? 0), Math.abs(tempExtent[1] ?? 1)) * 1.2;
+    const xTemp = d3.scaleLinear().domain([0, tempMax]).range([0, w * 0.85]);
 
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -73,86 +88,114 @@ export function EmittersContrastBar({ active, onCountryClick, selectedYear = 202
       .data(data)
       .join("g")
       .attr("class", "row")
-      .attr("transform", (_, i) => `translate(0,${i * (barH + gap)})`)
-      .style("cursor", (d) => (isPacificCountry(d.label) ? "pointer" : "default"))
-      .on("click", (event, d) => {
-        if (onCountryClick && isPacificCountry(d.label)) {
-          const countryCode = getCountryCode(d.label);
-          onCountryClick(d.label, countryCode);
-        }
+      .attr("transform", (_, i) => `translate(0,${i * rowH})`)
+      .style("cursor", "pointer")
+      .on("click", (_, d) => {
+        if (onCountryClick) onCountryClick(d.name, d.code);
       })
-      .on("mouseover", function (event, d) {
-        // Highlight the bar
-        d3.select(this).select("rect")
-          .transition()
-          .duration(200)
-          .attr("opacity", 0.8)
-          .attr("stroke", (d: any) => d.group === "pacific" ? "var(--coral)" : "var(--slate)")
-          .attr("stroke-width", 2);
+      .on("mouseover", function () {
+        d3.select(this).selectAll("rect").attr("opacity", 0.75);
       })
-      .on("mouseout", function (event, d) {
-        // Reset the bar
-        d3.select(this).select("rect")
-          .transition()
-          .duration(200)
-          .attr("opacity", 1)
-          .attr("stroke", "none")
-          .attr("stroke-width", 0);
+      .on("mouseout", function () {
+        d3.select(this).selectAll("rect").attr("opacity", 1);
       });
 
+    // Country name label
     rows
       .append("foreignObject")
-      .attr("x", -183)
+      .attr("x", -margin.left + 2)
       .attr("y", 0)
-      .attr("width", 180)
-      .attr("height", barH)
+      .attr("width", margin.left - 6)
+      .attr("height", rowH - rowGap)
       .append("xhtml:div")
       .style("display", "flex")
       .style("align-items", "center")
       .style("justify-content", "flex-end")
+      .style("height", "100%")
       .style("font-family", "var(--font-body)")
       .style("font-size", "10.5px")
       .style("color", "rgba(14,42,44,0.8)")
-      .html((d) => {
-        const countryCode = getCountryCode(d.label);
-        const flagClass = getFlagClass(countryCode);
-        if (flagClass) {
-          return `<span class="${flagClass} mr-1.5" style="font-size: 14px;"></span>${d.label}`;
-        }
-        return d.label;
+      .style("text-align", "right")
+      .style("line-height", "1.2")
+      .text((d) => {
+        const name = d.name;
+        // Short names
+        const shorts: Record<string, string> = {
+          "Federated States of Micronesia": "Micronesia",
+          "Republic of Marshall Islands": "Marshall Is.",
+        };
+        return shorts[name] ?? name;
       });
 
+    // GHG bar (top)
     rows
       .append("rect")
       .attr("x", 0)
       .attr("y", 0)
       .attr("height", barH)
-      .attr("rx", 3)
+      .attr("rx", 2)
       .attr("width", 0)
-      .attr("fill", (d) => (d.group === "pacific" ? "var(--coral)" : "var(--slate)"))
+      .attr("fill", "var(--coral)")
       .transition()
-      .duration(active ? 900 : 0)
-      .delay((_, i) => (active ? i * 60 : 0))
-      .attr("width", (d) => x(d.value));
+      .duration(active ? 800 : 0)
+      .delay((_, i) => (active ? i * 50 : 0))
+      .attr("width", (d) => xGhg(d.ghg));
 
+    // GHG value label
     rows
       .append("text")
-      .attr("x", (d) => x(d.value) + 8)
+      .attr("x", (d) => xGhg(d.ghg) + 5)
       .attr("y", barH / 2)
-      .attr("dy", "0.32em")
+      .attr("dy", "0.35em")
       .attr("font-family", "var(--font-data)")
-      .attr("font-size", 12)
-      .attr("fill", "var(--ink)")
-      .attr("opacity", 0.75)
-      .text((d) => `${d.value.toFixed(1)}t`);
-  }, [width, height, active, selectedYear]);
+      .attr("font-size", 9.5)
+      .attr("fill", "var(--coral)")
+      .text((d) => `${d.ghg.toFixed(2)} Mt`);
 
-  const rows = data.length;
-  const chartHeight = rows * 34;
+    // Temp bar (bottom)
+    rows
+      .append("rect")
+      .attr("x", 0)
+      .attr("y", barH + innerGap)
+      .attr("height", tempBarH)
+      .attr("rx", 2)
+      .attr("width", 0)
+      .attr("fill", "var(--lagoon)")
+      .attr("fill-opacity", 0.75)
+      .transition()
+      .duration(active ? 800 : 0)
+      .delay((_, i) => (active ? i * 50 + 200 : 0))
+      .attr("width", (d) => (d.temp !== null ? xTemp(Math.abs(d.temp)) : 0));
+
+    // Temp value label
+    rows
+      .append("text")
+      .attr("x", (d) => (d.temp !== null ? xTemp(Math.abs(d.temp)) + 5 : 5))
+      .attr("y", barH + innerGap + tempBarH / 2)
+      .attr("dy", "0.35em")
+      .attr("font-family", "var(--font-data)")
+      .attr("font-size", 9.5)
+      .attr("fill", "var(--lagoon)")
+      .text((d) => (d.temp !== null ? `${d.temp > 0 ? "+" : ""}${d.temp.toFixed(2)}°C` : "—"));
+
+  }, [width, active, selectedYear, data]);
+
+  const chartH = data.length * (16 + 3 + 12 + 10) + 16;
 
   return (
     <div ref={wrapRef} className="w-full">
-      <svg ref={svgRef} width={width} height={chartHeight} />
+      {/* Scale note */}
+      <div className="flex items-center gap-4 mb-2 text-[10px] font-mono text-ink/50">
+        <span className="flex items-center gap-1">
+          <span className="inline-block w-3 h-2 rounded-sm" style={{ background: "var(--coral)" }} />
+          GHG total (MtCO₂e) — scale per row
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="inline-block w-3 h-2 rounded-sm opacity-75" style={{ background: "var(--lagoon)" }} />
+          Temp anomaly (°C) — scale per row
+        </span>
+      </div>
+      <svg ref={svgRef} width={width} height={chartH} />
     </div>
   );
 }

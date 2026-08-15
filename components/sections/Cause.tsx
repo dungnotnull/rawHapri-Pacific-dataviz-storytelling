@@ -9,9 +9,10 @@ import { ScrollReveal } from "../ui/ScrollReveal";
 import { WarmingStripes } from "./WarningStripes";
 import { CountryModal } from "../ui/CountryModal";
 import { YearControl } from "../ui/YearControl";
+import { ghgLatestYear, SEA_LEVEL_START_YEAR } from "@/lib/data";
 
-const MIN_YEAR = 2016; // Data available for all 3 metrics starting 1993, synced to 2016
-const MAX_YEAR = 2023; // Latest available year in data
+const MIN_YEAR = 1990; // Extended range: GHG data available from 1990+
+const MAX_YEAR = ghgLatestYear; // Latest available year in GHG dataset
 
 export function Cause() {
   const [contrastVisible, setContrastVisible] = useState(false);
@@ -26,15 +27,15 @@ export function Cause() {
           <p className="eyebrow text-lagoon">The emissions disparity</p>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
-          <h2 className="prose-col mt-4 max-w-2xl font-display text-[clamp(1.9rem,4vw,3rem)] font-medium leading-[1.1] text-ink">
+          <h2 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl mt-4">
             One island exhales a whisper of carbon. A handful of nations roar.
           </h2>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={600}>
           <p className="prose-col mt-5 max-w-xl text-ink/65">
             Every circle below is a Pacific Island Country or Territory,
-            plotted where it sits. Its <b>size</b> is how much CO₂ the average
-            person there emits each year. Its <b>color</b> is how much the
+            plotted where it sits. Its <b>size</b> is the total greenhouse gas
+            (GHG) the country emits each year. Its <b>color</b> is how much the
             local temperature has already shifted.
           </p>
           <div className="mt-4">
@@ -61,10 +62,6 @@ export function Cause() {
                 <div className="mt-3">
                   <WarmingStripes />
                 </div>
-                {/* <SourceNote className="mt-3">
-                  <span>Source: Pacific Data Hub, CLIMATE_CHANGE_TEMP_INDICATORS.</span>
-                  <span>Unweighted average across 22 PICTs, °C vs. baseline.</span>
-                </SourceNote> */}
               </div>
             </ScrollReveal>
           </div>
@@ -72,7 +69,6 @@ export function Cause() {
           <div className="flex flex-col">
             <ScrollReveal animation="fade-left" delay={600}>
               <div ref={contrastRef}>
-                <p className="eyebrow text-ink/50">For scale: per-capita CO₂, {MAX_YEAR}</p>
                 <div className="mt-3" onMouseEnter={() => setContrastVisible(true)}>
                   <EmittersContrastBar
                     active={true}
@@ -80,22 +76,10 @@ export function Cause() {
                     onCountryClick={(name, code) => setSelectedCountry({ name, code })}
                   />
                 </div>
-                {/* <SourceNote className="mt-3">
-                  <span>Source: Pacific Data Hub, CLIMATE_CHANGE_GHG_INDICATORS.</span>
-                </SourceNote> */}
               </div>
             </ScrollReveal>
           </div>
         </div>
-
-        {/* <ScrollReveal animation="fade-up" delay={800}>
-          <p className="prose-col mt-10 max-w-2xl text-sm text-ink/50">
-            * Palau and New Caledonia report unusually high per-capita figures -
-            Palau's from its large international ship registry, New
-            Caledonia's from nickel processing - not from everyday household
-            emissions. Both are marked with a dashed ring on the map.
-          </p>
-        </ScrollReveal> */}
 
         <CountryModal
           isOpen={selectedCountry !== null}

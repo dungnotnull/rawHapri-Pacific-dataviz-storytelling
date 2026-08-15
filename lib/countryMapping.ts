@@ -1,41 +1,25 @@
 import { isTargetPic } from "./data";
 
-// Country name to ISO code mapping (3-letter codes to match ghg_per_capita.json)
+// Country name to 2-letter ISO code mapping (matches ghg_per_capita.json from new dataset)
 export function getCountryCode(countryName: string): string {
   const nameToCode: Record<string, string> = {
-    // Pacific Island Countries (3-letter ISO codes)
-    "Kiribati": "KIR",
-    "Marshall Islands": "MHL",
-    "Republic of Marshall Islands": "MHL",
-    "Federated States of Micronesia": "FSM",
-    "Micronesia": "FSM",
-    "Micronesia, Federated State of": "FSM",
-    "Nauru": "NRU",
-    "Palau": "PLW",
-    "Papua New Guinea": "PNG",
-    "Solomon Islands": "SLB",
-    "Tonga": "TON",
-    "Tuvalu": "TUV",
-    "Vanuatu": "VUT",
-    "Samoa": "WSM",
-    "Fiji": "FJI",
-    "New Caledonia": "NCL",
-    "Cook Islands": "COK",
-    "Niue": "NIU",
-    // Major emitters (2-letter codes - these don't have GHG year data)
-    "Qatar": "QA",
-    "Kuwait": "KW",
-    "United Arab Emirates": "AE",
-    "Bahrain": "BH",
-    "Saudi Arabia": "SA",
-    "Australia": "AU",
-    "United States": "US",
-    "Canada": "CA",
-    "Russia": "RU",
-    "Germany": "DE",
-    "Japan": "JP",
-    "South Korea": "KR",
-    "China": "CN",
+    // 13 Pacific Island Countries (2-letter codes matching new dataset)
+    "Cook Islands": "CK",
+    "Federated States of Micronesia": "FM",
+    "Micronesia": "FM",
+    "Micronesia, Federated State of": "FM",
+    "Fiji": "FJ",
+    "Kiribati": "KI",
+    "Nauru": "NR",
+    "Niue": "NU",
+    "Palau": "PW",
+    "Republic of Marshall Islands": "MH",
+    "Marshall Islands": "MH",
+    "Samoa": "WS",
+    "Solomon Islands": "SB",
+    "Tonga": "TO",
+    "Tuvalu": "TV",
+    "Vanuatu": "VU",
   };
   return nameToCode[countryName] || "";
 }
@@ -44,4 +28,3 @@ export function getCountryCode(countryName: string): string {
 export function isPacificCountry(countryName: string): boolean {
   return isTargetPic(countryName);
 }
-

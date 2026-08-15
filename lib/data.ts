@@ -27,20 +27,22 @@ export interface CleanWaterCountry {
 
 export const TARGET_PICS = [
   "Cook Islands",
+  "Federated States of Micronesia",
   "Fiji",
   "Kiribati",
   "Nauru",
   "Niue",
   "Palau",
-  "Marshall Islands",
+  "Republic of Marshall Islands",
   "Samoa",
   "Solomon Islands",
   "Tonga",
   "Tuvalu",
   "Vanuatu",
+  // Legacy / alternate name forms kept for backward compat with older JSON files
   "Micronesia",
   "Micronesia, Federated State of",
-  "Republic of Marshall Islands"
+  "Marshall Islands",
 ];
 
 export const isTargetPic = (name: string) => TARGET_PICS.includes(name);
@@ -55,11 +57,12 @@ export const cleanWaterData = Object.fromEntries(
 export const seaLevelCountries = Object.keys(seaLevelData).sort((a, b) => a.localeCompare(b));
 export const cleanWaterCountries = Object.keys(cleanWaterData).sort((a, b) => a.localeCompare(b));
 
+// Sea level years: all data from 1993 onward (full range for Sea Level Race chart)
 export const seaLevelYears = Array.from(
   new Set(
     Object.values(seaLevelData).flatMap((c) => c.series.map((s) => s.year))
   )
-).filter((y) => y >= 2016).sort((a, b) => a - b);
+).filter((y) => y >= 1993).sort((a, b) => a - b);
 
 export const cleanWaterYears = Array.from(
   new Set(
@@ -70,6 +73,8 @@ export const cleanWaterYears = Array.from(
 /** Shorten a few long country names for tight chart labels. */
 export const shortName = (name: string): string => {
   const map: Record<string, string> = {
+    "Federated States of Micronesia": "Micronesia (FSM)",
+    "Republic of Marshall Islands": "Marshall Islands",
     "Micronesia, Federated State of": "Micronesia (FSM)",
     "Northern Mariana Islands": "N. Mariana Is.",
     "Wallis and Futuna": "Wallis & Futuna",
@@ -173,7 +178,7 @@ export const wwdsYears = Array.from(new Set(wwdsSnapshot.map((r) => r.year))).so
   (a, b) => a - b
 );
 
-// ---- GHG per capita dataset ----
+// ---- GHG total dataset (total_ghg, MtCO2e) ----
 export interface GhgCountry {
   code: string;
   name: string;
@@ -185,6 +190,7 @@ export interface GhgCountry {
 }
 
 export const ghgData = (ghgRaw as GhgCountry[]).filter((r) => isTargetPic(r.name));
+export const ghgLatestYear = ghgData.length > 0 ? Math.max(...ghgData.map(c => c.latest_year)) : 2024;
 
 // ---- Temperature anomaly dataset (per country, yearly series) ----
 export interface TempCountry {
@@ -204,8 +210,11 @@ export const tempAnomalyData = (tempAnomalyRaw as TempCountry[]).filter((r) => i
 export const seaLevelPacificAvg = seaLevelPacificAvgRaw as YearValue[];
 export const tempPacificAvg = tempPacificAvgRaw as YearValue[];
 
-// Common years across sea level, GHG, temperature (2016–2023)
-export const CORRELATION_YEARS = Array.from({ length: 8 }, (_, i) => 2016 + i);
+// Common years across sea level, GHG, temperature (2016 to latest GHG year)
+export const CORRELATION_YEARS = Array.from({ length: Math.max(1, ghgLatestYear - 2016 + 1) }, (_, i) => 2016 + i);
+
+// GHG data range constants
+export const GHG_SERIES_START_YEAR = 1990;
+export const SEA_LEVEL_START_YEAR = 1993; // earliest data in dataset
 
 export const picCoords = (picCountriesRaw as Array<{ code: string; name: string; lat: number; lon: number }>).filter(p => isTargetPic(p.name));
-

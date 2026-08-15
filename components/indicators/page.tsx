@@ -27,7 +27,7 @@ export default function IndicatorsHub() {
   return (
     <>
       {/* Main Indicators Hub Header */}
-      <section className="mx-auto max-w-7xl px-5 sm:px-8 py-10 sm:py-14">
+      <section id="indicators" className="mx-auto max-w-7xl px-5 sm:px-8 py-10 sm:py-14">
         {/* <IndicatorSubNav /> */}
         <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-tide mb-3">
           Extended Analysis Station

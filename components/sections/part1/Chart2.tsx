@@ -107,7 +107,7 @@ export default function Part1Chart2() {
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
           <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-            Relative sea level anomalies by country (2016-2023).
+            Relative sea level anomalies by country ({seaLevelYears[0]}–{seaLevelYears[seaLevelYears.length - 1]}).
             Hover over a country in the legend or the chart to highlight its trend.
           </p>
         </ScrollReveal>
