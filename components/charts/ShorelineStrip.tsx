@@ -174,12 +174,12 @@ export function ShorelineStrip({ retreat }: { retreat: number }) {
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
           <p className="eyebrow text-foam/50">
-            Interactive Cross-section
+            Xxxxxxx xxx-xxxx
           </p>
         </div>
-        <p className="font-mono text-[11px] font-bold tracking-widest text-coral-soft transition-all duration-1000">
+        {/* <p className="font-mono text-[11px] font-bold tracking-widest text-coral-soft transition-all duration-1000">
           {retreat === 0 ? `${startYear}: BASELINE` : `${endYear}: CRITICAL SWELL`}
-        </p>
+        </p> */}
       </div>
     </div>
   );

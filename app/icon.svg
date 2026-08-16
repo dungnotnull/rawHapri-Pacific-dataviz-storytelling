@@ -1,6 +1,15 @@
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="6" fill="#2c7a79"/>
-  <path d="M8 20C8 16 12 12 16 12C20 12 24 16 24 20" stroke="#eef2ee" stroke-width="2" stroke-linecap="round"/>
-  <path d="M6 24C6 18.686 10.686 14 16 14C21.314 14 26 18.686 26 24" stroke="#e2603d" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="16" cy="10" r="2" fill="#d99a3d"/>
+  <rect width="32" height="32" rx="8" fill="#0b172a"/>
+  
+  <circle cx="16" cy="12" r="7" fill="url(#heatGrad)" />
+  
+  <path d="M4 20 Q 10 16, 16 20 T 28 20 L 28 32 L 4 32 Z" fill="#2c7a79" />
+  <path d="M4 24 Q 10 21, 16 24 T 28 24 L 28 32 L 4 32 Z" fill="#0891b2" opacity="0.8" />
+  
+  <defs>
+    <linearGradient id="heatGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f87171" />
+      <stop offset="100%" stop-color="#d99a3d" />
+    </linearGradient>
+  </defs>
 </svg>

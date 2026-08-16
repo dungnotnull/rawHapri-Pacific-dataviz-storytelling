@@ -185,14 +185,14 @@ export function EmittersContrastBar({ active, onCountryClick, selectedYear = 202
   return (
     <div ref={wrapRef} className="w-full">
       {/* Scale note */}
-      <div className="flex items-center gap-4 mb-2 text-[10px] font-mono text-ink/50">
+      <div className="flex items-center gap-4 mb-2 text-xs text-ink">
         <span className="flex items-center gap-1">
           <span className="inline-block w-3 h-2 rounded-sm" style={{ background: "var(--coral)" }} />
-          GHG total (MtCO₂e) — scale per row
+          GHG total (MtCO₂e)
         </span>
         <span className="flex items-center gap-1">
           <span className="inline-block w-3 h-2 rounded-sm opacity-75" style={{ background: "var(--lagoon)" }} />
-          Temp anomaly (°C) — scale per row
+          Temperature anomaly (°C)
         </span>
       </div>
       <svg ref={svgRef} width={width} height={chartH} />

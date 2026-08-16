@@ -1,5 +1,6 @@
-// Country code to flag-icons class mapping
-export function getFlagClass(countryCode: string): string {
+export function getIso2(countryCode: string): string {
+  if (!countryCode) return "";
+  if (countryCode.length === 2) return countryCode.toLowerCase();
   const codeMap: Record<string, string> = {
     // Pacific Island Countries (3-letter codes from ghg data)
     "FJI": "fj",
@@ -32,7 +33,12 @@ export function getFlagClass(countryCode: string): string {
     "KR": "kr",
     "CN": "cn",
   };
-  const code = codeMap[countryCode.toUpperCase()];
+  return codeMap[countryCode.toUpperCase()] || "";
+}
+
+// Country code to flag-icons class mapping
+export function getFlagClass(countryCode: string): string {
+  const code = getIso2(countryCode);
   return code ? `fi fi-${code}` : "";
 }
 

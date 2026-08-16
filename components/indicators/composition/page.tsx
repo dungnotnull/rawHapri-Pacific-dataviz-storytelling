@@ -6,6 +6,8 @@ import { cleanWaterFull, indicatorIds, shortName } from "@/lib/data";
 import Flag from "../../ui/Flag";
 import IndicatorSelect from "../../ui/IndicatorSelect";
 import YearRangeSelect from "../../ui/YearRangeSelect";
+import { SourceNote } from "@/components/ui/SourceNote";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const THRESHOLD = 1.0; // percentage points
 
@@ -65,19 +67,12 @@ export default function CompositionPage() {
 
   return (
     <div id="composition-section">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
-        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-tide mb-3">
-          Analysis Station &middot; Change Composition
-        </p>
+      <div className="mx-auto max-w-6xl">
         <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
           How many countries improved, how many declined?
         </h2>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-          Compares each country's start and end values within your selected year
-          range, categorizing by direction of change (±{THRESHOLD} percentage point
-          threshold counts as "no change"). For "higher is worse" indicators
-          (open defecation), the "improvement" direction is reversed for correct
-          interpretation.
+          xxxxxxxxxxxxxxxx
         </p>
 
         <div className="mt-8 flex flex-col gap-4">
@@ -131,7 +126,7 @@ export default function CompositionPage() {
                 >
                   {CAT_LABEL[k]} ({counts[k]})
                 </span>
-                <div className="flex flex-col gap-2 max-h-80 overflow-y-auto pr-2 custom-scroll">
+                <div className="flex flex-col gap-2 pr-2 custom-scroll">
                   {rows
                     .filter((r) => r.category === k)
                     .map((r) => (
@@ -157,6 +152,18 @@ export default function CompositionPage() {
             ))}
           </div>
         </div>
+          <SourceNote className="text-primary text-xs mt-3">
+                        <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2023.</span>
+                      </SourceNote>
+               <ScrollReveal animation="fade-up" delay={600}>
+                  <p className="mt-3 max-w-2xl text-sm text-primary leading-relaxed opacity-[0.7]">
+                    Compares each country's start and end values within your selected year
+          range, categorizing by direction of change (±{THRESHOLD} percentage point
+          threshold counts as "no change"). For "higher is worse" indicators
+          (open defecation), the "improvement" direction is reversed for correct
+          interpretation.
+                  </p>
+                </ScrollReveal>
       </div>
     </div>
   );

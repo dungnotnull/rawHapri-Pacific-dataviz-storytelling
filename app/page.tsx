@@ -1,11 +1,8 @@
 import { TideRail } from "@/components/ui/TideRail";
 import { Hero } from "@/components/sections/Hero";
 import { Cause } from "@/components/sections/Cause";
-import { Result } from "@/components/sections/Result";
-import Part1Chart1 from "@/components/sections/part1/Chart1";
 import Part1Chart2 from "@/components/sections/part1/Chart2";
 import Part2Chart1 from "@/components/sections/part2/Chart1";
-import Part2Chart2 from "@/components/sections/part2/Chart2";
 import { BackToTop } from "@/components/ui/BackToTop";
 import Part2Chart2V2 from "@/components/sections/part2/Chart2v2";
 import IndicatorsHub from "@/components/indicators/page";
@@ -33,15 +30,12 @@ export default function Home() {
       </div> */}
 
       <Hero />
-      <Part1Chart2 />
       <Cause />
-      {/* <Result /> */}
-      {/* <Part1Chart1 /> */}
+      <Part1Chart2 />
       <CorrelationBubble />
       <Part2Chart1 />
-      {/* <Part2Chart2 /> */}
-      <Part2Chart2V2 />
       <IndicatorsHub />
+      <Part2Chart2V2 />
 
       <footer
         id="closing"

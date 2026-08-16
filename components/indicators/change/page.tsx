@@ -6,6 +6,8 @@ import { cleanWaterFull, indicatorIds, shortName, getIndicatorLabel } from "@/li
 import Flag from "../../ui/Flag";
 import IndicatorSelect from "../../ui/IndicatorSelect";
 import YearRangeSelect from "../../ui/YearRangeSelect";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { SourceNote } from "@/components/ui/SourceNote";
 
 
 type Mode = "delta" | "pct";
@@ -81,18 +83,12 @@ export default function ChangePage() {
 
   return (
     <div id="change-section">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
-        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-tide mb-3">
-          Analysis Station &middot; Year-over-Year Change
-        </p>
+      <div className="mx-auto max-w-6xl">
         <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
           Clean water indicator changes, year over year
         </h2>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-          Bars show change from the previous year (percentage points or relative
-          percent); the line shows actual values over years; the dashed horizontal
-          line is the average over the selected year range. Filter by time range
-          available in the dataset ({years[0]}–{years[years.length - 1]}).
+          xxxxxxxxxxxxxxxxxxxx
         </p>
 
         <div className="mt-8 flex flex-col gap-4">
@@ -111,7 +107,7 @@ export default function ChangePage() {
             <select
               value={activeCountry}
               onChange={(e) => setCountry(e.target.value)}
-              className="bg-paper-raised-2 border border-grid rounded-md px-4 py-2.5 font-mono text-[12px] text-ink font-medium hover:border-tide cursor-pointer transition-all hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brass-bright/30"
+              className="bg-paper-raised-2 border border-grid rounded-md px-4 py-2.5 text-[12px] text-ink font-medium hover:border-tide cursor-pointer transition-all hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brass-bright/30"
             >
               {availableCountries.map((n) => (
                 <option key={n} value={n}>
@@ -128,7 +124,7 @@ export default function ChangePage() {
               onChangeEnd={setEnd}
             />
 
-            <div className="flex rounded-md overflow-hidden border border-grid font-mono text-[12px]">
+            <div className="flex rounded-md overflow-hidden border border-grid text-[12px]">
               <button
                 onClick={() => setMode("delta")}
                 className={`px-4 py-2.5 font-medium transition-all cursor-pointer ${
@@ -156,7 +152,7 @@ export default function ChangePage() {
         <div className="mt-6 chart-paper rounded-lg p-4 sm:p-6 overflow-x-auto">
           <div className="flex items-center gap-2 mb-3">
             <Flag iso2={indicator.countries[activeCountry]?.iso2 ?? "un"} className="w-5 h-3.5" />
-            <span className="font-mono text-[12px] text-ink font-medium">
+            <span className=" text-[12px] text-ink font-medium">
               {shortName(activeCountry)} &middot; {getIndicatorLabel(indicator.label)}
             </span>
           </div>
@@ -214,7 +210,6 @@ export default function ChangePage() {
                     y={yValue(avgValue) - 8}
                     textAnchor="end"
                     fontSize={12}
-                    fontFamily="var(--font-mono)"
                     fill="var(--brass-bright)"
                     fontWeight={600}
                   >
@@ -248,7 +243,6 @@ export default function ChangePage() {
                   y={innerH + 24}
                   textAnchor="middle"
                   fontSize={14}
-                  fontFamily="var(--font-mono)"
                   fill="var(--ink-dim)"
                   fontWeight={500}
                 >
@@ -264,7 +258,6 @@ export default function ChangePage() {
                   y={yValue(t) + 4}
                   textAnchor="end"
                   fontSize={13}
-                  fontFamily="var(--font-mono)"
                   fill="var(--ink-dim)"
                   fontWeight={500}
                 >
@@ -279,7 +272,6 @@ export default function ChangePage() {
                   x={innerW + 12}
                   y={yChange(t) + 4}
                   fontSize={13}
-                  fontFamily="var(--font-mono)"
                   fill="var(--ink-dim)"
                   fontWeight={500}
                 >
@@ -289,13 +281,24 @@ export default function ChangePage() {
               ))}
             </g>
           </svg>
-          <div className="flex justify-between font-mono text-[10px] text-ink-dant px-2 mt-2">
+          <div className="flex justify-between text-[10px] text-ink-dant px-2 mt-2">
             <span className="font-medium">▬ Actual value (left axis, %)</span>
             <span className="font-medium">
               █ {mode === "delta" ? "% point change (right axis)" : "% change vs previous year (right axis)"}
             </span>
           </div>
         </div>
+          <SourceNote className="text-primary text-xs mt-0">
+                        <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2023.</span>
+                      </SourceNote>
+               <ScrollReveal animation="fade-up" delay={600}>
+                  <p className="mt-4 max-w-2xl text-sm text-primary leading-relaxed opacity-[0.7]">
+                    Bars show change from the previous year (percentage points or relative
+          percent); the line shows actual values over years; the dashed horizontal
+          line is the average over the selected year range. Filter by time range
+          available in the dataset ({years[0]}–{years[years.length - 1]}).
+                  </p>
+                </ScrollReveal>
       </div>
     </div>
   );

@@ -32,7 +32,7 @@ export function Hero() {
       className="relative bg-ocean-deep text-foam"
     >
       {/* ---- opening banner ---- */}
-      <div className="relative flex min-h-[92vh] flex-col items-start justify-center px-6 md:px-16 pt-10">
+      <div className="relative flex min-h-[75vh] xl:min-h-[92vh] flex-col items-start justify-center px-6 md:px-16 pt-10">
         <AmbientWaves />
         <div className="relative z-10 grid w-full gap-8 md:grid-cols-[1fr_0.8fr] items-center">
           <div>
@@ -42,9 +42,8 @@ export function Hero() {
               </p>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={400}>
-              <h1 className="mt-5 max-w-2xl font-display text-[clamp(2.4rem,6vw,4.75rem)] font-medium leading-[1.05] tracking-tight">
-                xxxxxx
-                <span className="italic text-lagoon-soft"> xxxxxx</span>
+              <h1 className="mt-5 max-w-2xl font-display text-[clamp(2rem,6vw,4.25rem)] font-medium leading-[1.05] tracking-tight">
+                Higher Sea Levels, Scarcer Clean Water
               </h1>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={600}>
@@ -52,7 +51,7 @@ export function Hero() {
                 xxxxxx
               </p>
               <p className="mt-4 text-sm font-medium text-foam/80">
-                created by team: Hong Ngoc, Minh Thu, Hoang Lan, Hoang Dung
+                Created by Ngoc Nguyen, Lan Nguyen, Thu Truong, Dung Truong
               </p>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={800}>

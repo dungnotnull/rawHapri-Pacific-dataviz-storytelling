@@ -26,44 +26,28 @@ export default function IndicatorsHub() {
 
   return (
     <>
-      {/* Main Indicators Hub Header */}
-      <section id="indicators" className="mx-auto max-w-7xl px-5 sm:px-8 py-10 sm:py-14">
-        {/* <IndicatorSubNav /> */}
-        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-tide mb-3">
-          Extended Analysis Station
-        </p>
-        <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
-          Comprehensive clean water indicators
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-          The analysis stations below explore the full range of indicators in the
-          CLEAN_WATER dataset — safe drinking water, basic handwashing, safe
-          sanitation, open defecation — and their relationship with sea level rise.
-        </p>
-      </section>
-
       {/* Radar Section */}
       {/* <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
         <RadarPage />
       </section> */}
 
       {/* Correlation Section */}
-      {/* <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
+      {/* <section className="relative px-6 py-14 md:px-16">
         <CorrelationPage />
       </section> */}
 
       {/* Change Section */}
-      <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
+      <section className="relative px-6 py-14 md:px-16">
         <ChangePage />
       </section>
 
       {/* Distribution Section */}
-      {/* <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
+      {/* <section className="relative px-6 py-14 md:px-16">
         <DistributionPage />
       </section> */}
 
       {/* Composition Section */}
-      <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
+      <section className="relative px-6 py-14 md:px-16">
         <CompositionPage />
       </section>
 

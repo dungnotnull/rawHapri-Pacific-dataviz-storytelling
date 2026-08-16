@@ -13,6 +13,7 @@ import Flag from "@/components/ui/Flag";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useDimensions } from "@/hooks/useDimensions";
 import { YearValue } from "@/types";
+import { SourceNote } from "@/components/ui/SourceNote";
 
 export default function Part1Chart2() {
   const palette = useMemo(() => makePalette(seaLevelCountries), []);
@@ -28,7 +29,7 @@ export default function Part1Chart2() {
       Object.values(seaLevelData).flatMap((c) =>
         c.series
           .filter(s => s.year >= seaLevelYears[0] && s.year <= seaLevelYears[seaLevelYears.length - 1])
-          .map((s) => s.value * 1000)
+          .map((s) => s.value)
       ),
     []
   );
@@ -50,14 +51,14 @@ export default function Part1Chart2() {
   const lineGenerator = useMemo(
     () => d3.line<YearValue>()
       .x((d) => xScale(d.year))
-      .y((d) => yScale(d.value * 1000))
+      .y((d) => yScale(d.value))
       .curve(d3.curveMonotoneX),
     [xScale, yScale]
   );
 
   const getTrendLine = (data: YearValue[]) => {
     const xSeries = data.map(d => d.year);
-    const ySeries = data.map(d => d.value * 1000);
+    const ySeries = data.map(d => d.value);
     const xMean = d3.mean(xSeries) || 0;
     const yMean = d3.mean(ySeries) || 0;
     const denominator = d3.sum(xSeries.map(x => Math.pow(x - xMean, 2)));
@@ -86,9 +87,9 @@ export default function Part1Chart2() {
       if (dataPoint) {
         setHoverData({
           year,
-          value: dataPoint.value * 1000,
+          value: dataPoint.value,
           x: xScale(year),
-          y: yScale(dataPoint.value * 1000)
+          y: yScale(dataPoint.value)
         });
       }
     }
@@ -101,14 +102,13 @@ export default function Part1Chart2() {
           <p className="eyebrow text-lagoon">A Pacific climate story</p>
         </ScrollReveal>
         <ScrollReveal animation="fade-down" delay={200}>
-          <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
-            Sea level race over years
+          <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl mt-2">
+            Sea level rise over years
           </h1>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
           <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-            Relative sea level anomalies by country ({seaLevelYears[0]}–{seaLevelYears[seaLevelYears.length - 1]}).
-            Hover over a country in the legend or the chart to highlight its trend.
+            xxxxxxxxxxxxxxxxxxxx
           </p>
         </ScrollReveal>
 
@@ -189,14 +189,14 @@ export default function Part1Chart2() {
                         .filter(s => s.year >= seaLevelYears[0] && s.year <= seaLevelYears[seaLevelYears.length - 1])
                         .map(s => {
                           const x = xScale(s.year);
-                          const y = yScale(s.value * 1000);
+                          const y = yScale(s.value);
                           const color = palette.get(hoveredCountry) || "var(--coral)";
                           return (
                             <g key={s.year} transform={`translate(${x},${y})`}>
                               <circle r={4} fill={color} />
                               <rect x={-20} y={-24} width={40} height={18} fill="white" rx={3} stroke="var(--ink-faint)" strokeOpacity={0.2} className="shadow-sm" />
                               <text x={0} y={-11} textAnchor="middle" fill="var(--ink)" fontSize={10} fontFamily="var(--font-mono)" fontWeight="bold">
-                                {(s.value * 1000) > 0 ? '+' : ''}{(s.value * 1000).toFixed(1)}
+                                {(s.value) > 0 ? '+' : ''}{(s.value).toFixed(3)}
                               </text>
                             </g>
                           );
@@ -209,8 +209,8 @@ export default function Part1Chart2() {
           </div>
 
           {/* Legend Area */}
-          <div className="lg:w-64 shrink-0 flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-2">
-            <h3 className="text-sm font-semibold text-ink/70 mb-2 uppercase tracking-wider">Countries</h3>
+          <div className="lg:w-64 shrink-0 grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-col lg:justify-between max-h-[500px] overflow-y-auto pr-2 gap-x-2 gap-y-1">
+            {/* <h3 className="text-sm font-semibold text-ink/70 mb-2 uppercase tracking-wider">Countries</h3> */}
             {seaLevelCountries.map(name => {
               const iso2 = seaLevelData[name].iso2;
               const isHovered = hoveredCountry === name;
@@ -220,7 +220,7 @@ export default function Part1Chart2() {
               return (
                 <div
                   key={name}
-                  className={`flex items-center gap-3 p-2 rounded cursor-pointer transition-all ${isHovered ? 'bg-ink/5' : ''} ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+                  className={`flex items-center gap-2 p-1.5 lg:p-2 rounded cursor-pointer transition-all ${isHovered ? 'bg-ink/5' : ''} ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
                   onMouseEnter={() => setHoveredCountry(name)}
                   onMouseLeave={() => { setHoveredCountry(null); setHoverData(null); }}
                 >
@@ -232,6 +232,15 @@ export default function Part1Chart2() {
             })}
           </div>
         </div>
+         <SourceNote className="text-primary text-xs mt-2 md:mt-6">
+                <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2023.</span>
+              </SourceNote>
+         <ScrollReveal animation="fade-up" delay={400}>
+          <p className="mt-4 max-w-2xl text-sm text-primary leading-relaxed opacity-[0.7]">
+            Relative sea level anomalies by country ({seaLevelYears[0]}–{seaLevelYears[seaLevelYears.length - 1]}).
+            Hover over a country in the legend or the chart to highlight its trend.
+          </p>
+        </ScrollReveal>
       </div>
     </section>
   );

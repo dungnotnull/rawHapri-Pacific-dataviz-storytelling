@@ -45,7 +45,7 @@ const getTmp = (n: string, y: number) =>
   _tmp.get(n)?.series.find((s) => s.year === y)?.value ?? null;
 const getSl = (n: string, y: number) => {
   const pt = seaLevelData[n]?.series.find((s) => s.year === y);
-  return pt !== undefined ? pt.value * 1000 : null;
+  return pt !== undefined ? pt.value : null;
 };
 
 // ─── Pearson r (module-level, never recreated) ───────────────────────────────
@@ -486,7 +486,7 @@ export default function CorrelationBubble() {
                   <span className="font-mono text-[10px] text-ink-faint">Sea level</span>
                   <span className="font-mono text-[10px] text-lagoon tabular-nums">
                     {hoveredPt.sl !== null
-                      ? `${hoveredPt.sl >= 0 ? "+" : ""}${hoveredPt.sl.toFixed(0)} mm`
+                      ? `${hoveredPt.sl >= 0 ? "+" : ""}${hoveredPt.sl.toFixed(3)} mm`
                       : "—"}
                   </span>
                   <span className="font-mono text-[10px] text-ink-faint">Temp Δ</span>
@@ -753,6 +753,16 @@ export default function CorrelationBubble() {
             </svg>
           </div>
 
+          {/* ── Year scrubber (mobile) ── */}
+          <div className="block lg:hidden w-full px-2 mt-4">
+            <YearScrubber
+              years={CORRELATION_YEARS}
+              year={year}
+              onChange={setYear}
+              speedMs={850}
+            />
+          </div>
+
           {/* ── Year scrubber (desktop) ── */}
           <div className="hidden lg:block">
             <YearScrubber
@@ -766,10 +776,7 @@ export default function CorrelationBubble() {
 
           {/* ── Country legend ── */}
           <div className="chart-paper rounded-xl p-4 h-fit lg:sticky lg:top-24">
-            <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-faint block mb-3">
-              Countries
-            </span>
-            <div className="flex flex-col gap-0.5 max-h-[440px] overflow-y-auto pr-1">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-col gap-x-2 gap-y-1 max-h-[160px] lg:max-h-[480px] pr-1">
               {COUNTRIES.map(({ slName, iso2 }) => (
                 <button
                   key={slName}
@@ -807,7 +814,7 @@ export default function CorrelationBubble() {
                   <>
                     <StatRow
                       label="Sea level"
-                      value={`${avgS >= 0 ? "+" : ""}${avgS.toFixed(0)} mm`}
+                      value={`${avgS >= 0 ? "+" : ""}${avgS.toFixed(3)} mm`}
                       color="var(--lagoon)"
                     />
                     <StatRow
@@ -826,15 +833,6 @@ export default function CorrelationBubble() {
             </div>
           </div>
 
-          {/* ── Year scrubber (mobile) ── */}
-          <div className="lg:hidden col-span-full">
-            <YearScrubber
-              years={CORRELATION_YEARS}
-              year={year}
-              onChange={setYear}
-              speedMs={850}
-            />
-          </div>
         </div>
       </div>
     </section>

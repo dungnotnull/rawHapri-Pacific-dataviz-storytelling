@@ -4,8 +4,6 @@ import cleanWaterFullRaw from "@/data/clean_water_full.json";
 import correlationRaw from "@/data/correlation_matrix.json";
 import ghgRaw from "@/data/ghg_per_capita.json";
 import tempAnomalyRaw from "@/data/temperature_anomaly.json";
-import seaLevelPacificAvgRaw from "@/data/sea_level_pacific_avg.json";
-import tempPacificAvgRaw from "@/data/temperature_pacific_avg.json";
 import picCountriesRaw from "@/data/pic_countries.json";
 
 export interface YearValue {
@@ -62,7 +60,7 @@ export const seaLevelYears = Array.from(
   new Set(
     Object.values(seaLevelData).flatMap((c) => c.series.map((s) => s.year))
   )
-).filter((y) => y >= 1993).sort((a, b) => a - b);
+).filter((y) => y >= 2005 && y <= 2024).sort((a, b) => a - b);
 
 export const cleanWaterYears = Array.from(
   new Set(
@@ -205,10 +203,6 @@ export interface TempCountry {
 }
 
 export const tempAnomalyData = (tempAnomalyRaw as TempCountry[]).filter((r) => isTargetPic(r.name));
-
-// ---- Pacific-wide averages ----
-export const seaLevelPacificAvg = seaLevelPacificAvgRaw as YearValue[];
-export const tempPacificAvg = tempPacificAvgRaw as YearValue[];
 
 // Common years across sea level, GHG, temperature (2016 to latest GHG year)
 export const CORRELATION_YEARS = Array.from({ length: Math.max(1, ghgLatestYear - 2016 + 1) }, (_, i) => 2016 + i);

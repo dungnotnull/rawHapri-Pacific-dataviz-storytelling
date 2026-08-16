@@ -10,7 +10,7 @@ import { ghgLatestYear } from "@/lib/data";
 
 const rawData = tempAvg as YearValue[];
 // Match the Map's MIN_YEAR and MAX_YEAR
-const MIN_YEAR = 1990;
+const MIN_YEAR = 2005;
 const data = rawData.filter((d) => d.year >= MIN_YEAR && d.year <= ghgLatestYear);
 
 export function WarmingStripes() {
@@ -32,7 +32,15 @@ export function WarmingStripes() {
     const extent = d3.extent(data, (d) => d.value) as [number, number];
     // Use same fixed symmetrical domain as CauseMap for absolute consistency
     const color = d3
-      .scaleSequential(d3.interpolateRgbBasis(["#2c7a79", "#bcd8d3", "#d99a3d", "#e2603d"]))
+      .scaleSequential(d3.interpolateRgbBasis([
+        "#313695", // -1.2
+        "#74add1", // -0.8
+        "#e0f3f8", // -0.4
+        "#ffffbf", // 0.0
+        "#fdae61", // +0.4
+        "#f46d43", // +0.8
+        "#d73027"  // +1.2
+      ]))
       .domain([-1.2, 1.2]);
 
     svg
@@ -53,20 +61,23 @@ export function WarmingStripes() {
 
   return (
     <div className="w-full">
-      <div className="mb-2 flex items-center justify-between text-xs text-ink/60">
+      <div className="mb-1 flex items-center justify-between text-xs text-ink/60">
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-[#2c7a79]"></span> Cooler
+          <span className="h-2 w-2 rounded-full bg-[#313695]"></span> Cooler
+        </span>
+        <span className="uppercase tracking-widest text-[10px] font-semibold text-ink/50">
+          Regional warming, 2005–2024
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-[#d99a3d]"></span> Warmer
+          <span className="h-2 w-2 rounded-full bg-[#d73027]"></span> Warmer
         </span>
       </div>
-      <div ref={wrapRef} className="h-14 w-full overflow-hidden rounded-sm">
-        <svg ref={svgRef} width={width} height={56} />
+      <div ref={wrapRef} className="h-8 w-full overflow-hidden rounded-sm">
+        <svg ref={svgRef} width={width} height={32} />
       </div>
       <div className="mt-1.5 flex justify-between">
-        <span className="eyebrow text-ink/45">{first.year}</span>
-        <span className="eyebrow text-ink/45">{last.year}</span>
+        <span className="text-[10px] text-ink/65">{first.year}</span>
+        <span className="text-[10px] text-ink/65">{last.year}</span>
       </div>
     </div>
   );

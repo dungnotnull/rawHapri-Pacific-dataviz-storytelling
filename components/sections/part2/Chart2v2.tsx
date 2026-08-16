@@ -119,16 +119,10 @@ export default function Part2Chart2V2() {
     <section id="part1-chart1" className="relative bg-foam px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
         
-        <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
-          Safe drinking water: Rural &mdash; Urban divide
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-          Scatter plot comparing access to safely managed drinking water
-          between rural and urban areas, for 7 countries with full disaggregated
-          data. Scroll to explore each story layer — the chart stays pinned while
-          you read.
-        </p>
-        <div className="mt-12 flex items-center gap-2 font-mono text-[11px] text-ink-faint animate-pulse">
+           <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
+          Safely managed drinking water: Rural &mdash; Urban divide
+        </h2>
+        <div className="mt-8 flex items-center gap-2 text-xs text-ink-faint animate-pulse">
           <svg width="12" height="16" viewBox="0 0 12 16" fill="none">
             <path
               d="M6 1v12M1 9l5 5 5-5"
@@ -143,18 +137,18 @@ export default function Part2Chart2V2() {
       </div>
 
       {/* SCROLLYTELLING SECTION */}
-      <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
+      <div className="relative max-w-6xl mx-auto">
         {/* Sticky chart */}
         <div
           ref={graphicRef}
-          className="sticky top-16 h-[calc(100vh-4rem)] flex items-center justify-center z-0"
+          className="sticky top-16 h-[calc(100vh-4rem)] flex items-start pt-16 md:pt-0 md:items-center justify-center z-0"
         >
           <div className="chart-paper rounded-lg p-3 sm:p-5 w-full max-w-2xl">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-faint">
+              <span className="text-[12px] uppercase tracking-[0.15em] text-ink-faint">
                 Safe drinking water &middot; {showTrajectory ? `${YEAR_EARLY} → ${YEAR_LATE}` : YEAR_LATE}
               </span>
-              <span className="font-mono text-[10px] text-ink-faint">
+              <span className="text-[12px] text-ink-faint">
                 {currentStep + 1} / {steps.length}
               </span>
             </div>
@@ -195,7 +189,6 @@ export default function Part2Chart2V2() {
                       y={innerH + 16}
                       textAnchor="middle"
                       fontSize={9}
-                      fontFamily="var(--font-mono)"
                       fill="var(--ink-faint)"
                     >
                       {t}
@@ -205,7 +198,6 @@ export default function Part2Chart2V2() {
                       y={innerH - scale(t) + 3}
                       textAnchor="end"
                       fontSize={9}
-                      fontFamily="var(--font-mono)"
                       fill="var(--ink-faint)"
                     >
                       {t}
@@ -229,7 +221,6 @@ export default function Part2Chart2V2() {
                     y={16}
                     textAnchor="end"
                     fontSize={9.5}
-                    fontFamily="var(--font-mono)"
                     fill="var(--brass-bright)"
                     style={{ transition: "opacity 500ms ease" }}
                   >
@@ -304,7 +295,6 @@ export default function Part2Chart2V2() {
                         y={-radiusFor(name) - 6}
                         textAnchor="middle"
                         fontSize={isHighlight ? 11 : 9}
-                        fontFamily="var(--font-mono)"
                         fill={isHighlight ? "var(--brass-bright)" : "var(--ink-dim)"}
                         opacity={
                           highlightCountry ? (isHighlight ? 1 : 0) : currentStep === 0 ? 0 : 0.85
@@ -319,7 +309,6 @@ export default function Part2Chart2V2() {
                           y={radiusFor(name) + 16}
                           textAnchor="middle"
                           fontSize={10}
-                          fontFamily="var(--font-mono)"
                           fill="var(--ink)"
                         >
                           {`R ${getVal(name, "rural", YEAR_LATE).toFixed(0)}% · U ${getVal(
@@ -339,7 +328,6 @@ export default function Part2Chart2V2() {
                   y={innerH + 40}
                   textAnchor="middle"
                   fontSize={10.5}
-                  fontFamily="var(--font-mono)"
                   fill="var(--ink-dim)"
                 >
                   RURAL (%)
@@ -348,28 +336,12 @@ export default function Part2Chart2V2() {
                   transform={`translate(${-42},${innerH / 2}) rotate(-90)`}
                   textAnchor="middle"
                   fontSize={10.5}
-                  fontFamily="var(--font-mono)"
                   fill="var(--ink-dim)"
                 >
                   URBAN (%)
                 </text>
               </g>
             </svg>
-
-            <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mt-2 pt-3 border-t border-grid">
-              {SCATTER_COUNTRIES.map((name) => (
-                <span key={name} className="flex items-center gap-1">
-                  <span
-                    className="w-2 h-2 rounded-full inline-block"
-                    style={{ background: palette.get(name) }}
-                  />
-                  <Flag iso2={cleanWaterData[name].iso2} className="w-3.5 h-2.5" />
-                  <span className="font-mono text-[9px] text-ink-faint">
-                    {shortName(name)}
-                  </span>
-                </span>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -381,9 +353,9 @@ export default function Part2Chart2V2() {
               stepRefs.current[i] = el;
             }}
             data-step-index={i}
-            className={`min-h-[calc(100vh-4rem)] flex items-center relative z-20 pointer-events-none px-1 sm:px-4 ${
+            className={`min-h-[calc(100vh-4rem)] flex items-end pb-24 md:pb-0 md:items-center relative z-20 pointer-events-none px-2 sm:px-4 justify-center ${
               i === 0 ? "-mt-[calc(100vh-4rem)]" : ""
-            } ${step.align === "left" ? "justify-start" : "justify-end"}`}
+            } ${step.align === "left" ? "md:justify-start" : "md:justify-end"}`}
           >
             <div
               className={`chart-paper rounded-lg p-5 sm:p-6 max-w-sm shadow-2xl pointer-events-auto transition-all duration-300 ${
@@ -392,7 +364,7 @@ export default function Part2Chart2V2() {
                   : "opacity-60"
               }`}
             >
-              <span className="font-mono text-[10px] tracking-[0.15em] text-brass-bright">
+              <span className="text-[10px] tracking-[0.15em] text-brass-bright">
                 {step.kicker}
               </span>
               <p className="mt-2 text-sm sm:text-[15px] text-ink leading-relaxed">
@@ -403,7 +375,7 @@ export default function Part2Chart2V2() {
         ))}
       </div>
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 pt-10 sm:pt-18">
+      <div className="mx-auto max-w-6xl pt-6 sm:pt-10">
         <p className="font-mono text-[11px] text-ink-faint leading-relaxed max-w-2xl">
           Note: Nauru has urban-only data, Wallis &amp; Futuna has rural-only
           data, so neither qualifies for this scatter plot. Remaining

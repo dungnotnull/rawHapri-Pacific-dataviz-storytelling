@@ -15,7 +15,7 @@ export default function IndicatorSelect({
   onChange: (id: string) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="inline-flex flex-wrap gap-1.5 p-1.5 bg-ink/5 rounded-2xl items-center border border-ink/10 w-fit">
       {indicatorIds.map((id) => {
         const ind = cleanWaterFull[id];
         const active = value === id;
@@ -23,16 +23,16 @@ export default function IndicatorSelect({
           <button
             key={id}
             onClick={() => onChange(id)}
-            className={`px-3 py-2 rounded-md text-left transition-all border cursor-pointer ${
+            className={`cursor-pointer px-4 py-2 text-left rounded-xl transition-all duration-200 focus:outline-none ${
               active
-                ? "bg-brass-bright text-paper border-brass-bright shadow-md hover:shadow-lg"
-                : "border-grid text-ink-dim hover:border-tide hover:text-ink hover:shadow-sm bg-paper"
+                ? "bg-white text-primary shadow-sm ring-1 ring-black/5"
+                : "text-ink-dim hover:text-ink hover:bg-black/5"
             }`}
           >
-            <div className="font-mono text-[11px] leading-tight">{getIndicatorLabel(ind.label)}</div>
+            <div className="text-sm font-medium leading-tight">{getIndicatorLabel(ind.label)}</div>
             <div
-              className={`font-mono text-[9px] uppercase tracking-wide ${
-                active ? "text-paper/70" : "text-ink-faint"
+              className={`text-[9px] uppercase tracking-wide mt-0.5 ${
+                active ? "text-primary/70" : "text-ink-faint"
               }`}
             >
               {POLARITY_NOTE[ind.polarity]}

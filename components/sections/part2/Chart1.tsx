@@ -13,6 +13,8 @@ import { makePalette } from "@/lib/colors";
 import YearScrubber from "@/components/ui/YearScrubber";
 import Flag from "@/components/ui/Flag";
 import { createPortal } from "react-dom";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { SourceNote } from "@/components/ui/SourceNote";
 
 const MARGIN = { top: 30, right: 140, bottom: 30, left: 24 };
 const ROW_H = 35;
@@ -129,7 +131,9 @@ export default function Part2Chart1() {
 
   const n = activeCountries.length;
   const height = n * ROW_H + MARGIN.top + MARGIN.bottom;
-  const innerW = Math.max(width - MARGIN.left - MARGIN.right, 200);
+  const minInnerW = 500;
+  const innerW = Math.max(width - MARGIN.left - MARGIN.right, minInnerW);
+  const svgWidth = Math.max(width, innerW + MARGIN.left + MARGIN.right);
   const innerH = n * ROW_H;
 
   const xYear = useMemo(
@@ -150,13 +154,17 @@ export default function Part2Chart1() {
   return (
     <section id="part2-chart1" className="relative bg-foam px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
-        <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl">
+         <ScrollReveal animation="fade-down" delay={200}>
+          <p className="eyebrow text-lagoon">A Pacific climate story</p>
+        </ScrollReveal>
+        <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl mt-2">
           Clean Water &amp; Sanitation Rankings
         </h1>
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-          Select an indicator below to view the ranking of Pacific countries over time. 
-          Rank 1 (top) is the best performing country. Connecting lines show position changes. 
-          Click on a country to view its detailed trend.
+          xxxxxxxxxxxxxx
+        </p>
+         <p className="max-w-2xl text-sm text-red-500 leading-relaxed italic">
+          Click on any country in the chart to view detailed data 
         </p>
 
         {/* Indicator Selection Buttons */}
@@ -169,7 +177,7 @@ export default function Part2Chart1() {
                 onClick={() => setActiveIndicator(id)}
                 className={`cursor-pointer px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 focus:outline-none ${
                   isActive 
-                    ? "bg-white text-coral shadow-sm ring-1 ring-black/5" 
+                    ? "bg-white text-primary shadow-sm ring-1 ring-black/5" 
                     : "text-ink-dim hover:text-ink hover:bg-black/5"
                 }`}
               >
@@ -181,8 +189,8 @@ export default function Part2Chart1() {
 
         <div className="mt-10 grid lg:grid-cols-[1fr_70px] gap-8 items-start">
           {/* Chart */}
-          <div ref={containerRef} className="chart-paper rounded-xl p-4 sm:p-6 shadow-sm border border-ink/5">
-            <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
+          <div ref={containerRef} className="chart-paper rounded-xl p-4 sm:p-6 shadow-sm border border-ink/5 overflow-x-auto custom-scroll">
+            <svg width={svgWidth} height={height} viewBox={`0 0 ${svgWidth} ${height}`} preserveAspectRatio="xMidYMid meet">
               <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
                 {/* year axis labels */}
                 {activeYears.map((yr) => (
@@ -300,6 +308,16 @@ export default function Part2Chart1() {
             <YearScrubber years={activeYears} year={year} onChange={setYear} speedMs={1200} />
           </div>
         </div>
+         <SourceNote className="text-primary text-xs mt-5">
+                        <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2023.</span>
+                      </SourceNote>
+               <ScrollReveal animation="fade-up" delay={600}>
+                  <p className="mt-3 max-w-2xl text-sm text-primary leading-relaxed opacity-[0.7]">
+                    Select an indicator below to view the ranking of Pacific countries over time. 
+                    Rank 1 (top) is the best performing country. Connecting lines show position changes. 
+                    Click on a country to view its detailed trend.
+                  </p>
+                </ScrollReveal>
       </div>
 
       {/* Modal Overlay */}

@@ -167,7 +167,15 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
     // Symmetrical fixed domain (-1.2 to 1.2) so cool is always teal and warm is always red
     // 1.2 is roughly the max temp anomaly in the dataset
     const color = d3
-      .scaleSequential(d3.interpolateRgbBasis(["#2c7a79", "#bcd8d3", "#d99a3d", "#e2603d"]))
+      .scaleSequential(d3.interpolateRgbBasis([
+        "#313695", // -1.2
+        "#74add1", // -0.8
+        "#e0f3f8", // -0.4
+        "#ffffbf", // 0.0
+        "#fdae61", // +0.4
+        "#f46d43", // +0.8
+        "#d73027"  // +1.2
+      ]))
       .domain([-1.2, 1.2]);
 
     const gMarks = svg.append("g").attr("class", "marks");
@@ -276,7 +284,7 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
           {tooltip.d.seaLevel !== null && (
             <p className="stat-figure text-[#3b82f6]">
               {tooltip.d.seaLevel > 0 ? "+" : ""}
-              {(tooltip.d.seaLevel * 1000).toFixed(0)} mm sea level
+              {(tooltip.d.seaLevel).toFixed(3)} mm sea level
             </p>
           )}
         </div>
