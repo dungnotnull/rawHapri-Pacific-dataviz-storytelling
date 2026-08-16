@@ -163,9 +163,14 @@ export default function Part2Chart1() {
         <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
           xxxxxxxxxxxxxx
         </p>
-         <p className="max-w-2xl text-sm text-red-500 leading-relaxed italic">
-          Click on any country in the chart to view detailed data 
-        </p>
+        <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur border border-ink/10 shadow-sm transition-transform hover:scale-[1.02]">
+          <svg className="w-4 h-4 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+          </svg>
+          <span className="text-xs font-medium text-ink/80">
+            Click on any country in the chart to view detailed data
+          </span>
+        </div>
 
         {/* Indicator Selection Buttons */}
         <div className="mt-6 inline-flex flex-wrap gap-1.5 p-1.5 bg-ink/5 rounded-2xl items-center border border-ink/10">
