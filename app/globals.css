@@ -415,3 +415,16 @@ a[href^="#"] {
 .custom-scroll::-webkit-scrollbar-thumb:hover {
   background: var(--lagoon-soft);
 }
+
+@keyframes blink-bg {
+  0%, 100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: color-mix(in srgb, var(--ink) 5%, transparent);
+  }
+}
+
+.animate-blink-bg {
+  animation: blink-bg 1.6s ease-in-out infinite;
+}

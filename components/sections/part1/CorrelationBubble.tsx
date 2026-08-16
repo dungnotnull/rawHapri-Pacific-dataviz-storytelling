@@ -777,23 +777,36 @@ export default function CorrelationBubble() {
           {/* ── Country legend ── */}
           <div className="chart-paper rounded-xl p-4 h-fit lg:sticky lg:top-24">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-col gap-x-2 gap-y-1 max-h-[160px] lg:max-h-[480px] pr-1">
-              {COUNTRIES.map(({ slName, iso2 }) => (
-                <button
-                  key={slName}
-                  onMouseEnter={() => setHover(slName)}
-                  onMouseLeave={() => setHover(null)}
-                  className="flex items-center gap-2 px-2 py-1 rounded text-left hover:bg-paper-raised-2 transition-colors"
-                >
-                  <span
-                    className="w-2 h-2 rounded-full shrink-0"
-                    style={{ background: palette.get(slName) }}
-                  />
-                  <Flag iso2={iso2} className="w-4 h-3 shrink-0" />
-                  <span className="font-mono text-[10px] text-ink truncate">
-                    {shortName(slName)}
-                  </span>
-                </button>
-              ))}
+              {COUNTRIES.map(({ slName, iso2 }, index) => {
+  const isHovered = hover === slName;
+  const isDimmed = hover !== null && !isHovered;
+  const isFirst = index === 0;
+  const shouldBlink = isFirst && hover === null;
+
+  return (
+    <button
+      key={slName}
+      onMouseEnter={() => setHover(slName)}
+      onMouseLeave={() => setHover(null)}
+      className={`
+        flex items-center gap-2 px-2 py-1 rounded text-left transition-colors cursor-pointer
+        ${isHovered ? 'bg-paper-raised-2' : ''}
+        ${isDimmed ? 'opacity-40' : 'opacity-100'}
+        ${shouldBlink ? 'animate-blink-bg' : ''}
+        ${isFirst && isDimmed ? 'bg-transparent' : ''}
+      `}
+    >
+      <span
+        className="w-2 h-2 rounded-full shrink-0"
+        style={{ background: palette.get(slName) }}
+      />
+      <Flag iso2={iso2} className="w-4 h-3 shrink-0" />
+      <span className="font-mono text-[10px] text-ink truncate">
+        {shortName(slName)}
+      </span>
+    </button>
+  );
+})}
             </div>
 
             {/* Pacific avg stats */}

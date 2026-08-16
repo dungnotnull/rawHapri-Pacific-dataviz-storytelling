@@ -65,7 +65,7 @@ export function ShorelineStrip({ retreat }: { retreat: number }) {
       
       <div 
         ref={containerRef}
-        className="relative h-[220px] w-full overflow-hidden rounded-xl border border-foam/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+        className="relative h-[220px] w-full overflow-hidden rounded-t-xl border border-foam/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
       >
         
         {/* Dynamic Sky Background - Daytime */}

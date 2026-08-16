@@ -211,25 +211,37 @@ export default function Part1Chart2() {
           {/* Legend Area */}
           <div className="lg:w-64 shrink-0 grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-col lg:justify-between max-h-[500px] overflow-y-auto pr-2 gap-x-2 gap-y-1">
             {/* <h3 className="text-sm font-semibold text-ink/70 mb-2 uppercase tracking-wider">Countries</h3> */}
-            {seaLevelCountries.map(name => {
-              const iso2 = seaLevelData[name].iso2;
-              const isHovered = hoveredCountry === name;
-              const isDimmed = hoveredCountry !== null && !isHovered;
-              const color = palette.get(name) || "var(--coral)";
-              
-              return (
-                <div
-                  key={name}
-                  className={`flex items-center gap-2 p-1.5 lg:p-2 rounded cursor-pointer transition-all ${isHovered ? 'bg-ink/5' : ''} ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
-                  onMouseEnter={() => setHoveredCountry(name)}
-                  onMouseLeave={() => { setHoveredCountry(null); setHoverData(null); }}
-                >
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                  <Flag iso2={iso2} className="w-5 h-3.5 shrink-0 shadow-sm" />
-                  <span className="text-xs font-medium text-ink truncate">{shortName(name)}</span>
-                </div>
-              );
-            })}
+            {seaLevelCountries.map((name, index) => {
+  const iso2 = seaLevelData[name].iso2;
+  const isHovered = hoveredCountry === name;
+  const isDimmed = hoveredCountry !== null && !isHovered;
+  const color = palette.get(name) || "var(--coral)";
+  const isFirst = index === 0;
+
+  const shouldBlink = isFirst && hoveredCountry === null;
+
+  return (
+    <div
+      key={name}
+      className={`
+        flex items-center gap-2 p-1.5 lg:p-2 rounded cursor-pointer transition-all
+        ${isHovered ? 'bg-ink/5' : ''}
+        ${isDimmed ? 'opacity-40' : 'opacity-100'}
+        ${shouldBlink ? 'animate-blink-bg' : ''}
+        ${isFirst && isDimmed ? 'bg-transparent' : ''}
+      `}
+      onMouseEnter={() => setHoveredCountry(name)}
+      onMouseLeave={() => {
+        setHoveredCountry(null);
+        setHoverData(null);
+      }}
+    >
+      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+      <Flag iso2={iso2} className="w-5 h-3.5 shrink-0 shadow-sm" />
+      <span className="text-xs font-medium text-ink truncate">{shortName(name)}</span>
+    </div>
+  );
+})}
           </div>
         </div>
          <SourceNote className="text-primary text-xs mt-2 md:mt-6">
