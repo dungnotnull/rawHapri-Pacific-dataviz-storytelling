@@ -73,7 +73,7 @@ function ModalChart({ series, years, color }: { series: YearValue[], years: numb
               fill="var(--ink)"
               fontWeight={600}
             >
-              {Number(s.value.toFixed(2))}%
+              {s.value.toFixed(2)}%
             </text>
           </g>
         ))}
@@ -320,7 +320,7 @@ export default function Part2Chart1() {
                       >
                         {shortName(name)}
                         <tspan fill={isHover ? "var(--coral)" : isTop3 ? "#EF4444" : "var(--gold)"} dx={8} fontWeight={600}>
-                          {Number(val.toFixed(2))}%
+                          {val.toFixed(2)}%
                         </tspan>
                       </text>
                     </g>
@@ -352,8 +352,7 @@ export default function Part2Chart1() {
                <ScrollReveal animation="fade-up" delay={600}>
                   <p className="mt-3 max-w-2xl text-sm text-primary leading-relaxed opacity-[0.7]">
                     Select an indicator below to view the ranking of Pacific countries over time. 
-                    Rank 1 (top) is the best performing country. Connecting lines show position changes. 
-                    Click on a country to view its detailed trend.
+                    Rank 1 (top) is the best performing country. Connecting lines show position changes.
                   </p>
                 </ScrollReveal>
       </div>

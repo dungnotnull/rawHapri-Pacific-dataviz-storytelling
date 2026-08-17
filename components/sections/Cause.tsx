@@ -32,7 +32,7 @@ export function Cause() {
           </h2>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={600}>
-          <p className="mt-5 max-w-3xl text-ink/65">
+          <p className="mt-5 max-w-3xl text-ink/65 text-sm sm:text-base leading-relaxed">
             From Tuvalu to Nauru, tiny carbon footprints stand against rising temperatures and rising seas
           </p>
           <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur border border-ink/10 shadow-sm transition-transform hover:scale-[1.02]">
