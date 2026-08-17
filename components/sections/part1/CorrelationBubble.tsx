@@ -481,7 +481,7 @@ export default function CorrelationBubble() {
                 <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
                   <span className="font-mono text-[10px] text-ink-faint">GHG/cap</span>
                   <span className="font-mono text-[10px] tabular-nums" style={{ color: "var(--gold)" }}>
-                    {hoveredPt.ghg?.toFixed(2)} t
+                    {hoveredPt.ghg?.toFixed(1)} Tons
                   </span>
                   <span className="font-mono text-[10px] text-ink-faint">Sea level</span>
                   <span className="font-mono text-[10px] text-lagoon tabular-nums">
@@ -832,7 +832,7 @@ export default function CorrelationBubble() {
                     />
                     <StatRow
                       label="GHG/cap"
-                      value={`${avgG.toFixed(2)} t`}
+                      value={`${avgG.toFixed(1)} Tons`}
                       color="var(--gold)"
                     />
                     <StatRow

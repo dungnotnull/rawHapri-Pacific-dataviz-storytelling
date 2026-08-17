@@ -270,7 +270,7 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
             <p className="text-ink/50">{selectedYear}</p>
           </div>
           <p className="stat-figure mt-1 text-ink/70">
-            {tooltip.d.ghg.toFixed(3)} MtCO₂e
+            {tooltip.d.ghg.toFixed(1)} Tons
             {tooltip.d.isOutlier && (
               <span className="ml-1 text-gold">· see note</span>
             )}

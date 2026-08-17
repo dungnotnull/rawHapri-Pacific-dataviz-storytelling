@@ -150,7 +150,7 @@ export function EmittersContrastBar({ active, onCountryClick, selectedYear = 202
       .attr("font-family", "var(--font-data)")
       .attr("font-size", 9.5)
       .attr("fill", "var(--coral)")
-      .text((d) => `${d.ghg.toFixed(2)} Mt`);
+      .text((d) => `${d.ghg.toFixed(1)} Tons`);
 
     // Temp bar (bottom)
     rows
@@ -188,7 +188,7 @@ export function EmittersContrastBar({ active, onCountryClick, selectedYear = 202
       <div className="flex items-center gap-4 mb-2 text-xs text-ink">
         <span className="flex items-center gap-1">
           <span className="inline-block w-3 h-2 rounded-sm" style={{ background: "var(--coral)" }} />
-          GHG total (MtCO₂e)
+          GHG per capita (Tons)
         </span>
         <span className="flex items-center gap-1">
           <span className="inline-block w-3 h-2 rounded-sm opacity-75" style={{ background: "var(--lagoon)" }} />

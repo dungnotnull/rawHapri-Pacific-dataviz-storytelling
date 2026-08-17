@@ -121,12 +121,12 @@ export function CountryModal({
         {/* Current Stats */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="rounded-xl border border-ink/8 bg-white/40 p-4">
-            <p className="eyebrow text-ink/60">GHG Total (2024)</p>
+            <p className="eyebrow text-ink/60">GHG Per Capita (2024)</p>
             <p className="mt-2 font-display text-3xl font-medium text-coral">
               {countryGhg?.latest_value
-                ? countryGhg.latest_value.toFixed(3)
+                ? countryGhg.latest_value.toFixed(1)
                 : "N/A"}
-              <span className="ml-1 text-lg text-ink/50">MtCO₂e</span>
+              <span className="ml-1 text-lg text-ink/50">Tons</span>
             </p>
           </div>
           <div className="rounded-xl border border-ink/8 bg-white/40 p-4">
@@ -201,7 +201,7 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
     const xMax = 2024;
     const x = d3.scaleLinear().domain([xMin, xMax]).range([0, w]);
 
-    // Left Y scale - GHG total (0 to max MtCO2e)
+    // Left Y scale - GHG per capita (0 to max Tons)
     const maxGhg =
       countryGhg && countryGhg.series
         ? d3.max(countryGhg.series.filter((d) => d.year >= xMin), (d) => d.value)! * 1.1
@@ -241,7 +241,7 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       .attr("stroke", "rgba(14,42,44,0.08)")
       .attr("stroke-width", 1);
 
-    // Draw GHG total line
+    // Draw GHG per capita line
     if (countryGhg && countryGhg.series && countryGhg.series.length > 0) {
       const filteredGhg = countryGhg.series.filter((d) => d.year >= xMin && d.year <= xMax);
       const ghgLine = d3
@@ -378,7 +378,7 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
       .attr("text-anchor", "middle")
       .attr("font-size", 11)
       .attr("fill", "var(--coral)")
-      .text("GHG (MtCO₂e)");
+      .text("GHG (Tons)");
 
     g.append("text")
       .attr("transform", "rotate(-90)")

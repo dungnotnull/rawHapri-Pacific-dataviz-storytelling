@@ -176,7 +176,7 @@ export const wwdsYears = Array.from(new Set(wwdsSnapshot.map((r) => r.year))).so
   (a, b) => a - b
 );
 
-// ---- GHG total dataset (total_ghg, MtCO2e) ----
+// ---- GHG per capita dataset (GHG_EMI_CAPITA, Tons) ----
 export interface GhgCountry {
   code: string;
   name: string;
