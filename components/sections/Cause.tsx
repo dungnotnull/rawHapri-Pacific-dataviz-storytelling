@@ -24,16 +24,16 @@ export function Cause() {
     <section id="cause" className="relative bg-foam px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
         <ScrollReveal animation="fade-down" delay={200}>
-          <p className="eyebrow text-lagoon">A Pacific climate story</p>
+          <p className="eyebrow text-lagoon">Climate story</p>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
           <h2 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl mt-4">
-            One island exhales a whisper of carbon. A handful of nations roar.
+            A huge imbalance in greenhouse-gas emissions across Pacific Island countries.
           </h2>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={600}>
-          <p className="prose-col mt-5 max-w-xl text-ink/65">
-            xxxxxxxxxxxxx
+          <p className="mt-5 max-w-3xl text-ink/65">
+            From Tuvalu to Nauru, tiny carbon footprints stand against rising temperatures and rising seas
           </p>
           <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur border border-ink/10 shadow-sm transition-transform hover:scale-[1.02]">
             <svg className="w-4 h-4 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">

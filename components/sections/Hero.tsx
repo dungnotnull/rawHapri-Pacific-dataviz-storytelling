@@ -38,7 +38,7 @@ export function Hero() {
           <div>
             <ScrollReveal animation="fade-down" delay={200}>
               <p className="eyebrow text-coral-soft">
-                xxxxxx
+                A Pacific Climate Crisis
               </p>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={400}>
@@ -48,15 +48,13 @@ export function Hero() {
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={600}>
               <p className="prose-col mt-7 text-lg text-foam/70">
-                xxxxxx
+                13 pacific island countries, but the same story - relating to the sea. As sea level rise drives saltwater farther inland, drinking water supplies of some coastal cities will be contaminated.
               </p>
-              <p className="mt-4 text-sm font-medium text-foam/80">
-                Created by Ngoc Nguyen, Lan Nguyen, Thu Truong, Dung Truong
-              </p>
+            
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={800}>
               <div className="mt-14 flex items-center gap-3 text-foam/50">
-                <span className="eyebrow">xxxxxx</span>
+                <span className="eyebrow"> Created by Ngoc Nguyen, Lan Nguyen, Thu Truong, Dung Truong</span>
                 <span className="h-8 w-px animate-pulse bg-foam/30" />
               </div>
             </ScrollReveal>
@@ -119,10 +117,14 @@ export function Hero() {
           <path d="M0 20V11.5C0 5.15 4.5 0.9 11 0L11.8 3.1C7.8 4 5.6 6.7 5.3 10.2H10V20H0ZM16.2 20V11.5C16.2 5.15 20.7 0.9 27.2 0L28 3.1C24 4 21.8 6.7 21.5 10.2H26.2V20H16.2Z" fill="currentColor"/>
         </svg>
         <p className="font-display text-2xl italic leading-relaxed text-foam md:text-3xl animate-on-scroll animate-fade-up is-visible">
-          xxxxxx
+          The sea keeps us alive, but it rises, 
+then clean water declines;<br/>
+Humans cry,<br/>
+humans try,<br/>
+… to survive.<br/>
         </p>
         <ScrollReveal animation="fade-up" delay={600}>
-          <p className="eyebrow mt-6 text-foam/45">xxxxxx</p>
+          <p className="eyebrow mt-6 text-foam/45">So why?</p>
         </ScrollReveal>
       </div>
     </section>

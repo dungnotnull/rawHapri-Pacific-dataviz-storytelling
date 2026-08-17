@@ -20,9 +20,9 @@ const MARGIN = { top: 30, right: 140, bottom: 30, left: 24 };
 const ROW_H = 35;
 
 function ModalChart({ series, years, color }: { series: YearValue[], years: number[], color: string }) {
-  const w = 400;
-  const h = 200;
-  const m = { top: 20, right: 20, bottom: 20, left: 40 };
+  const w = 500;
+  const h = 250;
+  const m = { top: 30, right: 30, bottom: 30, left: 60 };
   const innerW = w - m.left - m.right;
   const innerH = h - m.top - m.bottom;
 
@@ -41,21 +41,41 @@ function ModalChart({ series, years, color }: { series: YearValue[], years: numb
   return (
     <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="100%">
       <g transform={`translate(${m.left},${m.top})`}>
-        {/* Axes */}
-        {yScale.ticks(4).map(t => (
+        {/* Axes Base Lines */}
+        <line x1={0} y1={innerH} x2={innerW} y2={innerH} stroke="#9CA3AF" strokeWidth={1} />
+        <line x1={0} y1={0} x2={0} y2={innerH} stroke="#9CA3AF" strokeWidth={1} />
+        
+        {/* Grid and Ticks */}
+        {yScale.ticks(5).map(t => (
           <g key={t} transform={`translate(0,${yScale(t)})`}>
-            <line x1={0} x2={innerW} stroke="var(--ink-faint)" strokeOpacity={0.2} strokeDasharray="2,2" />
-            <text x={-5} y={4} textAnchor="end" fontSize={10} fill="var(--ink-dim)">{t}%</text>
+            <line x1={0} x2={innerW} stroke="#D1D5DB" strokeOpacity={0.6} strokeDasharray="2,2" />
+            <line x1={-4} x2={0} stroke="#9CA3AF" strokeWidth={1} />
+            <text x={-8} y={4} textAnchor="end" fontSize={11} fill="var(--ink-dim)">{t}%</text>
           </g>
         ))}
         {years.map(y => (
-          <text key={y} x={xScale(y)} y={innerH + 15} textAnchor="middle" fontSize={10} fill="var(--ink-dim)">{y}</text>
+          <g key={y} transform={`translate(${xScale(y)}, 0)`}>
+            <line y1={innerH} y2={innerH + 4} stroke="#9CA3AF" strokeWidth={1} />
+            <text y={innerH + 20} textAnchor="middle" fontSize={11} fill="var(--ink-dim)">{y}</text>
+          </g>
         ))}
         {/* Line */}
         <path d={line(series) || ""} fill="none" stroke={color} strokeWidth={2.5} />
-        {/* Points */}
+        {/* Points and Values */}
         {series.map(s => (
-          <circle key={s.year} cx={xScale(s.year)} cy={yScale(s.value)} r={4} fill={color} />
+          <g key={s.year}>
+            <circle cx={xScale(s.year)} cy={yScale(s.value)} r={4} fill={color} />
+            <text 
+              x={xScale(s.year)} 
+              y={yScale(s.value) - 10} 
+              textAnchor={s.year === years[0] ? "start" : s.year === years[years.length - 1] ? "end" : "middle"} 
+              fontSize={10} 
+              fill="var(--ink)"
+              fontWeight={600}
+            >
+              {Number(s.value.toFixed(2))}%
+            </text>
+          </g>
         ))}
       </g>
     </svg>
@@ -226,6 +246,8 @@ export default function Part2Chart1() {
                 {/* rank lines, only through elapsed years */}
                 {activeCountries.map((name) => {
                   const isHover = hover === name;
+                  const rank = rankOf(name, year);
+                  const isTop3 = rank < 3;
                   const pastYears = activeYears.slice(0, Math.max(1, yearIdx + 1));
                   const pathD = d3
                     .line<number>()
@@ -239,8 +261,8 @@ export default function Part2Chart1() {
                       d={pathD ?? ""}
                       fill="none"
                       stroke={palette.get(name)}
-                      strokeWidth={isHover ? 4 : 2}
-                      opacity={isHover ? 1 : hover ? 0.05 : 0.6}
+                      strokeWidth={isHover ? 4 : isTop3 ? 3.5 : 2}
+                      opacity={isHover ? 1 : hover ? 0.05 : isTop3 ? 1 : 0.4}
                       style={{ transition: "opacity 200ms ease, stroke-width 200ms ease" }}
                       onMouseEnter={() => setHover(name)}
                       onMouseLeave={() => setHover(null)}
@@ -255,6 +277,7 @@ export default function Part2Chart1() {
                   const rank = rankOf(name, year);
                   const val = valueOf(name, year);
                   const isHover = hover === name;
+                  const isTop3 = rank < 3;
                   
                   // Don't render node if they have no data for this year
                   if (val === undefined) return null;
@@ -270,24 +293,34 @@ export default function Part2Chart1() {
                       className="cursor-pointer"
                     >
                       <circle
-                        r={isHover ? 7 : 5}
+                        r={isHover ? 7 : isTop3 ? 6 : 5}
                         fill={palette.get(name)}
                         stroke="var(--paper-raised)"
                         strokeWidth={1.5}
                       />
-                      <rect x={10} y={-10} width={120} height={20} fill="transparent" />
+                      <rect x={10} y={-10} width={150} height={20} fill="transparent" />
+                      {isTop3 && (
+                        <g transform={`translate(-55, -9)`}>
+                          <rect 
+                            width={42} height={18} rx={9} 
+                            fill={rank === 0 ? "#EF4444" : rank === 1 ? "#F97316" : "#FEF08A"} 
+                          />
+                          <text x={21} y={13} fontSize={10} fill={rank === 2 ? "var(--ink)" : "white"} fontWeight={700} textAnchor="middle">
+                            Top {rank + 1}
+                          </text>
+                        </g>
+                      )}
                       <text
                         x={16}
                         y={4}
                         fontSize={12}
-                        fontFamily="var(--font-mono)"
                         fill={isHover ? "var(--ink)" : "var(--ink-dim)"}
                         fontWeight={isHover ? 600 : 400}
                         style={{ transition: "all 200ms ease" }}
                       >
                         {shortName(name)}
-                        <tspan fill={isHover ? "var(--coral)" : "var(--gold)"} dx={8} fontWeight={600}>
-                          {val.toFixed(1)}%
+                        <tspan fill={isHover ? "var(--coral)" : isTop3 ? "#EF4444" : "var(--gold)"} dx={8} fontWeight={600}>
+                          {Number(val.toFixed(2))}%
                         </tspan>
                       </text>
                     </g>

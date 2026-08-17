@@ -107,8 +107,10 @@ export default function Part1Chart2() {
           </h1>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
-          <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
-            xxxxxxxxxxxxxxxxxxxx
+          <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink/65 leading-relaxed">
+            Sea levels across Pacific Island countries fluctuated significantly year-to-year but the overall trend is upward through the years.
+It causes fear…
+
           </p>
         </ScrollReveal>
 
