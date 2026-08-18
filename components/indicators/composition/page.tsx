@@ -8,6 +8,8 @@ import IndicatorSelect from "../../ui/IndicatorSelect";
 import YearRangeSelect from "../../ui/YearRangeSelect";
 import { SourceNote } from "@/components/ui/SourceNote";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import DotPlotChart from "./DotPlotChart";
+import DotPlotChartOld from "./DotPlotChartOld";
 
 const THRESHOLD = 1.0; // percentage points
 
@@ -164,6 +166,10 @@ export default function CompositionPage() {
           interpretation.
                   </p>
                 </ScrollReveal>
+      </div>
+      <DotPlotChart />
+      <div className="mt-20">
+        <DotPlotChartOld />
       </div>
     </div>
   );

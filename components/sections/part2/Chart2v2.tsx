@@ -1,15 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { cleanWaterData, shortName, cleanWaterYears } from "@/lib/data";
+import { cleanWaterFull, indicatorIds, shortName, cleanWaterYears } from "@/lib/data";
 import { makePalette, NEUTRAL_LINE } from "@/lib/colors";
 import Flag from "@/components/ui/Flag";
-
-
-const SCATTER_COUNTRIES = Object.keys(cleanWaterData).filter(
-  (name) =>
-    cleanWaterData[name].urban.length > 0 && cleanWaterData[name].rural.length > 0
-);
 
 const YEAR_EARLY = cleanWaterYears[0];
 const YEAR_LATE = cleanWaterYears[cleanWaterYears.length - 1];
@@ -18,42 +12,120 @@ interface Step {
   kicker: string;
   text: string;
   align: "left" | "right";
+  highlightCountry: string | null;
+  indId: string;
+  localStepIndex: number;
 }
 
-const steps: Step[] = [
-  {
-    kicker: "01 — HOW TO READ",
-    text: `Each dot is one country. X-axis shows rural population with safely managed drinking water, Y-axis shows urban — both in %, year ${YEAR_LATE}.`,
-    align: "left",
-  },
-  {
-    kicker: "02 — THE PATTERN",
-    text: "All 7 countries with disaggregated data fall ABOVE the diagonal — meaning in every country without exception, urban access to safe water is always higher than rural.",
-    align: "right",
-  },
-  {
-    kicker: "03 — LARGEST GAP",
-    text: `Palau: 97.7% of urban population had safe drinking water in ${YEAR_LATE}, compared to just 57.3% in rural areas — a 40+ point gap, the widest in the region.`,
-    align: "left",
-  },
-  {
-    kicker: "04 — NARROWEST GAP",
-    text: "Tuvalu has just a 5-point gap — but since both urban and rural hover around 10%, this is 'equality' in deprivation, not in sufficiency.",
-    align: "right",
-  },
-  {
-    kicker: `05 — TRAJECTORY ${YEAR_EARLY} → ${YEAR_LATE}`,
-    text: `From ${YEAR_EARLY} to ${YEAR_LATE}, the gap barely narrowed. In Palau and Samoa it even widened, because urban areas improved much faster than rural areas.`,
-    align: "left",
-  },
-];
+const ENGLISH_LABELS: Record<string, string> = {
+  "SH_H2O_SAFE": "Safely managed drinking water",
+  "SH_SAN_HNDWSH": "Basic handwashing facilities",
+  "SH_SAN_DEFECT": "Open defecation",
+  "SH_SAN_SAFE": "Safely managed sanitation"
+};
+
+function generateStepsForIndicator(indId: string): Omit<Step, "indId" | "localStepIndex">[] {
+  const data = cleanWaterFull[indId as keyof typeof cleanWaterFull].countries;
+  const countries = Object.keys(data).filter(
+    (name) => data[name].urban && data[name].rural && data[name].urban.length > 0 && data[name].rural.length > 0
+  );
+  
+  if (countries.length === 0) return [];
+
+  const label = ENGLISH_LABELS[indId] || cleanWaterFull[indId as keyof typeof cleanWaterFull].label;
+  
+  const gapData = countries.map(name => {
+    const urban = data[name].urban.find(s => s.year === YEAR_LATE)?.value ?? 0;
+    const rural = data[name].rural.find(s => s.year === YEAR_LATE)?.value ?? 0;
+    const gap = Math.abs(urban - rural);
+    return { name, urban, rural, gap };
+  }).sort((a, b) => b.gap - a.gap);
+
+  const largest = gapData[0] || { name: "", urban: 0, rural: 0, gap: 0 };
+  const narrowest = gapData[gapData.length - 1] || { name: "", urban: 0, rural: 0, gap: 0 };
+  
+  const isReversed = indId === "SH_SAN_DEFECT"; // Open defecation: smaller is better
+  
+  let aboveCount = 0;
+  let belowCount = 0;
+  gapData.forEach(d => {
+    if (d.urban > d.rural) aboveCount++;
+    else if (d.rural > d.urban) belowCount++;
+  });
+  
+  let patternText = "";
+  if (aboveCount === countries.length) {
+    patternText = `All ${countries.length} countries with disaggregated data fall ABOVE the diagonal — meaning in every country without exception, urban rates are higher than rural.`;
+  } else if (belowCount === countries.length) {
+    patternText = `All ${countries.length} countries fall BELOW the diagonal — meaning rural rates are higher than urban.`;
+  } else {
+    patternText = `${aboveCount} out of ${countries.length} countries fall ABOVE the diagonal, meaning urban areas typically have higher rates than rural areas.`;
+  }
+
+  // Adjust wording for Open Defecation
+  const widestKicker = isReversed ? "WORST DISPARITY" : "WIDEST GAP";
+  
+  return [
+    {
+      kicker: `01 — ${label.toUpperCase()}`,
+      text: `Each dot is one country. X-axis shows rural population with ${label.toLowerCase()}, Y-axis shows urban — both in %, year ${YEAR_LATE}.`,
+      align: "left",
+      highlightCountry: null
+    },
+    {
+      kicker: "02 — THE PATTERN",
+      text: patternText,
+      align: "right",
+      highlightCountry: null
+    },
+    {
+      kicker: `03 — ${widestKicker}`,
+      text: `${shortName(largest.name)}: ${largest.urban.toFixed(1)}% of urban population compared to ${largest.rural.toFixed(1)}% in rural areas — a ${largest.gap.toFixed(1)}-point gap, the widest in the region.`,
+      align: "left",
+      highlightCountry: largest.name
+    },
+    {
+      kicker: `04 — NARROWEST GAP`,
+      text: `${shortName(narrowest.name)} has just a ${narrowest.gap.toFixed(1)}-point gap between urban (${narrowest.urban.toFixed(1)}%) and rural (${narrowest.rural.toFixed(1)}%).`,
+      align: "right",
+      highlightCountry: narrowest.name
+    },
+    {
+      kicker: `05 — TRAJECTORY ${YEAR_EARLY} → ${YEAR_LATE}`,
+      text: `From ${YEAR_EARLY} to ${YEAR_LATE}, you can see how each country progressed. ${isReversed ? "Lines pointing down and left mean rates are improving (decreasing)." : "Lines pointing up and right mean both rural and urban improved."}`,
+      align: "left",
+      highlightCountry: null
+    }
+  ];
+}
 
 export default function Part2Chart2V2() {
-  const palette = useMemo(() => makePalette(SCATTER_COUNTRIES), []);
   const [currentStep, setCurrentStep] = useState(0);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const graphicRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(520);
+
+  const allStepsWithMeta = useMemo(() => {
+    const arr: Step[] = [];
+    indicatorIds.forEach(indId => {
+      const steps = generateStepsForIndicator(indId);
+      steps.forEach((s, i) => {
+        arr.push({ ...s, indId, localStepIndex: i });
+      });
+    });
+    return arr;
+  }, []);
+
+  const currentMeta = allStepsWithMeta[currentStep] || allStepsWithMeta[0];
+  const activeIndId = currentMeta.indId;
+  const localStep = currentMeta.localStepIndex;
+  
+  const activeData = cleanWaterFull[activeIndId as keyof typeof cleanWaterFull].countries;
+  const SCATTER_COUNTRIES = useMemo(() => Object.keys(activeData).filter(
+    (name) => activeData[name].urban && activeData[name].rural && activeData[name].urban.length > 0 && activeData[name].rural.length > 0
+  ), [activeData]);
+  
+  const palette = useMemo(() => makePalette(SCATTER_COUNTRIES), [SCATTER_COUNTRIES]);
 
   useEffect(() => {
     const ro = new ResizeObserver((entries) => {
@@ -84,7 +156,7 @@ export default function Part2Chart2V2() {
     );
     stepRefs.current.forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [allStepsWithMeta.length]);
 
   const margin = { top: 26, right: 22, bottom: 52, left: 52 };
   const innerW = size - margin.left - margin.right;
@@ -93,15 +165,15 @@ export default function Part2Chart2V2() {
   const scale = (v: number) => (v / 100) * innerW;
 
   const getVal = (name: string, kind: "urban" | "rural", year: number) =>
-    cleanWaterData[name][kind].find((s) => s.year === year)?.value ?? 0;
+    activeData[name][kind].find((s) => s.year === year)?.value ?? 0;
 
-  const showDiagonalShade = currentStep >= 1;
-  const highlightCountry =
-    currentStep === 2 ? "Palau" : currentStep === 3 ? "Tuvalu" : null;
-  const showTrajectory = currentStep >= 4;
+  const showDiagonalShade = localStep >= 1;
+  const highlightCountry = currentMeta.highlightCountry;
+  const showTrajectory = localStep >= 4;
+  const isReversed = activeIndId === "SH_SAN_DEFECT";
 
   const fillFor = (name: string) =>
-    currentStep === 0 ? NEUTRAL_LINE : (palette.get(name) as string);
+    localStep === 0 ? NEUTRAL_LINE : (palette.get(name) as string);
 
   const radiusFor = (name: string) => {
     if (highlightCountry) return name === highlightCountry ? 12 : 5;
@@ -110,17 +182,17 @@ export default function Part2Chart2V2() {
 
   const opacityFor = (name: string) => {
     if (highlightCountry) return name === highlightCountry ? 1 : 0.12;
-    return currentStep === 0 ? 0.55 : 0.9;
+    return localStep === 0 ? 0.55 : 0.9;
   };
 
   const ticks = [0, 25, 50, 75, 100];
+  const activeLabel = ENGLISH_LABELS[activeIndId] || activeIndId;
 
   return (
     <section id="part1-chart1" className="relative bg-foam px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
-        
-           <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
-          Safely managed drinking water: Rural &mdash; Urban divide
+        <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
+          The Rural&mdash;Urban Divide
         </h2>
         <div className="mt-8 flex items-center gap-2 text-xs text-ink-faint animate-pulse">
           <svg width="12" height="16" viewBox="0 0 12 16" fill="none">
@@ -146,10 +218,10 @@ export default function Part2Chart2V2() {
           <div className="chart-paper rounded-lg p-3 sm:p-5 w-full max-w-2xl">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[12px] uppercase tracking-[0.15em] text-ink-faint">
-                Safe drinking water &middot; {showTrajectory ? `${YEAR_EARLY} → ${YEAR_LATE}` : YEAR_LATE}
+                {activeLabel} &middot; {showTrajectory ? `${YEAR_EARLY} → ${YEAR_LATE}` : YEAR_LATE}
               </span>
               <span className="text-[12px] text-ink-faint">
-                {currentStep + 1} / {steps.length}
+                {currentStep + 1} / {allStepsWithMeta.length}
               </span>
             </div>
             <svg
@@ -161,9 +233,9 @@ export default function Part2Chart2V2() {
                 {/* upper-triangle diagonal shading */}
                 <polygon
                   points={`0,${innerH} 0,0 ${innerW},0`}
-                  fill="var(--tide)"
+                  fill={isReversed ? "var(--coral)" : "var(--tide)"}
                   opacity={showDiagonalShade ? 0.03 : 0}
-                  style={{ transition: "opacity 500ms ease" }}
+                  style={{ transition: "opacity 500ms ease, fill 500ms ease" }}
                 />
                 {/* gridlines */}
                 {ticks.map((t) => (
@@ -193,15 +265,17 @@ export default function Part2Chart2V2() {
                     >
                       {t}
                     </text>
-                    <text
-                      x={-8}
-                      y={innerH - scale(t) + 3}
-                      textAnchor="end"
-                      fontSize={9}
-                      fill="var(--ink-faint)"
-                    >
-                      {t}
-                    </text>
+                    {t !== 0 && (
+                      <text
+                        x={-8}
+                        y={innerH - scale(t) + 3}
+                        textAnchor="end"
+                        fontSize={9}
+                        fill="var(--ink-faint)"
+                      >
+                        {t}
+                      </text>
+                    )}
                   </g>
                 ))}
 
@@ -217,14 +291,14 @@ export default function Part2Chart2V2() {
                 />
                 {showDiagonalShade && (
                   <text
-                    x={innerW - 8}
-                    y={16}
-                    textAnchor="end"
+                    x={16}
+                    y={24}
+                    textAnchor="start"
                     fontSize={9.5}
-                    fill="var(--brass-bright)"
-                    style={{ transition: "opacity 500ms ease" }}
+                    fill={isReversed ? "var(--coral)" : "var(--brass-bright)"}
+                    style={{ transition: "opacity 500ms ease, fill 500ms ease" }}
                   >
-                    urban always higher ↑
+                    {isReversed ? "rural usually higher ↓" : "urban always higher ↑"}
                   </text>
                 )}
 
@@ -244,7 +318,7 @@ export default function Part2Chart2V2() {
                       stroke="var(--brass-bright)"
                       strokeWidth={1.2}
                       opacity={showTrajectory ? 0.5 : 0}
-                      style={{ transition: "opacity 500ms ease" }}
+                      style={{ transition: "opacity 500ms ease, x1 500ms ease, y1 500ms ease, x2 500ms ease, y2 500ms ease" }}
                     />
                   );
                 })}
@@ -263,13 +337,19 @@ export default function Part2Chart2V2() {
                       stroke={palette.get(name)}
                       strokeWidth={1.5}
                       opacity={showTrajectory ? 0.5 : 0}
-                      style={{ transition: "opacity 500ms ease" }}
+                      style={{ transition: "opacity 500ms ease, cx 500ms ease, cy 500ms ease" }}
                     />
                   );
                 })}
 
                 {/* main markers (2024) */}
-                {SCATTER_COUNTRIES.map((name) => {
+                {[...SCATTER_COUNTRIES]
+                  .sort((a, b) => {
+                    if (a === highlightCountry) return 1;
+                    if (b === highlightCountry) return -1;
+                    return 0;
+                  })
+                  .map((name) => {
                   const rx = scale(getVal(name, "rural", YEAR_LATE));
                   const ry = innerH - scale(getVal(name, "urban", YEAR_LATE));
                   const isHighlight = highlightCountry === name;
@@ -290,6 +370,24 @@ export default function Part2Chart2V2() {
                             "r 400ms ease, opacity 400ms ease, fill 400ms ease",
                         }}
                       />
+                      {/* Text Halo / Stroke for better legibility when overlapping */}
+                      <text
+                        x={0}
+                        y={-radiusFor(name) - 6}
+                        textAnchor="middle"
+                        fontSize={isHighlight ? 11 : 9}
+                        fill="none"
+                        stroke="white"
+                        strokeWidth={3}
+                        strokeLinejoin="round"
+                        opacity={
+                          highlightCountry ? (isHighlight ? 1 : 0) : localStep === 0 ? 0 : 0.85
+                        }
+                        style={{ transition: "opacity 400ms ease, font-size 400ms ease" }}
+                      >
+                        {shortName(name)}
+                      </text>
+                      {/* Main Text */}
                       <text
                         x={0}
                         y={-radiusFor(name) - 6}
@@ -297,7 +395,7 @@ export default function Part2Chart2V2() {
                         fontSize={isHighlight ? 11 : 9}
                         fill={isHighlight ? "var(--brass-bright)" : "var(--ink-dim)"}
                         opacity={
-                          highlightCountry ? (isHighlight ? 1 : 0) : currentStep === 0 ? 0 : 0.85
+                          highlightCountry ? (isHighlight ? 1 : 0) : localStep === 0 ? 0 : 0.85
                         }
                         style={{ transition: "opacity 400ms ease, font-size 400ms ease" }}
                       >
@@ -346,7 +444,7 @@ export default function Part2Chart2V2() {
         </div>
 
         {/* Scroll steps */}
-        {steps.map((step, i) => (
+        {allStepsWithMeta.map((step, i) => (
           <div
             key={i}
             ref={(el) => {
@@ -364,7 +462,7 @@ export default function Part2Chart2V2() {
                   : "opacity-60"
               }`}
             >
-              <span className="text-[10px] tracking-[0.15em] text-brass-bright">
+              <span className="text-[10px] tracking-[0.15em] text-brass-bright font-bold">
                 {step.kicker}
               </span>
               <p className="mt-2 text-sm sm:text-[15px] text-ink leading-relaxed">
@@ -375,14 +473,11 @@ export default function Part2Chart2V2() {
         ))}
       </div>
 
-      <div className="mx-auto max-w-6xl pt-6 sm:pt-10">
+      {/* <div className="mx-auto max-w-6xl pt-6 sm:pt-10">
         <p className="font-mono text-[11px] text-ink-faint leading-relaxed max-w-2xl">
-          Note: Nauru has urban-only data, Wallis &amp; Futuna has rural-only
-          data, so neither qualifies for this scatter plot. Remaining
-          countries/territories have no disaggregated reporting for safely managed drinking water
-          in the source dataset.
+          Note: Countries without both urban and rural disaggregated reporting are not shown in this chart.
         </p>
-      </div>
+      </div> */}
     </section>
   );
 }

@@ -116,13 +116,7 @@ export default function ChangePage() {
               ))}
             </select>
 
-            <YearRangeSelect
-              years={years}
-              start={start}
-              end={end}
-              onChangeStart={setStart}
-              onChangeEnd={setEnd}
-            />
+            {/* Year range is fixed to default (2016-2024) */}
 
             <div className="flex rounded-md overflow-hidden border border-grid text-[12px]">
               <button

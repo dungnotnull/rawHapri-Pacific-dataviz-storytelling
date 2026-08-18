@@ -193,8 +193,14 @@ export default function Part2Chart1() {
         </div>
 
         {/* Indicator Selection Buttons */}
-        <div className="mt-6 inline-flex flex-wrap gap-1.5 p-1.5 bg-ink/5 rounded-2xl items-center border border-ink/10">
-          {indicatorIds.map(id => {
+        <div className="mt-6 flex flex-wrap gap-1.5 p-1.5 bg-ink/5 rounded-2xl items-center border border-ink/10 w-fit">
+          {indicatorIds
+            .filter(id => {
+              // Hide Safely managed sanitation as requested (comment out the next line to reopen)
+              if (id === "SH_SAN_SAFE") return false;
+              return true;
+            })
+            .map(id => {
             const isActive = activeIndicator === id;
             return (
               <button
