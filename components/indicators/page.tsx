@@ -37,9 +37,9 @@ export default function IndicatorsHub() {
       </section> */}
 
       {/* Change Section */}
-      <section className="relative px-6 py-14 md:px-16">
+      {/* <section className="relative px-6 py-14 md:px-16">
         <ChangePage />
-      </section>
+      </section> */}
 
       {/* Distribution Section */}
       {/* <section className="relative px-6 py-14 md:px-16">

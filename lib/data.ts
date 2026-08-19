@@ -106,7 +106,7 @@ export const cleanWaterFull = Object.fromEntries(
     return [id, { ...def, countries: filteredCountries }];
   })
 ) as Record<string, IndicatorDef>;
-export const indicatorIds = Object.keys(cleanWaterFull).filter(id => id !== "SH_SAN_SAFE");
+export const indicatorIds = ["SH_H2O_SAFE", "SH_SAN_DEFECT", "SH_SAN_HNDWSH"];
 export const ALL_INDICATOR_YEARS = cleanWaterFull[indicatorIds[0]].years;
 
 // ---- Rolling correlation matrix (sea level x clean-water indicators) ----
