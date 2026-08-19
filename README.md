@@ -17,16 +17,18 @@ The story unfolds across four main sections:
 1. **Hero** – Opening thesis statement with ambient visual elements
 2. **Cause** – CO₂ emissions & temperature trends: contrasting PICs against top global emitters
 3. **Reality** – Sea level rise and shoreline displacement across the Pacific
-4. **Consequence** – Impact on agriculture: crop yield and livestock yield declines
+4. **Consequence** – Impact on agriculture and basic needs (WASH: Water, Sanitation, and Hygiene)
+5. **The Climate Triangle** – A 3D composition analyzing the intersection of emissions, sea level rise, and clean water access
 
 ## Features
 
 - **Scroll-driven storytelling** with Intersection Observer-based step triggers
-- **Interactive D3.js visualizations** including:
+- **Interactive D3.js & Plotly.js visualizations** including:
   - World map with country emissions bubbles
   - Per-capita CO₂ emissions comparison chart
   - Sea level trend visualization with Pacific average
-  - Combined CO₂ and temperature anomaly charts
+  - Clean Water & Sanitation (WASH) rankings and dot plots
+  - 3D Climate Triangle scatter plot
 - **Country modal** with detailed year-over-year data (click any country on the map)
 - **Year-by-year animation** with auto-play from 1850→2025
 - **Responsive design** optimized for desktop and mobile viewing
@@ -38,7 +40,7 @@ The story unfolds across four main sections:
 - **Framework:** Next.js 15.5+ (React 19) with App Router
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS v4 with custom design tokens
-- **Visualization:** D3.js v7 for custom charts, TopoJSON for map data
+- **Visualization:** D3.js v7 for custom charts, Plotly.js (via react-plotly.js) for 3D/complex scatter plots, TopoJSON for map data
 - **Fonts:** Fraunces (display), IBM Plex Mono (monospace), Public Sans (body)
 - **Deployment:** Vercel (static export)
 
@@ -113,6 +115,7 @@ All data is sourced from publicly available climate and development databases:
 - **CO₂ Emissions:** Pacific Data Hub, Our World in Data
 - **Temperature Anomalies:** World Bank Climate Change Knowledge Portal
 - **Sea Level:** Pacific Data Hub CLIMATE_CHANGE_SEA_INDICATORS
+- **WASH (Water, Sanitation, Hygiene):** WHO/UNICEF Joint Monitoring Programme
 - **Country Coordinates:** PIC countries geographic data
 
 See `data/SOURCES.md` for complete source listings, access dates, and licensing information.
@@ -145,7 +148,7 @@ See `data/SOURCES.md` for complete source listings, access dates, and licensing 
 
 - Static export for zero server dependency
 - D3.js charts render once on mount with ResizeObserver
-- Lazy-loaded section components
+- **Advanced Lazy Loading:** Heavy visualization libraries (like Plotly.js) are dynamically imported and deferred using `IntersectionObserver`, ensuring zero impact on the initial page load and Hero animation.
 - Optimized images with Unsplash CDN
 - CSS-based animations where possible
 

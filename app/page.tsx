@@ -6,7 +6,6 @@ import Part2Chart1 from "@/components/sections/part2/Chart1";
 import { BackToTop } from "@/components/ui/BackToTop";
 import Part2Chart2V2 from "@/components/sections/part2/Chart2v2";
 import IndicatorsHub from "@/components/indicators/page";
-import CorrelationBubble from "@/components/sections/part1/CorrelationBubble";
 
 const MARKS = [
   { id: "closing", label: "closing" },
@@ -32,7 +31,6 @@ export default function Home() {
       <Hero />
       <Cause />
       <Part1Chart2 />
-      {/* <CorrelationBubble /> */}
       <Part2Chart1 />
       <IndicatorsHub />
       <Part2Chart2V2 />

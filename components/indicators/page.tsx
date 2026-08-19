@@ -5,10 +5,6 @@ import * as d3 from "d3";
 import { wwdsSnapshot, wwdsYears, shortName } from "@/lib/data";
 import Flag from "../ui/Flag";
 import IndicatorSubNav from "../ui/IndicatorSubNav";
-import RadarPage from "./radar/page";
-import CorrelationPage from "./correlation/page";
-import ChangePage from "./change/page";
-import DistributionPage from "./distribution/page";
 import CompositionPage from "./composition/page";
 import { makePalette } from "@/lib/colors";
 
@@ -26,26 +22,6 @@ export default function IndicatorsHub() {
 
   return (
     <>
-      {/* Radar Section */}
-      {/* <section className="mx-auto max-w-7xl px-5 sm:px-8 py-6 sm:py-8">
-        <RadarPage />
-      </section> */}
-
-      {/* Correlation Section */}
-      {/* <section className="relative px-6 py-14 md:px-16">
-        <CorrelationPage />
-      </section> */}
-
-      {/* Change Section */}
-      {/* <section className="relative px-6 py-14 md:px-16">
-        <ChangePage />
-      </section> */}
-
-      {/* Distribution Section */}
-      {/* <section className="relative px-6 py-14 md:px-16">
-        <DistributionPage />
-      </section> */}
-
       {/* Composition Section */}
       <section className="relative px-6 py-14 md:px-16">
         <CompositionPage />
