@@ -55,6 +55,25 @@ export default function WashTriangleDashboard() {
   const [selectedYear, setSelectedYear] = useState<number>(2024);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
 
+  // Lazy loading state
+  const [inView, setInView] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "400px" } 
+    );
+    if (containerRef.current) observer.observe(containerRef.current);
+    
+    return () => observer.disconnect();
+  }, []);
+
   // Extract valid years (2016 to 2024)
   const availableYears = useMemo(() => {
     const years = new Set<number>();
@@ -258,51 +277,53 @@ export default function WashTriangleDashboard() {
         </div>
         <div className="h-40 w-full relative ">
           {/* @ts-ignore */}
-          <Plot
-            data={[
-              {
-                x: pts.map((d) => d.x),
-                y: pts.map((d) => d.y),
-                type: "scatter",
-                mode: "markers",
-                marker: { color, size: 6, opacity: 0.7 },
-                text: pts.map((d) => shortName(d.name)),
-                hoverinfo: "text",
-              },
-              {
-                x: lineX,
-                y: lineY,
-                type: "scatter",
-                mode: "lines",
-                line: { color: "var(--ink-dim)", width: 1, dash: "dot" },
-                hoverinfo: "none",
-              },
-            ]}
-            layout={{
-              margin: { l: 40, r: 15, b: 40, t: 15 },
-              font: { family: "inherit", color: "var(--ink)" },
-              xaxis: { title: { text: xLabel, font: { size: 10 } }, tickfont: { size: 9 }, range: [0, 100], ticksuffix: "%" },
-              yaxis: { title: { text: yLabel, font: { size: 10 } }, tickfont: { size: 9 }, ticksuffix: "%" },
-              showlegend: false,
-              paper_bgcolor: "transparent",
-              plot_bgcolor: "transparent",
-              hoverlabel: {
-                bgcolor: "rgba(255, 255, 255, 0.95)",
-                bordercolor: "rgba(14, 42, 44, 0.1)",
-                font: { color: "#0e2a2c", family: "inherit", size: 11 }
-              }
-            }}
-            config={{ displayModeBar: false }}
-            style={{ width: "100%", height: "100%" }}
-            useResizeHandler={true}
-          />
+          {inView && (
+            <Plot
+              data={[
+                {
+                  x: pts.map((d) => d.x),
+                  y: pts.map((d) => d.y),
+                  type: "scatter",
+                  mode: "markers",
+                  marker: { color, size: 6, opacity: 0.7 },
+                  text: pts.map((d) => shortName(d.name)),
+                  hoverinfo: "text",
+                },
+                {
+                  x: lineX,
+                  y: lineY,
+                  type: "scatter",
+                  mode: "lines",
+                  line: { color: "var(--ink-dim)", width: 1, dash: "dot" },
+                  hoverinfo: "none",
+                },
+              ] as any}
+              layout={{
+                margin: { l: 40, r: 15, b: 40, t: 15 },
+                font: { family: "inherit", color: "var(--ink)" },
+                xaxis: { title: { text: xLabel, font: { size: 10 } }, tickfont: { size: 9 }, range: [0, 100], ticksuffix: "%" },
+                yaxis: { title: { text: yLabel, font: { size: 10 } }, tickfont: { size: 9 }, ticksuffix: "%" },
+                showlegend: false,
+                paper_bgcolor: "transparent",
+                plot_bgcolor: "transparent",
+                hoverlabel: {
+                  bgcolor: "rgba(255, 255, 255, 0.95)",
+                  bordercolor: "rgba(14, 42, 44, 0.1)",
+                  font: { color: "#0e2a2c", family: "inherit", size: 11 }
+                }
+              }}
+              config={{ displayModeBar: false }}
+              style={{ width: "100%", height: "100%" }}
+              useResizeHandler={true}
+            />
+          )}
         </div>
       </div>
     );
   };
 
   return (
-    <section className="relative mb-20 font-sans">
+    <section className="relative mb-20 font-sans" ref={containerRef}>
       <div className="mx-auto max-w-6xl px-0">
         {/* Header */}
         <div className="flex flex-col mb-8 relative">
@@ -372,13 +393,15 @@ export default function WashTriangleDashboard() {
             
             <div className="absolute inset-0 top-8">
               {/* @ts-ignore */}
-              <Plot
-                data={plotData3D as any}
-                layout={plotLayout3D as any}
-                config={{ displayModeBar: false }}
-                style={{ width: "100%", height: "100%" }}
-                useResizeHandler={true}
-              />
+              {inView && (
+                <Plot
+                  data={plotData3D as any}
+                  layout={plotLayout3D as any}
+                  config={{ displayModeBar: false }}
+                  style={{ width: "100%", height: "100%" }}
+                  useResizeHandler={true}
+                />
+              )}
             </div>
             
             <div className="absolute -bottom-8 left-4 right-4 text-xs text-ink-dim p-2 rounded backdrop-blur opacity-[0.5]">
