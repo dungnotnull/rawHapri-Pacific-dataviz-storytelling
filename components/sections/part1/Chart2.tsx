@@ -116,7 +116,7 @@ It causes fear…
 
         <div className="mt-10 flex flex-col lg:flex-row gap-8">
           {/* Chart Area */}
-          <div className="flex-1 rounded-lg border border-ink/10 bg-transparent shadow-[0_8px_30px_rgba(0,0,0,0.08)]" ref={wrapRef} style={{ height }}>
+          <div className="flex-1 rounded-lg border border-ink/10 bg-white/60 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.08)]" ref={wrapRef} style={{ height }}>
             {width > 0 && (
               <svg width={width} height={height} className="overflow-visible block">
                 <g transform={`translate(${margin.left},${margin.top})`}>

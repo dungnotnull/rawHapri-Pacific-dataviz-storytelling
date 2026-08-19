@@ -32,7 +32,7 @@ export default function Home() {
       <Hero />
       <Cause />
       <Part1Chart2 />
-      <CorrelationBubble />
+      {/* <CorrelationBubble /> */}
       <Part2Chart1 />
       <IndicatorsHub />
       <Part2Chart2V2 />

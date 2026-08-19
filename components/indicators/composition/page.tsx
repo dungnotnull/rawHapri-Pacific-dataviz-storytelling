@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import * as d3 from "d3";
 import { cleanWaterFull, indicatorIds } from "@/lib/data";
 import DotPlotChartOld from "./DotPlotChartOld";
+import WashTriangleDashboard from "./WashTriangleDashboard";
 
 const THRESHOLD = 1.0; // percentage points
 
@@ -51,6 +52,7 @@ export default function CompositionPage() {
   return (
     <div id="composition-section">
       {/* <DotPlotChart /> */}
+        <WashTriangleDashboard />
         <DotPlotChartOld />
     </div>
   );

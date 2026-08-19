@@ -80,7 +80,7 @@ export default function DotPlotChartOld() {
   const rowHeight = 120;
   const innerH = ORDERED_INDICATORS.length * rowHeight;
   
-  const margin = { top: 80, right: 60, bottom: 40, left: 220 };
+  const margin = { top: 80, right: width < 640 ? 20 : 60, bottom: 40, left: width < 640 ? 140 : 220 };
   const height = innerH + margin.top + margin.bottom;
   const innerW = width > 0 ? width - margin.left - margin.right : 0;
 
@@ -123,10 +123,13 @@ export default function DotPlotChartOld() {
   const handleMouseMove = (e: React.MouseEvent<SVGElement>) => {
     if (!wrapRef.current) return;
     const rect = wrapRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - margin.left;
-    const y = e.clientY - rect.top - margin.top;
+    
+    // Using nativeEvent.offsetX/Y gives coordinates relative to the SVG element, inherently accounting for scroll
+    const x = e.nativeEvent.offsetX - margin.left;
+    const y = e.nativeEvent.offsetY - margin.top;
     
     let closestPt: DataPoint | null = null;
+    let closestPos = { x: 0, y: 0 };
     let minD = 30;
     
     for (const indId of ORDERED_INDICATORS) {
@@ -142,16 +145,14 @@ export default function DotPlotChartOld() {
         if (dist < minD) {
           minD = dist;
           closestPt = d;
+          closestPos = { x: cx + margin.left, y: cy + margin.top };
         }
       }
     }
     
     if (closestPt) {
       setHoveredData(closestPt);
-      setHoverPos({
-        x: e.clientX,
-        y: e.clientY
-      });
+      setHoverPos(closestPos);
     } else {
       setHoveredData(null);
     }
@@ -166,18 +167,18 @@ export default function DotPlotChartOld() {
           </h2>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
-          <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink/65 leading-relaxed">
+          <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink-dim leading-relaxed">
             xxxxxxxxxxxxxxxxx
           </p>
         </ScrollReveal>
 
         <div className="mt-10 flex flex-col lg:flex-row gap-8">
-          <div className="flex-1 w-full overflow-x-auto overflow-y-hidden custom-scroll rounded-lg border border-ink/10 bg-transparent shadow-[0_8px_30px_rgba(0,0,0,0.08)]" ref={wrapRef} style={{ minHeight: height }}>
+          <div className="flex-1 w-full  overflow-hidden custom-scroll rounded-lg border border-ink/10 bg-white/60 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.08)] relative" ref={wrapRef} style={{ minHeight: height }}>
             {width > 0 && (
               <svg width={Math.max(width, 600)} height={height} className="block overflow-visible font-sans" onMouseMove={handleMouseMove} onMouseLeave={() => setHoveredData(null)}>
                 <g transform={`translate(${margin.left},${margin.top})`}>
                   
-                  {xScale.ticks(10).map(tick => (
+                  {xScale.ticks(width < 640 ? 5 : 10).map(tick => (
                     <g key={`x-${tick}`} transform={`translate(${xScale(tick)},0)`}>
                       <line y1={0} y2={innerH} stroke="#e5e7eb" strokeWidth={1} />
                       <text y={-25} textAnchor="middle" fill="#6b7280" fontSize={11} fontWeight="500">
@@ -199,9 +200,9 @@ export default function DotPlotChartOld() {
 
                     return (
                       <g key={indId} transform={`translate(0, ${y})`}>
-                        {/* Indicator Label (multiline if needed, but here simple text) */}
-                        <foreignObject x={-margin.left + 20} y={-20} width={margin.left - 40} height={40}>
-                          <div className="flex items-center h-full text-xs font-semibold text-ink/80 leading-tight">
+                        {/* Indicator Label */}
+                        <foreignObject x={-margin.left + 10} y={-20} width={margin.left - 20} height={40}>
+                          <div className="flex items-center justify-start h-full text-[10px] sm:text-xs font-semibold text-ink/80 leading-tight">
                             {label}
                           </div>
                         </foreignObject>
@@ -318,11 +319,11 @@ export default function DotPlotChartOld() {
             
             {hoveredData && (
               <div 
-                className="fixed z-[100] pointer-events-none bg-white border border-gray-200 shadow-md rounded px-3 py-2 text-xs"
+                className="absolute z-[100] pointer-events-none bg-white border border-ink/10 shadow-lg rounded px-3 py-2 text-xs"
                 style={{
-                  left: hoverPos.x,
-                  top: hoverPos.y - 10,
-                  transform: 'translate(-50%, -100%)'
+                  left: hoverPos.x - 12,
+                  top: hoverPos.y,
+                  transform: 'translate(-100%, -50%)'
                 }}
               >
                 <div className="font-bold text-ink mb-1">{shortName(selectedCountry)} ({hoveredData.year})</div>
@@ -354,16 +355,18 @@ export default function DotPlotChartOld() {
             })}
           </div>
         </div>
-                <SourceNote className="text-primary text-xs mt-3">
-                        <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2023.</span>
-                      </SourceNote>
-               <ScrollReveal animation="fade-up" delay={600}>
-                  <p className="mt-3 max-w-2xl text-sm text-primary leading-relaxed opacity-[0.7]">
-                   Distribution of the clean water and sanitation indicators for a selected country. 
+        <div className="mt-4">
+          <SourceNote>
+            <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2023.</span>
+          </SourceNote>
+        </div>
+        <ScrollReveal animation="fade-up" delay={600}>
+          <p className="mt-3 max-w-2xl text-xs sm:text-sm text-ink-dim leading-relaxed opacity-[0.7]">
+            Distribution of the clean water and sanitation indicators for a selected country. 
             The dots represent the percentage value staggered vertically by year. 
             Colors represent the trend from 2016 to 2024 (Green: Improved, Red: Declined, Black: Unchanged).
-                  </p>
-                </ScrollReveal>
+          </p>
+        </ScrollReveal>
       </div>
     </section>
   );

@@ -105,12 +105,13 @@ export default function DotPlotChart() {
 
   const handleMouseMove = (e: React.MouseEvent<SVGElement>) => {
     if (!wrapRef.current) return;
-    const rect = wrapRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - margin.left;
-    const y = e.clientY - rect.top - margin.top;
     
-    // Find closest point
+    // Using nativeEvent.offsetX/Y gives coordinates relative to the SVG element, inherently accounting for scroll
+    const x = e.nativeEvent.offsetX - margin.left;
+    const y = e.nativeEvent.offsetY - margin.top;
+    
     let closestPt: DataPoint | null = null;
+    let closestPos = { x: 0, y: 0 };
     let minD = 30; // max distance to hover
     
     data.forEach(d => {
@@ -120,15 +121,13 @@ export default function DotPlotChart() {
       if (dist < minD) {
         minD = dist;
         closestPt = d;
+        closestPos = { x: cx + margin.left, y: cy + margin.top };
       }
     });
-    
+
     if (closestPt) {
       setHoveredData(closestPt);
-      setHoverPos({
-        x: xScale((closestPt as DataPoint).year) + margin.left,
-        y: (yPositions.get(`${(closestPt as DataPoint).country}-${(closestPt as DataPoint).indicatorId}`) || 0) + margin.top
-      });
+      setHoverPos(closestPos);
     } else {
       setHoveredData(null);
     }
@@ -143,14 +142,14 @@ export default function DotPlotChart() {
           </h2>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
-          <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink/65 leading-relaxed">
+          <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink-dim leading-relaxed">
             Distribution of the clean water and sanitation indicators over the years ({years[0]} - {years[years.length - 1]}).
             The size of each bubble corresponds to the percentage value.
           </p>
         </ScrollReveal>
 
         <div className="mt-10 relative">
-          <div className="w-full overflow-x-auto overflow-y-hidden custom-scroll" ref={wrapRef}>
+          <div className="w-full overflow-x-auto overflow-y-hidden custom-scroll rounded-lg border border-ink/10 bg-white/60 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.08)] relative" ref={wrapRef}>
             {width > 0 && (
               <svg width={Math.max(width, 800)} height={height} className="block overflow-visible font-sans" onMouseMove={handleMouseMove} onMouseLeave={() => setHoveredData(null)}>
                 <g transform={`translate(${margin.left},${margin.top})`}>
@@ -245,11 +244,11 @@ export default function DotPlotChart() {
             {/* Tooltip */}
             {hoveredData && (
               <div 
-                className="absolute z-10 pointer-events-none bg-white border border-gray-200 shadow-md rounded px-3 py-2 text-xs"
+                className="absolute z-[100] pointer-events-none bg-white border border-ink/10 shadow-lg rounded px-3 py-2 text-xs"
                 style={{
-                  left: hoverPos.x,
-                  top: hoverPos.y - 10,
-                  transform: 'translate(-50%, -100%)',
+                  left: hoverPos.x - 12,
+                  top: hoverPos.y,
+                  transform: 'translate(-100%, -50%)'
                 }}
               >
                 <div className="font-bold text-ink mb-1">{shortName(hoveredData.country)} ({hoveredData.year})</div>

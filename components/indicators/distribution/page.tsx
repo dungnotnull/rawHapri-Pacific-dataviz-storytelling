@@ -106,7 +106,7 @@ export default function DistributionPage() {
         <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
           Disparities between countries across years
         </h2>
-        <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
+        <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink-dim leading-relaxed">
           Each box plot summarizes dispersion between countries in a year: the center
           line is the median, the box is the interquartile range (Q1–Q3), whiskers are
           the non-outlier range, and dots are individual countries (hover to identify).

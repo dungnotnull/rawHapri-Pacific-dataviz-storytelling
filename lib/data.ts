@@ -129,9 +129,9 @@ export const correlationMatrix = correlationRaw as CorrelationMatrixData;
 // Label translations for Vietnamese indicators
 export const INDICATOR_LABEL_MAP: Record<string, string> = {
   "Nước uống được quản lý an toàn": "Safely managed drinking water",
-  "Có nơi rửa tay cơ bản tại nhà": "Basic handwashing facilities at home",
+  "Có nơi rửa tay cơ bản tại nhà": "Basic handwashing facilities",
   "Vệ sinh được quản lý an toàn": "Safely managed sanitation",
-  "Đi vệ sinh lộ thiên (phóng uế bừa bãi)": "Open defecation (to be eliminated)",
+  "Đi vệ sinh lộ thiên (phóng uế bừa bãi)": "Open defecation",
   // Correlation matrix labels
   "Mực nước biển": "Sea level",
   "Nước uống an toàn": "Safe drinking water",

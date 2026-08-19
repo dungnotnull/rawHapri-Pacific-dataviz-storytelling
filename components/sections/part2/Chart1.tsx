@@ -220,7 +220,7 @@ export default function Part2Chart1() {
 
         <div className="mt-10 grid lg:grid-cols-[1fr_70px] gap-8 items-start">
           {/* Chart */}
-          <div ref={containerRef} className="chart-paper rounded-xl p-4 sm:p-6 shadow-sm border border-ink/5 overflow-x-auto custom-scroll">
+          <div ref={containerRef} className="bg-white/60 backdrop-blur-md rounded-xl p-4 sm:p-6 shadow-sm border border-ink/5 overflow-x-auto custom-scroll">
             <svg width={svgWidth} height={height} viewBox={`0 0 ${svgWidth} ${height}`} preserveAspectRatio="xMidYMid meet">
               <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
                 {/* year axis labels */}

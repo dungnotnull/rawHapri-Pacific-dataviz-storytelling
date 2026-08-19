@@ -87,7 +87,7 @@ export default function ChangePage() {
         <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
           Clean water indicator changes, year over year
         </h2>
-        <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
+        <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink-dim leading-relaxed">
           xxxxxxxxxxxxxxxxxxxx
         </p>
 

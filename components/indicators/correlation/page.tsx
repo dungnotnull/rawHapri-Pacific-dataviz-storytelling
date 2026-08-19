@@ -53,7 +53,7 @@ export default function CorrelationPage() {
         <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
           How are sea level and clean water indicators correlated over years?
         </h2>
-        <p className="mt-3 max-w-2xl text-sm sm:text-base text-ink-dim leading-relaxed">
+        <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink-dim leading-relaxed">
           Because sea level is nearly uniform across countries within the same year
           (it's a regional signal, not a country-level difference), correlation
           "cross-country" in a single year is nearly meaningless. Instead, this chart
