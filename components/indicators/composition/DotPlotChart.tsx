@@ -144,7 +144,7 @@ export default function DotPlotChart() {
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
           <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink/65 leading-relaxed">
-            Distribution of the 4 clean water and sanitation indicators over the years ({years[0]} - {years[years.length - 1]}).
+            Distribution of the clean water and sanitation indicators over the years ({years[0]} - {years[years.length - 1]}).
             The size of each bubble corresponds to the percentage value.
           </p>
         </ScrollReveal>

@@ -145,7 +145,7 @@ export default function DotPlotChartOld() {
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
           <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink/65 leading-relaxed">
-            Distribution of the 4 clean water and sanitation indicators. Here, the X-axis is the percentage value and the dots are staggered vertically by year.
+            Distribution of the clean water and sanitation indicators. Here, the X-axis is the percentage value and the dots are staggered vertically by year.
           </p>
         </ScrollReveal>
 
