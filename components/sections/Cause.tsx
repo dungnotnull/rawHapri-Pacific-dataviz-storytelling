@@ -56,7 +56,7 @@ export function Cause() {
         <div className="mt-6 grid gap-10 lg:grid-cols-[1.3fr_0.9fr]">
           <div className="flex flex-col gap-3">
             <ScrollReveal animation="fade-right" delay={200}>
-              <div className="relative h-[62vh] md:h-[420px] 2xl:h-[60vh] min-h-[420px] rounded-2xl border border-ink/8 bg-white/40 p-2">
+              <div className="relative h-[62vh] md:h-[420px] 2xl:h-[60vh] min-h-[420px] rounded-2xl border border-ink/8 bg-white/65 p-2">
                 <CauseMap active selectedYear={selectedYear} />
                 <div className="absolute bottom-2 left-6 right-6 z-10">
                   <WarmingStripes />
