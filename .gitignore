@@ -46,3 +46,6 @@ next-env.d.ts
 # Project documentation (keep private)
 CLAUDE.md
 PROJECT-DETAIL.md
+
+# Data
+data/pacific_data_all.xlsx

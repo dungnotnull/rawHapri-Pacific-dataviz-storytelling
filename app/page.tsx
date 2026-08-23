@@ -31,7 +31,7 @@ export default function Home() {
       <Hero />
       <Cause />
       <Part1Chart2 />
-      <Part2Chart1 />
+      {/* <Part2Chart1 /> */}
       <IndicatorsHub />
       <Part2Chart2V2 />
 

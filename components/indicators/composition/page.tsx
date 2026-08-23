@@ -52,8 +52,8 @@ export default function CompositionPage() {
   return (
     <div id="composition-section">
       {/* <DotPlotChart /> */}
-        <WashTriangleDashboard />
         <DotPlotChartOld />
+        <WashTriangleDashboard />
     </div>
   );
 }

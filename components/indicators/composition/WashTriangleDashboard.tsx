@@ -36,19 +36,19 @@ const INDICATORS = {
 
 // Colors for countries in the legend/scatter
 const COUNTRY_COLORS = [
-  "#9333ea", // Niue (purple)
-  "#0ea5e9", // Palau (blue)
-  "#ef4444", // Samoa (red)
-  "#06b6d4", // Fiji (cyan)
-  "#8b5cf6", // Tonga (violet)
-  "#10b981", // Vanuatu (emerald)
-  "#3b82f6", // Marshall Islands (blue)
-  "#6366f1", // Micronesia (indigo)
-  "#14b8a6", // Solomon Islands (teal)
-  "#f43f5e", // Kiribati (rose)
-  "#f97316", // Tuvalu (orange)
-  "#84cc16", // Cook Islands (lime)
-  "#eab308", // Nauru (yellow)
+  "#dc2626", // strong red
+  "#2563eb", // strong blue
+  "#16a34a", // green
+  "#ea580c", // orange
+  "#9333ea", // purple
+  "#0891b2", // cyan
+  "#e11d48", // rose
+  "#d97706", // amber
+  "#0d9488", // teal
+  "#65a30d", // lime
+  "#4f46e5", // indigo
+  "#0284c7", // light blue
+  "#c026d3", // fuchsia
 ];
 
 export default function WashTriangleDashboard() {
@@ -155,25 +155,7 @@ export default function WashTriangleDashboard() {
     };
   }, [dataMap, activeCountries]);
 
-  // Compute Composite Scores (Top 3)
-  const topCountries = useMemo(() => {
-    const scores = activeCountries.map((c) => {
-      const d = dataMap.get(c);
-      // Normalize (0-1). Water: higher is better. Handwashing: higher is better. Defecation: lower is better.
-      const wScore = d.water !== null ? d.water / 100 : 0;
-      const hScore = d.handwashing !== null ? d.handwashing / 100 : 0;
-      const dScore = d.defecation !== null ? Math.max(0, 1 - d.defecation / 100) : 0;
 
-      // Only score countries with at least 2 metrics
-      const validMetrics = [d.water, d.handwashing, d.defecation].filter((v) => v !== null).length;
-      if (validMetrics < 2) return { country: c, score: -1 };
-
-      const score = (wScore + hScore + dScore) / 3;
-      return { country: c, score };
-    });
-
-    return scores.filter((s) => s.score >= 0).sort((a, b) => b.score - a.score).slice(0, 3);
-  }, [dataMap, activeCountries]);
 
   // 3D Chart Data formatting
   const plotData3D = useMemo(() => {
@@ -190,8 +172,8 @@ export default function WashTriangleDashboard() {
         type: "scatter3d",
         mode: isOtherHovered ? "markers" : "markers+text",
         name: shortName(c),
-        x: [d.water],
-        y: [d.defecation],
+        x: [d.defecation],
+        y: [d.water],
         z: [d.handwashing],
         text: [shortName(c)],
         textposition: "top center",
@@ -222,18 +204,18 @@ export default function WashTriangleDashboard() {
     },
     scene: {
       xaxis: { 
-        title: { text: "Safely managed drinking water (%)", font: { color: "#2563eb", size: 12 } }, 
-        range: [0, 100], backgroundcolor: "transparent", showbackground: false, ticksuffix: "%",
-        color: "#2563eb", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#2563eb", zeroline: false
+        title: { text: "Open defecation (%)", font: { color: "#ea580c", size: 12 } }, 
+        range: [0, 50], backgroundcolor: "transparent", showbackground: false,
+        color: "#ea580c", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#ea580c", zeroline: false
       },
       yaxis: { 
-        title: { text: "Open defecation (%)", font: { color: "#ea580c", size: 12 } }, 
-        range: [0, 50], backgroundcolor: "transparent", showbackground: false, ticksuffix: "%",
-        color: "#ea580c", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#ea580c", zeroline: false
+        title: { text: "Safely managed drinking water (%)", font: { color: "#2563eb", size: 12 } }, 
+        range: [0, 100], backgroundcolor: "transparent", showbackground: false,
+        color: "#2563eb", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#2563eb", zeroline: false
       },
       zaxis: { 
         title: { text: "Handwashing facilities (%)", font: { color: "#059669", size: 12 } }, 
-        range: [0, 100], backgroundcolor: "transparent", showbackground: false, ticksuffix: "%",
+        range: [0, 100], backgroundcolor: "transparent", showbackground: false,
         color: "#059669", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#059669", zeroline: false
       },
       camera: {
@@ -244,128 +226,60 @@ export default function WashTriangleDashboard() {
     hovermode: "closest",
   };
 
-  // 2D Scatter plot generator
-  const renderPairwiseScatter = (xKey: "water" | "handwashing", yKey: "defecation" | "handwashing", title: string, xLabel: string, yLabel: string, color: string) => {
-    const pts = activeCountries
-      .map((c) => ({ x: dataMap.get(c)[xKey], y: dataMap.get(c)[yKey], name: c }))
-      .filter((p) => p.x !== null && p.y !== null);
-
-    // Simple linear regression
-    const n = pts.length;
-    if (n < 2) return null;
-    const sumX = d3.sum(pts, (d) => d.x);
-    const sumY = d3.sum(pts, (d) => d.y);
-    const sumXY = d3.sum(pts, (d) => d.x * d.y);
-    const sumX2 = d3.sum(pts, (d) => d.x * d.x);
-    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-    const intercept = (sumY - slope * sumX) / n;
-
-    // Correlation coefficient (r)
-    const sumY2 = d3.sum(pts, (d) => d.y * d.y);
-    const r = (n * sumXY - sumX * sumY) / Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
-
-    const xMin = d3.min(pts, (d) => d.x) || 0;
-    const xMax = d3.max(pts, (d) => d.x) || 100;
-    const lineX = [xMin, xMax];
-    const lineY = [slope * xMin + intercept, slope * xMax + intercept];
-
-    return (
-      <div className="flex flex-col justify-between flex-1 bg-white/60 backdrop-blur-md rounded-lg p-3 border border-ink/10 shadow-sm overflow-hidden group min-w-[200px]">
-        <div className="flex justify-between items-start gap-2 mb-1">
-          <h4 className="text-sm font-semibold text-ink/80 leading-tight">{title}</h4>
-          <p className="text-xs text-ink/60 font-mono whitespace-nowrap pt-0.5">r = {r.toFixed(2)}</p>
-        </div>
-        <div className="h-40 w-full relative ">
-          {/* @ts-ignore */}
-          {inView && (
-            <Plot
-              data={[
-                {
-                  x: pts.map((d) => d.x),
-                  y: pts.map((d) => d.y),
-                  type: "scatter",
-                  mode: "markers",
-                  marker: { color, size: 6, opacity: 0.7 },
-                  text: pts.map((d) => shortName(d.name)),
-                  hoverinfo: "text",
-                },
-                {
-                  x: lineX,
-                  y: lineY,
-                  type: "scatter",
-                  mode: "lines",
-                  line: { color: "var(--ink-dim)", width: 1, dash: "dot" },
-                  hoverinfo: "none",
-                },
-              ] as any}
-              layout={{
-                margin: { l: 40, r: 15, b: 40, t: 15 },
-                font: { family: "inherit", color: "var(--ink)" },
-                xaxis: { title: { text: xLabel, font: { size: 10 } }, tickfont: { size: 9 }, range: [0, 100], ticksuffix: "%" },
-                yaxis: { title: { text: yLabel, font: { size: 10 } }, tickfont: { size: 9 }, ticksuffix: "%" },
-                showlegend: false,
-                paper_bgcolor: "transparent",
-                plot_bgcolor: "transparent",
-                hoverlabel: {
-                  bgcolor: "rgba(255, 255, 255, 0.95)",
-                  bordercolor: "rgba(14, 42, 44, 0.1)",
-                  font: { color: "#0e2a2c", family: "inherit", size: 11 }
-                }
-              }}
-              config={{ displayModeBar: false }}
-              style={{ width: "100%", height: "100%" }}
-              useResizeHandler={true}
-            />
-          )}
-        </div>
-      </div>
-    );
-  };
+  // Removed renderPairwiseScatter
 
   return (
-    <section className="relative mb-20 font-sans" ref={containerRef}>
+    <section className="relative mb-0" ref={containerRef}>
       <div className="mx-auto max-w-6xl px-0">
         {/* Header */}
-        <div className="flex flex-col mb-8 relative">
+        <div className="flex flex-col mb-6 relative">
           <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
-            The Climate Triangle <span className="text-ink/50">— {selectedYear}</span>
+            The Climate Triangle
           </h2>
-         
         </div>
 
-        {/* Top KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-transparent rounded-lg p-5 border-l-2 border-blue-400">
-            <div>
-              <h3 className="text-xs font-bold text-blue-600 uppercase tracking-wider">Safely Managed Drinking Water</h3>
-              <p className="text-xs text-ink/60 mt-1">Pacific average</p>
-              <p className="text-3xl font-display text-blue-600 mt-1">{averages.water.toFixed(1)}%</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 bg-white rounded-md border border-ink/10 shadow-sm overflow-hidden mb-0 text-sm divide-y md:divide-y-0 md:divide-x divide-ink/10">
+          
+          {/* Water Column */}
+          <div className="p-3">
+            <h4 className="font-semibold text-blue-600 uppercase tracking-wide">Safely Managed Drinking Water</h4>
+            {/* <p className="text-blue-500/80 mb-5 text-[13px]">(% of population)</p> */}
+            <div className="space-y-2.5">
+              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={activeCountries.length})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded">Pacific ({averages.water.toFixed(1)}%)</span></div>
+              <div className="flex justify-between items-center"><span className="text-ink/70">Highest</span> <span className="text-ink">{shortName(extremes.water.high.country || "N/A")} ({extremes.water.high.value?.toFixed(1) ?? "-"}%)</span></div>
+              <div className="flex justify-between items-center"><span className="text-ink/70">Lowest</span> <span className="text-ink">{shortName(extremes.water.low.country || "N/A")} ({extremes.water.low.value?.toFixed(1) ?? "-"}%)</span></div>
             </div>
           </div>
-          <div className="bg-transparent rounded-lg p-5 border-l-2 border-orange-400">
-            <div>
-              <h3 className="text-xs font-bold text-orange-600 uppercase tracking-wider">Open Defecation (lower is better)</h3>
-              <p className="text-xs text-ink/60 mt-1">Pacific average</p>
-              <p className="text-3xl font-display text-orange-600 mt-1">{averages.defecation.toFixed(1)}%</p>
+
+          {/* Defecation Column */}
+          <div className="p-3">
+            <h4 className="font-semibold text-orange-600 uppercase tracking-wide">Open Defecation</h4>
+            {/* <p className="text-orange-500/80 mb-5 text-[13px]">lower is better</p> */}
+            <div className="space-y-2.5">
+              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={activeCountries.length})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded">Pacific ({averages.defecation.toFixed(1)}%)</span></div>
+              <div className="flex justify-between items-center"><span className="text-ink/70">Lowest</span> <span className="text-ink">{shortName(extremes.defecation.low.country || "N/A")} ({extremes.defecation.low.value?.toFixed(1) ?? "-"}%)</span></div>
+              <div className="flex justify-between items-center"><span className="text-ink/70">Highest</span> <span className="text-ink">{shortName(extremes.defecation.high.country || "N/A")} ({extremes.defecation.high.value?.toFixed(1) ?? "-"}%)</span></div>
             </div>
           </div>
-          <div className="bg-transparent rounded-lg p-5 border-l-2 border-emerald-400">
-            <div>
-              <h3 className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Handwashing Facilities</h3>
-              <p className="text-xs text-ink/60 mt-1">Pacific average</p>
-              <p className="text-3xl font-display text-emerald-600 mt-1">{averages.handwashing.toFixed(1)}%</p>
+
+          {/* Handwashing Column */}
+          <div className="p-3">
+            <h4 className="font-semibold text-emerald-600 uppercase tracking-wide">Handwashing Facilities</h4>
+            {/* <p className="text-emerald-500/80 mb-5 text-[13px]">(% of population)</p> */}
+            <div className="space-y-2.5">
+              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={activeCountries.length})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded">Pacific ({averages.handwashing.toFixed(1)}%)</span></div>
+              <div className="flex justify-between items-center"><span className="text-ink/70">Highest</span> <span className="text-ink">{shortName(extremes.handwashing.high.country || "N/A")} ({extremes.handwashing.high.value?.toFixed(1) ?? "-"}%)</span></div>
+              <div className="flex justify-between items-center"><span className="text-ink/70">Lowest</span> <span className="text-ink">{shortName(extremes.handwashing.low.country || "N/A")} ({extremes.handwashing.low.value?.toFixed(1) ?? "-"}%)</span></div>
             </div>
           </div>
         </div>
 
         {/* Main 3D Space & Legend */}
-        <div className="flex flex-col lg:flex-row gap-8 mb-12">
-          <div className="flex-1 lg:flex-[3] relative" style={{ minHeight: "550px" }}>
-            {/* <h3 className="font-semibold text-ink text-sm mb-1">3D WASH SPACE</h3> */}
-            <p className="text-xs text-ink/60 mb-4">Drag to rotate • Scroll to zoom</p>
+        <div className="flex flex-col lg:flex-row gap-10 mb-8 pt-4">
+          <div className="flex-1 lg:flex-[3] relative flex flex-col" style={{ minHeight: "550px" }}>
+            <p className="text-[11px] text-ink/40 mb-4 font-medium pl-4 absolute top-0 left-0 z-10">Drag to rotate • Scroll to zoom</p>
 
-            {/* Year Filter moved inside chart */}
-            <div className="absolute top-0 right-0 z-20 flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-ink/10 shadow-sm">
+            <div className="absolute top-0 right-4 z-20 flex items-center gap-2 bg-white/70 hover:bg-white/95 transition-colors backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-sm border border-ink/10">
               <span className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Year</span>
               <select
                 className="bg-transparent text-sm font-bold text-ink outline-none cursor-pointer"
@@ -381,7 +295,7 @@ export default function WashTriangleDashboard() {
             </div>
 
             {hoveredCountry && dataMap.get(hoveredCountry) && (
-              <div className="absolute top-12 left-4 bg-white/90 backdrop-blur p-4 rounded-lg shadow-lg border border-ink/10 z-10 max-w-[200px] pointer-events-none">
+              <div className="absolute top-12 left-4 bg-white/95 backdrop-blur p-4 rounded-lg shadow-lg border border-ink/10 z-30 max-w-[200px] pointer-events-none">
                 <h4 className="font-bold text-ink mb-2 border-b border-ink/10 pb-2">{hoveredCountry}</h4>
                 <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between gap-4"><span className="text-ink/60">Water:</span> <span className="font-semibold text-blue-600">{dataMap.get(hoveredCountry).water?.toFixed(1)}%</span></div>
@@ -391,95 +305,38 @@ export default function WashTriangleDashboard() {
               </div>
             )}
             
-            <div className="absolute inset-0 top-8">
+            <div className="flex-1 w-full relative mt-6">
               {/* @ts-ignore */}
               {inView && (
                 <Plot
                   data={plotData3D as any}
                   layout={plotLayout3D as any}
                   config={{ displayModeBar: false }}
-                  style={{ width: "100%", height: "100%" }}
+                  style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }}
                   useResizeHandler={true}
                 />
               )}
             </div>
             
-            <div className="absolute -bottom-8 left-4 right-4 text-xs text-ink-dim p-2 rounded backdrop-blur opacity-[0.5]">
+            <div className="text-[11px] text-ink/50 mt-4 pl-4 pt-2 border-t border-ink/5">
               ⓘ Closer to the top-front-right corner is better (high water, low open defecation, high handwashing)
             </div>
           </div>
 
-          {/* Right Sidebar */}
-          <div className="flex-1 flex flex-col gap-6">
-            <div className="bg-transparent border-l border-ink/10 pl-6 flex-1">
-              {/* <h3 className="font-semibold text-ink text-xs mb-4 uppercase tracking-wider">Legend (Countries)</h3> */}
-              <div className="flex flex-col gap-1.5 max-h-[450px] overflow-y-auto custom-scroll pr-2">
+          {/* Right Sidebar (Legend) */}
+          <div className="lg:w-64 shrink-0 flex flex-col gap-6">
+            <div className="bg-transparent border-l border-ink/10 pl-5 flex-1">
+              <div className="flex flex-col gap-1 max-h-[450px] overflow-y-auto custom-scroll pr-2">
                 {activeCountries.map((c, i) => (
                   <div
                     key={c}
-                    className={`flex items-center gap-3 p-2 rounded cursor-pointer transition-colors ${hoveredCountry === c ? "bg-ink/5" : "hover:bg-ink/5"}`}
+                    className={`flex items-center gap-2.5 p-1.5 rounded cursor-pointer transition-colors ${hoveredCountry === c ? "bg-ink/5" : "hover:bg-ink/5"}`}
                     onMouseEnter={() => setHoveredCountry(c)}
                     onMouseLeave={() => setHoveredCountry(null)}
                   >
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COUNTRY_COLORS[i % COUNTRY_COLORS.length] }}></div>
-                    <Flag iso2={cleanWaterFull[INDICATORS.water].countries[c]?.iso2 || "un"} className="w-5 h-3.5 shadow-sm" />
+                    <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: COUNTRY_COLORS[i % COUNTRY_COLORS.length] }}></div>
+                    <Flag iso2={cleanWaterFull[INDICATORS.water].countries[c]?.iso2 || "un"} className="w-4 h-3 shadow-sm opacity-90" />
                     <span className="text-sm font-medium text-ink">{shortName(c)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Row */}
-        <div className="flex flex-col lg:flex-row gap-8 pt-8 border-t border-ink/10">
-          {/* Scatter Plots */}
-          <div className="flex-1 lg:w-2/3">
-            <h3 className="font-semibold text-ink text-sm mb-4 uppercase tracking-wider">Pairwise Relationships</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {renderPairwiseScatter("water", "defecation", "Water vs Defecation", "Safely managed drinking water (%)", "Open defecation (%)", "#3b82f6")}
-              {renderPairwiseScatter("water", "handwashing", "Water vs Handwashing", "Safely managed drinking water (%)", "Handwashing (%)", "#10b981")}
-              {renderPairwiseScatter("handwashing", "defecation", "Handwashing vs Defecation", "Handwashing (%)", "Open defecation (%)", "#8b5cf6")}
-            </div>
-          </div>
-
-          {/* Extremes & Top 3 */}
-          <div className="w-full lg:w-1/3 flex flex-col gap-8 lg:border-l border-ink/10 lg:pl-6">
-            <div>
-              <h3 className="font-semibold text-ink text-sm mb-4 uppercase tracking-wider">Pacific Extremes</h3>
-              <div className="space-y-5 text-sm">
-                <div>
-                  <div className="font-semibold text-blue-600 text-xs mb-1">SAFELY MANAGED DRINKING WATER</div>
-                  <div className="flex justify-between"><span className="text-ink-dim">Highest</span><span className="font-bold text-blue-600">{extremes.water.high.country} ({extremes.water.high.value?.toFixed(1)}%)</span></div>
-                  <div className="flex justify-between"><span className="text-ink-dim">Lowest</span><span className="font-medium">{extremes.water.low.country} ({extremes.water.low.value?.toFixed(1)}%)</span></div>
-                </div>
-                <div>
-                  <div className="font-semibold text-orange-600 text-xs mb-1">OPEN DEFECATION (lower is better)</div>
-                  <div className="flex justify-between"><span className="text-ink-dim">Lowest</span><span className="font-medium">{extremes.defecation.low.country} ({extremes.defecation.low.value?.toFixed(1)}%)</span></div>
-                  <div className="flex justify-between"><span className="text-ink-dim">Highest</span><span className="font-bold text-orange-600">{extremes.defecation.high.country} ({extremes.defecation.high.value?.toFixed(1)}%)</span></div>
-                </div>
-                <div>
-                  <div className="font-semibold text-emerald-600 text-xs mb-1">HANDWASHING FACILITIES</div>
-                  <div className="flex justify-between"><span className="text-ink-dim">Highest</span><span className="font-bold text-emerald-600">{extremes.handwashing.high.country} ({extremes.handwashing.high.value?.toFixed(1)}%)</span></div>
-                  <div className="flex justify-between"><span className="text-ink-dim">Lowest</span><span className="font-medium">{extremes.handwashing.low.country} ({extremes.handwashing.low.value?.toFixed(1)}%)</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-ink text-sm mb-2 uppercase tracking-wider">Top 3 Composite</h3>
-              <p className="text-xs text-ink/60 mb-4 leading-tight">By overall WASH performance score (normalized)</p>
-              <div className="space-y-3">
-                {topCountries.map((tc, idx) => (
-                  <div key={tc.country} className="flex items-center gap-3">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold ${idx === 0 ? 'bg-amber-500' : idx === 1 ? 'bg-slate-400' : 'bg-amber-700'}`}>
-                      {idx + 1}
-                    </div>
-                    <span className="text-sm font-medium text-ink flex-1 truncate">{shortName(tc.country)}</span>
-                    <div className="w-24 h-2 bg-ink/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${tc.score * 100}%` }}></div>
-                    </div>
-                    <span className="text-xs font-mono font-bold text-indigo-600">{(tc.score).toFixed(2)}</span>
                   </div>
                 ))}
               </div>

@@ -159,7 +159,7 @@ export default function DotPlotChartOld() {
   };
 
   return (
-    <section className="relative">
+    <section className="relative mb-20">
       <div className="mx-auto max-w-6xl">
         <ScrollReveal animation="fade-down" delay={200}>
           <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
