@@ -361,7 +361,7 @@ export default function WashTriangleDashboard() {
             </div>
             
             <div className="text-[11px] text-ink/50 mt-4 pl-4 pt-2 border-t border-ink/5">
-              ⓘ Closer to the top-front-right corner is better (high water, low open defecation, high handwashing)
+              &#8251; Closer to the top-front-right corner is better (high water, low open defecation, high handwashing)
             </div>
           </div>
 
