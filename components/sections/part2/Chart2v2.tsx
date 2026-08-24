@@ -24,7 +24,18 @@ const ENGLISH_LABELS: Record<string, string> = {
   "SH_SAN_SAFE": "Safely managed sanitation"
 };
 
-function generateStepsForIndicator(indId: string): Omit<Step, "indId" | "localStepIndex">[] {
+function getClosestVal(dataObj: any, kind: "urban" | "rural", targetYear: number): number {
+  if (!dataObj || !dataObj[kind] || dataObj[kind].length === 0) return 0;
+  const exact = dataObj[kind].find((s: any) => s.year === targetYear);
+  if (exact) return exact.value;
+  
+  const closest = dataObj[kind].reduce((prev: any, curr: any) => 
+    Math.abs(curr.year - targetYear) < Math.abs(prev.year - targetYear) ? curr : prev
+  );
+  return closest ? closest.value : 0;
+}
+
+function generateStepsForIndicator(indId: string, index: number): Omit<Step, "indId" | "localStepIndex">[] {
   const data = cleanWaterFull[indId as keyof typeof cleanWaterFull].countries;
   const countries = Object.keys(data).filter(
     (name) => data[name].urban && data[name].rural && data[name].urban.length > 0 && data[name].rural.length > 0
@@ -35,8 +46,8 @@ function generateStepsForIndicator(indId: string): Omit<Step, "indId" | "localSt
   const label = ENGLISH_LABELS[indId] || cleanWaterFull[indId as keyof typeof cleanWaterFull].label;
   
   const gapData = countries.map(name => {
-    const urban = data[name].urban.find(s => s.year === YEAR_LATE)?.value ?? 0;
-    const rural = data[name].rural.find(s => s.year === YEAR_LATE)?.value ?? 0;
+    const urban = getClosestVal(data[name], "urban", YEAR_LATE);
+    const rural = getClosestVal(data[name], "rural", YEAR_LATE);
     const gap = Math.abs(urban - rural);
     return { name, urban, rural, gap };
   }).sort((a, b) => b.gap - a.gap);
@@ -65,33 +76,37 @@ function generateStepsForIndicator(indId: string): Omit<Step, "indId" | "localSt
   // Adjust wording for Open Defecation
   const widestKicker = isReversed ? "WORST DISPARITY" : "WIDEST GAP";
   
+  const prefix = indId.includes("H2O") ? "WATER" : indId === "SH_SAN_HNDWSH" ? "HYGIENE" : "SANITATION";
+  
   return [
     {
-      kicker: `01 — ${label.toUpperCase()}`,
-      text: `Each dot is one country. X-axis shows rural population with ${label.toLowerCase()}, Y-axis shows urban — both in %, year ${YEAR_LATE}.`,
+      kicker: `${prefix} — ${label.toUpperCase()}`,
+      text: index === 0 
+        ? `Each dot is one country. X-axis shows % of rural population, Y-axis shows urban, in 2024.`
+        : `Urban vs rural rates for ${label.toLowerCase()} in 2024.`,
       align: "left",
       highlightCountry: null
     },
     {
-      kicker: "02 — THE PATTERN",
+      kicker: `${prefix} — THE PATTERN`,
       text: patternText,
       align: "right",
       highlightCountry: null
     },
     {
-      kicker: `03 — ${widestKicker}`,
+      kicker: `${prefix} — ${widestKicker}`,
       text: `${shortName(largest.name)}: ${largest.urban.toFixed(1)}% of urban population compared to ${largest.rural.toFixed(1)}% in rural areas — a ${largest.gap.toFixed(1)}-point gap, the widest in the region.`,
       align: "left",
       highlightCountry: largest.name
     },
     {
-      kicker: `04 — NARROWEST GAP`,
+      kicker: `${prefix} — NARROWEST GAP`,
       text: `${shortName(narrowest.name)} has just a ${narrowest.gap.toFixed(1)}-point gap between urban (${narrowest.urban.toFixed(1)}%) and rural (${narrowest.rural.toFixed(1)}%).`,
       align: "right",
       highlightCountry: narrowest.name
     },
     {
-      kicker: `05 — TRAJECTORY ${YEAR_EARLY} → ${YEAR_LATE}`,
+      kicker: `${prefix} — TRAJECTORY ${YEAR_EARLY} → ${YEAR_LATE}`,
       text: `From ${YEAR_EARLY} to ${YEAR_LATE}, you can see how each country progressed. ${isReversed ? "Lines pointing down and left mean rates are improving (decreasing)." : "Lines pointing up and right mean both rural and urban improved."}`,
       align: "left",
       highlightCountry: null
@@ -101,14 +116,15 @@ function generateStepsForIndicator(indId: string): Omit<Step, "indId" | "localSt
 
 export default function Part2Chart2V2() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const graphicRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(520);
 
   const allStepsWithMeta = useMemo(() => {
     const arr: Step[] = [];
-    indicatorIds.forEach(indId => {
-      const steps = generateStepsForIndicator(indId);
+    indicatorIds.forEach((indId, index) => {
+      const steps = generateStepsForIndicator(indId, index);
       steps.forEach((s, i) => {
         arr.push({ ...s, indId, localStepIndex: i });
       });
@@ -165,7 +181,7 @@ export default function Part2Chart2V2() {
   const scale = (v: number) => (v / 100) * innerW;
 
   const getVal = (name: string, kind: "urban" | "rural", year: number) =>
-    activeData[name][kind].find((s) => s.year === year)?.value ?? 0;
+    getClosestVal(activeData[name], kind, year);
 
   const showDiagonalShade = localStep >= 1;
   const highlightCountry = currentMeta.highlightCountry;
@@ -176,11 +192,13 @@ export default function Part2Chart2V2() {
     localStep === 0 ? NEUTRAL_LINE : (palette.get(name) as string);
 
   const radiusFor = (name: string) => {
+    if (hoveredNode === name) return 10;
     if (highlightCountry) return name === highlightCountry ? 12 : 5;
     return 7.5;
   };
 
   const opacityFor = (name: string) => {
+    if (hoveredNode === name) return 1;
     if (highlightCountry) return name === highlightCountry ? 1 : 0.12;
     return localStep === 0 ? 0.55 : 0.9;
   };
@@ -332,11 +350,11 @@ export default function Part2Chart2V2() {
                       key={`early-${name}`}
                       cx={rx}
                       cy={ry}
-                      r={4}
-                      fill="none"
+                      r={4.5}
+                      fill="white"
                       stroke={palette.get(name)}
-                      strokeWidth={1.5}
-                      opacity={showTrajectory ? 0.5 : 0}
+                      strokeWidth={2}
+                      opacity={showTrajectory ? 0.85 : 0}
                       style={{ transition: "opacity 500ms ease, cx 500ms ease, cy 500ms ease" }}
                     />
                   );
@@ -345,6 +363,8 @@ export default function Part2Chart2V2() {
                 {/* main markers (2024) */}
                 {[...SCATTER_COUNTRIES]
                   .sort((a, b) => {
+                    if (a === hoveredNode) return 1;
+                    if (b === hoveredNode) return -1;
                     if (a === highlightCountry) return 1;
                     if (b === highlightCountry) return -1;
                     return 0;
@@ -353,11 +373,17 @@ export default function Part2Chart2V2() {
                   const rx = scale(getVal(name, "rural", YEAR_LATE));
                   const ry = innerH - scale(getVal(name, "urban", YEAR_LATE));
                   const isHighlight = highlightCountry === name;
+                  const isHovered = hoveredNode === name;
+                  const showLabel = isHighlight || isHovered;
+                  
                   return (
                     <g
                       key={name}
                       transform={`translate(${rx},${ry})`}
-                      style={{ transition: "transform 600ms cubic-bezier(.4,0,.2,1)" }}
+                      style={{ transition: "transform 600ms cubic-bezier(.4,0,.2,1)", cursor: "pointer" }}
+                      onMouseEnter={() => setHoveredNode(name)}
+                      onMouseLeave={() => setHoveredNode(null)}
+                      onTouchStart={() => setHoveredNode(name)}
                     >
                       <circle
                         r={radiusFor(name)}
@@ -375,14 +401,12 @@ export default function Part2Chart2V2() {
                         x={0}
                         y={-radiusFor(name) - 6}
                         textAnchor="middle"
-                        fontSize={isHighlight ? 11 : 9}
+                        fontSize={isHighlight || isHovered ? 11 : 9}
                         fill="none"
                         stroke="white"
                         strokeWidth={3}
                         strokeLinejoin="round"
-                        opacity={
-                          highlightCountry ? (isHighlight ? 1 : 0) : localStep === 0 ? 0 : 0.85
-                        }
+                        opacity={showLabel ? 1 : 0}
                         style={{ transition: "opacity 400ms ease, font-size 400ms ease" }}
                       >
                         {shortName(name)}
@@ -392,16 +416,14 @@ export default function Part2Chart2V2() {
                         x={0}
                         y={-radiusFor(name) - 6}
                         textAnchor="middle"
-                        fontSize={isHighlight ? 11 : 9}
-                        fill={isHighlight ? "var(--brass-bright)" : "var(--ink-dim)"}
-                        opacity={
-                          highlightCountry ? (isHighlight ? 1 : 0) : localStep === 0 ? 0 : 0.85
-                        }
+                        fontSize={isHighlight || isHovered ? 11 : 9}
+                        fill={isHighlight || isHovered ? "var(--brass-bright)" : "var(--ink-dim)"}
+                        opacity={showLabel ? 1 : 0}
                         style={{ transition: "opacity 400ms ease, font-size 400ms ease" }}
                       >
                         {shortName(name)}
                       </text>
-                      {isHighlight && (
+                      {(isHighlight || isHovered) && (
                         <text
                           x={0}
                           y={radiusFor(name) + 16}
