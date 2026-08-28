@@ -353,7 +353,7 @@ export default function Part2Chart1() {
           </div>
         </div>
          <SourceNote className="text-primary text-xs mt-5">
-                        <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2023.</span>
+                        <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2024.</span>
                       </SourceNote>
                <ScrollReveal animation="fade-up" delay={600}>
                   <p className="mt-3 max-w-2xl text-sm text-primary leading-relaxed opacity-[0.7]">

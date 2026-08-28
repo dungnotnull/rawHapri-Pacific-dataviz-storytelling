@@ -357,7 +357,7 @@ export default function DotPlotChartOld() {
         </div>
         <div className="mt-4">
           <SourceNote>
-            <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2023.</span>
+            <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2024.</span>
           </SourceNote>
         </div>
         <ScrollReveal animation="fade-up" delay={600}>

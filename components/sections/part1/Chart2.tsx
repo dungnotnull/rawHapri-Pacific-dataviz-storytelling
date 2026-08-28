@@ -247,7 +247,7 @@ It causes fear…
           </div>
         </div>
          <SourceNote className="text-primary text-xs mt-2 md:mt-6">
-                <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2023.</span>
+                <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2024.</span>
               </SourceNote>
          <ScrollReveal animation="fade-up" delay={400}>
           <p className="mt-4 max-w-2xl text-sm text-primary leading-relaxed opacity-[0.7]">
