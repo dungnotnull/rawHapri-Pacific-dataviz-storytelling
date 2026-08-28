@@ -58,11 +58,11 @@ print(f"Total rows: {len(df)}")
 # ---------------------------------------------------------------------------
 # 1. GHG total (MtCO2e) - from pacific_ghg_yearly_worlddata, indicator=total_ghg
 # ---------------------------------------------------------------------------
-print("\n[1] Generating ghg_per_capita.json (total_ghg)...")
+print("\n[1] Generating ghg_per_capita.json (ghg_per_capita)...")
 
 ghg_raw = df[
-    (df["dataset"] == "pacific_ghg_yearly_worlddata") &
-    (df["indicator_id"] == "total_ghg") &
+    (df["dataset"] == "CLIMATE_CHANGE_GHG_INDICATORS") &
+    (df["indicator_id"] == "GHG_EMI_CAPITA") &
     (df["geo_pict"].isin(TARGET_CODES))
 ].dropna(subset=["value"]).sort_values(["geo_pict", "year"])
 
