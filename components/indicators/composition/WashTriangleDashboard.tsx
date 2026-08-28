@@ -111,49 +111,52 @@ export default function WashTriangleDashboard() {
 
   const activeCountries = Array.from(dataMap.keys()).sort();
 
-  // Compute Pacific Averages
-  const averages = useMemo(() => {
-    const vals = { water: [] as number[], defecation: [] as number[], handwashing: [] as number[] };
-    activeCountries.forEach((c) => {
-      const d = dataMap.get(c);
-      if (d.water !== null) vals.water.push(d.water);
-      if (d.defecation !== null) vals.defecation.push(d.defecation);
-      if (d.handwashing !== null) vals.handwashing.push(d.handwashing);
+  // Compute Stats per indicator for all TARGET_PICS (not just activeCountries in 3D plot)
+  const indicatorStats = useMemo(() => {
+    const stats = {
+      water: { values: [] as { country: string, value: number }[] },
+      defecation: { values: [] as { country: string, value: number }[] },
+      handwashing: { values: [] as { country: string, value: number }[] },
+    };
+
+    TARGET_PICS.forEach((country) => {
+      const water = getExactValue(country, INDICATORS.water, selectedYear);
+      if (water !== null) stats.water.values.push({ country, value: water });
+
+      const defecation = getExactValue(country, INDICATORS.defecation, selectedYear);
+      if (defecation !== null) stats.defecation.values.push({ country, value: defecation });
+
+      const handwashing = getExactValue(country, INDICATORS.handwashing, selectedYear);
+      if (handwashing !== null) stats.handwashing.values.push({ country, value: handwashing });
     });
-    return {
-      water: d3.mean(vals.water) || 0,
-      defecation: d3.mean(vals.defecation) || 0,
-      handwashing: d3.mean(vals.handwashing) || 0,
-    };
-  }, [dataMap, activeCountries]);
 
-  // Compute Extremes
-  const extremes = useMemo(() => {
-    const getExtreme = (key: "water" | "defecation" | "handwashing", type: "max" | "min") => {
-      let extVal = type === "max" ? -Infinity : Infinity;
-      let extCountry = "";
-      activeCountries.forEach((c) => {
-        const val = dataMap.get(c)[key];
-        if (val !== null) {
-          if (type === "max" && val > extVal) {
-            extVal = val;
-            extCountry = c;
-          }
-          if (type === "min" && val < extVal) {
-            extVal = val;
-            extCountry = c;
-          }
-        }
+    const getExtremesAndAvg = (arr: { country: string, value: number }[]) => {
+      if (arr.length === 0) return { avg: 0, high: { country: null as string | null, value: null as number | null }, low: { country: null as string | null, value: null as number | null }, n: 0 };
+      const avg = d3.mean(arr, d => d.value) || 0;
+      let maxVal = -Infinity;
+      let minVal = Infinity;
+      let maxCountry = null;
+      let minCountry = null;
+
+      arr.forEach(d => {
+        if (d.value > maxVal) { maxVal = d.value; maxCountry = d.country; }
+        if (d.value < minVal) { minVal = d.value; minCountry = d.country; }
       });
-      return { country: extCountry, value: extVal === Infinity || extVal === -Infinity ? null : extVal };
+
+      return {
+        avg,
+        high: { country: maxCountry, value: maxVal },
+        low: { country: minCountry, value: minVal },
+        n: arr.length
+      };
     };
 
     return {
-      water: { high: getExtreme("water", "max"), low: getExtreme("water", "min") },
-      defecation: { high: getExtreme("defecation", "max"), low: getExtreme("defecation", "min") },
-      handwashing: { high: getExtreme("handwashing", "max"), low: getExtreme("handwashing", "min") },
+      water: getExtremesAndAvg(stats.water.values),
+      defecation: getExtremesAndAvg(stats.defecation.values),
+      handwashing: getExtremesAndAvg(stats.handwashing.values),
     };
-  }, [dataMap, activeCountries]);
+  }, [selectedYear]);
 
 
 
@@ -245,14 +248,14 @@ export default function WashTriangleDashboard() {
             <h4 className="font-semibold text-blue-600 uppercase tracking-wide">Safely Managed Drinking Water</h4>
             {/* <p className="text-blue-500/80 mb-5 text-[13px]">(% of population)</p> */}
             <div className="space-y-2.5">
-              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={activeCountries.length})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded border border-amber-100/50">Pacific ({averages.water.toFixed(1)}%)</span></div>
+              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={indicatorStats.water.n})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded border border-amber-100/50">Pacific ({indicatorStats.water.avg.toFixed(1)}%)</span></div>
               
               <div className="flex justify-between items-center mt-2">
                 <span className="text-emerald-600/90 font-medium text-[12px] flex items-center gap-1">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
                   Highest
                 </span>
-                <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(extremes.water.high.country || "N/A")} ({extremes.water.high.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.water.high.country || "N/A")} ({indicatorStats.water.high.value?.toFixed(1) ?? "-"}%)</span>
               </div>
               
               <div className="flex justify-between items-center">
@@ -260,7 +263,7 @@ export default function WashTriangleDashboard() {
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
                   Lowest
                 </span>
-                <span className="text-rose-700 bg-rose-50 border border-rose-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(extremes.water.low.country || "N/A")} ({extremes.water.low.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-rose-700 bg-rose-50 border border-rose-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.water.low.country || "N/A")} ({indicatorStats.water.low.value?.toFixed(1) ?? "-"}%)</span>
               </div>
             </div>
           </div>
@@ -270,14 +273,14 @@ export default function WashTriangleDashboard() {
             <h4 className="font-semibold text-orange-600 uppercase tracking-wide">Open Defecation</h4>
             {/* <p className="text-orange-500/80 mb-5 text-[13px]">lower is better</p> */}
             <div className="space-y-2.5">
-              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={activeCountries.length})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded border border-amber-100/50">Pacific ({averages.defecation.toFixed(1)}%)</span></div>
+              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={indicatorStats.defecation.n})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded border border-amber-100/50">Pacific ({indicatorStats.defecation.avg.toFixed(1)}%)</span></div>
               
               <div className="flex justify-between items-center mt-2">
                 <span className="text-emerald-600/90 font-medium text-[12px] flex items-center gap-1">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
                   Lowest
                 </span>
-                <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(extremes.defecation.low.country || "N/A")} ({extremes.defecation.low.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.defecation.low.country || "N/A")} ({indicatorStats.defecation.low.value?.toFixed(1) ?? "-"}%)</span>
               </div>
               
               <div className="flex justify-between items-center">
@@ -285,7 +288,7 @@ export default function WashTriangleDashboard() {
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
                   Highest
                 </span>
-                <span className="text-rose-700 bg-rose-50 border border-rose-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(extremes.defecation.high.country || "N/A")} ({extremes.defecation.high.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-rose-700 bg-rose-50 border border-rose-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.defecation.high.country || "N/A")} ({indicatorStats.defecation.high.value?.toFixed(1) ?? "-"}%)</span>
               </div>
             </div>
           </div>
@@ -295,14 +298,14 @@ export default function WashTriangleDashboard() {
             <h4 className="font-semibold text-emerald-600 uppercase tracking-wide">Handwashing Facilities</h4>
             {/* <p className="text-emerald-500/80 mb-5 text-[13px]">(% of population)</p> */}
             <div className="space-y-2.5">
-              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={activeCountries.length})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded border border-amber-100/50">Pacific ({averages.handwashing.toFixed(1)}%)</span></div>
+              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={indicatorStats.handwashing.n})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded border border-amber-100/50">Pacific ({indicatorStats.handwashing.avg.toFixed(1)}%)</span></div>
               
               <div className="flex justify-between items-center mt-2">
                 <span className="text-emerald-600/90 font-medium text-[12px] flex items-center gap-1">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
                   Highest
                 </span>
-                <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(extremes.handwashing.high.country || "N/A")} ({extremes.handwashing.high.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.handwashing.high.country || "N/A")} ({indicatorStats.handwashing.high.value?.toFixed(1) ?? "-"}%)</span>
               </div>
               
               <div className="flex justify-between items-center">
@@ -310,7 +313,7 @@ export default function WashTriangleDashboard() {
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
                   Lowest
                 </span>
-                <span className="text-rose-700 bg-rose-50 border border-rose-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(extremes.handwashing.low.country || "N/A")} ({extremes.handwashing.low.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-rose-700 bg-rose-50 border border-rose-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.handwashing.low.country || "N/A")} ({indicatorStats.handwashing.low.value?.toFixed(1) ?? "-"}%)</span>
               </div>
             </div>
           </div>

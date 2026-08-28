@@ -8,7 +8,7 @@ import { SourceNote } from "../ui/SourceNote";
 import { ScrollReveal } from "../ui/ScrollReveal";
 import { WarmingStripes } from "./WarningStripes";
 import { CountryModal } from "../ui/CountryModal";
-import { YearControl } from "../ui/YearControl";
+import { TimelineControl } from "../ui/TimelineControl";
 import { ghgLatestYear, SEA_LEVEL_START_YEAR } from "@/lib/data";
 
 const MIN_YEAR = 2005; // Extended range: GHG data available from 1990+
@@ -44,7 +44,7 @@ export function Cause() {
             </span>
           </div>
           <div className="mt-4">
-            <YearControl
+            <TimelineControl
               minYear={MIN_YEAR}
               maxYear={MAX_YEAR}
               currentYear={selectedYear}
