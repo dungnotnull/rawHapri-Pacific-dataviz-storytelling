@@ -7,6 +7,7 @@ import { SourceNote } from "@/components/ui/SourceNote";
 import Flag from "@/components/ui/Flag";
 import * as d3 from "d3";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { TimelineControl } from "@/components/ui/TimelineControl";
 
 // Dynamically import react-plotly factory to avoid heavy plotly.js and SSR issues
 const Plot = dynamic(() => 
@@ -217,9 +218,9 @@ export default function WashTriangleDashboard() {
         color: "#2563eb", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#2563eb", zeroline: false
       },
       zaxis: { 
-        title: { text: "Handwashing facilities (%)", font: { color: "#059669", size: 12 } }, 
+        title: { text: "Handwashing facilities (%)", font: { color: "#2c7a79", size: 12 } }, 
         range: [0, 100], backgroundcolor: "transparent", showbackground: false,
-        color: "#059669", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#059669", zeroline: false
+        color: "#2c7a79", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#2c7a79", zeroline: false
       },
       camera: {
         eye: { x: 1.85, y: 1.85, z: 0.2 }, // Zoom in slightly, tilted up
@@ -248,22 +249,25 @@ export default function WashTriangleDashboard() {
             <h4 className="font-semibold text-blue-600 uppercase tracking-wide">Safely Managed Drinking Water</h4>
             {/* <p className="text-blue-500/80 mb-5 text-[13px]">(% of population)</p> */}
             <div className="space-y-2.5">
-              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={indicatorStats.water.n})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded border border-amber-100/50">Pacific ({indicatorStats.water.avg.toFixed(1)}%)</span></div>
+              <div className="flex justify-between items-center">
+                <span className="text-ink font-medium flex items-center gap-1.5">Average <span className="text-ink/70 text-[11px] font-semibold">(n={indicatorStats.water.n})</span></span> 
+                <span className="font-medium text-ink bg-ink/5 px-2 py-0.5 rounded border border-ink/10">Pacific ({indicatorStats.water.avg.toFixed(1)}%)</span>
+              </div>
               
               <div className="flex justify-between items-center mt-2">
-                <span className="text-emerald-600/90 font-medium text-[12px] flex items-center gap-1">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                <span className="text-ink/80 font-medium text-[12px] flex items-center gap-1">
+                  <svg className="w-3 h-3 text-ink/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
                   Highest
                 </span>
-                <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.water.high.country || "N/A")} ({indicatorStats.water.high.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-ink bg-ink/5 border border-ink/10 px-2 py-0.5 rounded-md text-[12px] font-bold">{shortName(indicatorStats.water.high.country || "N/A")} ({indicatorStats.water.high.value?.toFixed(1) ?? "-"}%)</span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-rose-600/90 font-medium text-[12px] flex items-center gap-1">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                <span className="text-ink/80 font-medium text-[12px] flex items-center gap-1">
+                  <svg className="w-3 h-3 text-ink/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
                   Lowest
                 </span>
-                <span className="text-rose-700 bg-rose-50 border border-rose-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.water.low.country || "N/A")} ({indicatorStats.water.low.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-ink bg-ink/5 border border-ink/10 px-2 py-0.5 rounded-md text-[12px] font-bold">{shortName(indicatorStats.water.low.country || "N/A")} ({indicatorStats.water.low.value?.toFixed(1) ?? "-"}%)</span>
               </div>
             </div>
           </div>
@@ -273,71 +277,72 @@ export default function WashTriangleDashboard() {
             <h4 className="font-semibold text-orange-600 uppercase tracking-wide">Open Defecation</h4>
             {/* <p className="text-orange-500/80 mb-5 text-[13px]">lower is better</p> */}
             <div className="space-y-2.5">
-              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={indicatorStats.defecation.n})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded border border-amber-100/50">Pacific ({indicatorStats.defecation.avg.toFixed(1)}%)</span></div>
+              <div className="flex justify-between items-center">
+                <span className="text-ink font-medium flex items-center gap-1.5">Average <span className="text-ink/70 text-[11px] font-semibold">(n={indicatorStats.defecation.n})</span></span> 
+                <span className="font-medium text-ink bg-ink/5 px-2 py-0.5 rounded border border-ink/10">Pacific ({indicatorStats.defecation.avg.toFixed(1)}%)</span>
+              </div>
               
               <div className="flex justify-between items-center mt-2">
-                <span className="text-emerald-600/90 font-medium text-[12px] flex items-center gap-1">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                <span className="text-ink/80 font-medium text-[12px] flex items-center gap-1">
+                  <svg className="w-3 h-3 text-ink/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
                   Lowest
                 </span>
-                <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.defecation.low.country || "N/A")} ({indicatorStats.defecation.low.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-ink bg-ink/5 border border-ink/10 px-2 py-0.5 rounded-md text-[12px] font-bold">{shortName(indicatorStats.defecation.low.country || "N/A")} ({indicatorStats.defecation.low.value?.toFixed(1) ?? "-"}%)</span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-rose-600/90 font-medium text-[12px] flex items-center gap-1">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                <span className="text-ink/80 font-medium text-[12px] flex items-center gap-1">
+                  <svg className="w-3 h-3 text-ink/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
                   Highest
                 </span>
-                <span className="text-rose-700 bg-rose-50 border border-rose-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.defecation.high.country || "N/A")} ({indicatorStats.defecation.high.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-ink bg-ink/5 border border-ink/10 px-2 py-0.5 rounded-md text-[12px] font-bold">{shortName(indicatorStats.defecation.high.country || "N/A")} ({indicatorStats.defecation.high.value?.toFixed(1) ?? "-"}%)</span>
               </div>
             </div>
           </div>
 
           {/* Handwashing Column */}
           <div className="p-3">
-            <h4 className="font-semibold text-emerald-600 uppercase tracking-wide">Handwashing Facilities</h4>
+            <h4 className="font-semibold text-lagoon uppercase tracking-wide">Handwashing Facilities</h4>
             {/* <p className="text-emerald-500/80 mb-5 text-[13px]">(% of population)</p> */}
             <div className="space-y-2.5">
-              <div className="flex justify-between items-center"><span className="text-ink font-medium flex items-center gap-1.5">Average <span className="bg-yellow-100 px-1.5 py-0.5 rounded text-[11px] font-medium text-yellow-800">(n={indicatorStats.handwashing.n})</span></span> <span className="font-medium bg-amber-50/80 px-1.5 py-0.5 rounded border border-amber-100/50">Pacific ({indicatorStats.handwashing.avg.toFixed(1)}%)</span></div>
+              <div className="flex justify-between items-center">
+                <span className="text-ink font-medium flex items-center gap-1.5">Average <span className="text-ink/70 text-[11px] font-semibold">(n={indicatorStats.handwashing.n})</span></span> 
+                <span className="font-medium text-ink bg-ink/5 px-2 py-0.5 rounded border border-ink/10">Pacific ({indicatorStats.handwashing.avg.toFixed(1)}%)</span>
+              </div>
               
               <div className="flex justify-between items-center mt-2">
-                <span className="text-emerald-600/90 font-medium text-[12px] flex items-center gap-1">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                <span className="text-ink/80 font-medium text-[12px] flex items-center gap-1">
+                  <svg className="w-3 h-3 text-ink/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
                   Highest
                 </span>
-                <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.handwashing.high.country || "N/A")} ({indicatorStats.handwashing.high.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-ink bg-ink/5 border border-ink/10 px-2 py-0.5 rounded-md text-[12px] font-bold">{shortName(indicatorStats.handwashing.high.country || "N/A")} ({indicatorStats.handwashing.high.value?.toFixed(1) ?? "-"}%)</span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-rose-600/90 font-medium text-[12px] flex items-center gap-1">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                <span className="text-ink/80 font-medium text-[12px] flex items-center gap-1">
+                  <svg className="w-3 h-3 text-ink/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
                   Lowest
                 </span>
-                <span className="text-rose-700 bg-rose-50 border border-rose-200/60 px-2 py-0.5 rounded-md shadow-sm text-[12px] font-bold">{shortName(indicatorStats.handwashing.low.country || "N/A")} ({indicatorStats.handwashing.low.value?.toFixed(1) ?? "-"}%)</span>
+                <span className="text-ink bg-ink/5 border border-ink/10 px-2 py-0.5 rounded-md text-[12px] font-bold">{shortName(indicatorStats.handwashing.low.country || "N/A")} ({indicatorStats.handwashing.low.value?.toFixed(1) ?? "-"}%)</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main 3D Space & Legend */}
         <div className="flex flex-col lg:flex-row gap-10 mb-8 pt-4">
-          <div className="flex-1 lg:flex-[3] relative flex flex-col" style={{ minHeight: "550px" }}>
-            <p className="text-[11px] text-ink/40 mb-4 font-medium pl-4 absolute top-0 left-0 z-10">Drag to rotate • Scroll to zoom</p>
-
-            <div className="absolute top-0 right-4 z-20 flex items-center gap-2 bg-white/70 hover:bg-white/95 transition-colors backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-sm border border-ink/10">
-              <span className="text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Year</span>
-              <select
-                className="bg-transparent text-sm font-bold text-ink outline-none cursor-pointer"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-              >
-                {availableYears.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
+          <div className="flex-1 lg:flex-[3] relative flex flex-col min-w-0" style={{ minHeight: "550px" }}>
+            
+            <div className="w-full z-20 mb-2">
+              <TimelineControl
+                minYear={Math.min(...availableYears)}
+                maxYear={Math.max(...availableYears)}
+                currentYear={selectedYear}
+                onYearChange={setSelectedYear}
+                trackClassName="min-w-[500px] md:min-w-[600px]"
+              />
             </div>
+
+            <p className="text-[11px] text-ink/40 font-medium pl-4 z-10">Drag to rotate • Scroll to zoom</p>
 
             {hoveredCountry && dataMap.get(hoveredCountry) && (
               <div className="absolute top-12 left-4 bg-white/95 backdrop-blur p-4 rounded-lg shadow-lg border border-ink/10 z-30 max-w-[200px] pointer-events-none">

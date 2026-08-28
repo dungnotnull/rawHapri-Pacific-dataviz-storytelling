@@ -8,6 +8,7 @@ interface TimelineControlProps {
   maxYear: number;
   currentYear: number;
   onYearChange: (year: number) => void;
+  trackClassName?: string;
 }
 
 export function TimelineControl({
@@ -15,6 +16,7 @@ export function TimelineControl({
   maxYear,
   currentYear,
   onYearChange,
+  trackClassName
 }: TimelineControlProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -118,7 +120,7 @@ export function TimelineControl({
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         <div className="flex items-center w-max min-w-full px-4 md:px-6 h-full">
-            <div className="relative w-full min-w-[800px] md:min-w-[1000px] h-8 flex items-center">
+            <div className={`relative w-full h-8 flex items-center ${trackClassName || "min-w-[800px] md:min-w-[1000px]"}`}>
                 {/* Background Line */}
                 <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[3px] bg-lagoon/20 rounded-full z-0"></div>
                 
