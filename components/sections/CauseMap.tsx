@@ -246,7 +246,7 @@ export function CauseMap({ active, selectedYear = 2024 }: CauseMapProps) {
         const p = projection([d.lon, d.lat]);
         return p ? p[1] + 3 : 0;
       })
-      .attr("font-family", "var(--font-data)")
+      .attr("font-family", "'Public Sans', ui-sans-serif, system-ui, sans-serif")
       .attr("font-size", 10.5)
       .attr("fill", "rgba(14,42,44,0.55)")
       .attr("opacity", 0)

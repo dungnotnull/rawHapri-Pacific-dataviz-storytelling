@@ -84,7 +84,7 @@ export function CountryModal({
           <div className="flex items-center gap-3">
             {iso2 && <Flag iso2={iso2} className="w-16 h-auto shrink-0" />}
             <div>
-              <h3 className="font-display text-2xl font-medium text-ink">
+              <h3 className="text-2xl font-medium text-ink">
                 {countryName}
               </h3>
               <p className="mt-1 text-sm text-ink/60">
@@ -122,7 +122,7 @@ export function CountryModal({
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="rounded-xl border border-ink/8 bg-white/40 p-4">
             <p className="eyebrow text-ink/60">GHG Per Capita (2024)</p>
-            <p className="mt-2 font-display text-3xl font-medium text-coral">
+            <p className="mt-2 text-3xl font-medium text-coral">
               {countryGhg?.latest_value
                 ? countryGhg.latest_value.toFixed(1)
                 : "N/A"}
@@ -131,7 +131,7 @@ export function CountryModal({
           </div>
           <div className="rounded-xl border border-ink/8 bg-white/40 p-4">
             <p className="eyebrow text-ink/60">Temp Anomaly (2024)</p>
-            <p className="mt-2 font-display text-3xl font-medium text-lagoon">
+            <p className="mt-2 text-3xl font-medium text-lagoon">
               {(() => {
                 const temp2024 = countryTemp?.series?.find((s) => s.year === 2024);
                 const val = temp2024 !== undefined ? temp2024.value : countryTemp?.latest_value;
@@ -144,7 +144,7 @@ export function CountryModal({
           </div>
           <div className="rounded-xl border border-ink/8 bg-white/40 p-4">
             <p className="eyebrow text-ink/60">Sea Level (2024)</p>
-            <p className="mt-2 font-display text-3xl font-medium text-[#3b82f6]">
+            <p className="mt-2 text-3xl font-medium text-[#3b82f6]">
               {latestSl !== null
                 ? (latestSl.value > 0 ? "+" : "") +
                   (latestSl.value).toFixed(3) +
@@ -452,7 +452,12 @@ function CombinedChart({ countryCode }: { countryCode: string }) {
 
   return (
     <div ref={wrapRef} className="h-56 w-full">
-      <svg ref={svgRef} width={width} height={height} />
+      <svg
+        ref={svgRef}
+        width={width}
+        height={height}
+        style={{ fontFamily: 'var(--font-body)' }}
+      />
     </div>
   );
 }

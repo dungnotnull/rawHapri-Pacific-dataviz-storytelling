@@ -233,6 +233,86 @@
    }
   ]
  },
+ "Federated States of Micronesia": {
+  "iso2": "FM",
+  "total": [
+   {
+    "year": 2016,
+    "value": 62.87
+   },
+   {
+    "year": 2017,
+    "value": 62.84
+   },
+   {
+    "year": 2018,
+    "value": 62.81
+   },
+   {
+    "year": 2019,
+    "value": 62.72
+   },
+   {
+    "year": 2020,
+    "value": 62.33
+   },
+   {
+    "year": 2021,
+    "value": 62.04
+   },
+   {
+    "year": 2022,
+    "value": 61.74
+   },
+   {
+    "year": 2023,
+    "value": 61.1
+   },
+   {
+    "year": 2024,
+    "value": 60.48
+   }
+  ],
+  "urban": [],
+  "rural": [
+   {
+    "year": 2016,
+    "value": 12.5
+   },
+   {
+    "year": 2017,
+    "value": 12.41
+   },
+   {
+    "year": 2018,
+    "value": 12.32
+   },
+   {
+    "year": 2019,
+    "value": 12.23
+   },
+   {
+    "year": 2020,
+    "value": 12.14
+   },
+   {
+    "year": 2021,
+    "value": 12.06
+   },
+   {
+    "year": 2022,
+    "value": 11.99
+   },
+   {
+    "year": 2023,
+    "value": 11.85
+   },
+   {
+    "year": 2024,
+    "value": 11.72
+   }
+  ]
+ },
  "Nauru": {
   "iso2": "NR",
   "total": [

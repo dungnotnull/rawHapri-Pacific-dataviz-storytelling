@@ -200,7 +200,8 @@ export default function WashTriangleDashboard() {
 
   const plotLayout3D = {
     margin: { l: 0, r: 0, b: 0, t: 0 },
-    font: { family: "system-ui, -apple-system, sans-serif", color: "var(--ink)" },
+    font: { family: "'Public Sans', ui-sans-serif, system-ui, sans-serif", color: "var(--ink)", size: 11 },
+    paper_bgcolor: "transparent",
     hoverlabel: {
       bgcolor: "rgba(255, 255, 255, 0.95)",
       bordercolor: "rgba(14, 42, 44, 0.1)",
@@ -210,23 +211,25 @@ export default function WashTriangleDashboard() {
       xaxis: { 
         title: { text: "Open defecation (%)", font: { color: "#ea580c", size: 12 } }, 
         range: [0, 50], backgroundcolor: "transparent", showbackground: false,
-        color: "#ea580c", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#ea580c", zeroline: false
+        color: "#ea580c", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#ea580c", zeroline: false,
+        tickfont: { size: 11 }
       },
       yaxis: { 
         title: { text: "Safely managed drinking water (%)", font: { color: "#2563eb", size: 12 } }, 
         range: [0, 100], backgroundcolor: "transparent", showbackground: false,
-        color: "#2563eb", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#2563eb", zeroline: false
+        color: "#2563eb", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#2563eb", zeroline: false,
+        tickfont: { size: 11 }
       },
       zaxis: { 
         title: { text: "Handwashing facilities (%)", font: { color: "#2c7a79", size: 12 } }, 
         range: [0, 100], backgroundcolor: "transparent", showbackground: false,
-        color: "#2c7a79", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#2c7a79", zeroline: false
+        color: "#2c7a79", gridcolor: "rgba(0,0,0,0.05)", showgrid: true, showline: true, linewidth: 1, linecolor: "#2c7a79", zeroline: false,
+        tickfont: { size: 11 }
       },
       camera: {
         eye: { x: 1.85, y: 1.85, z: 0.2 }, // Zoom in slightly, tilted up
       },
     },
-    paper_bgcolor: "transparent",
     hovermode: "closest",
   };
 
@@ -386,7 +389,7 @@ export default function WashTriangleDashboard() {
                   >
                     <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: COUNTRY_COLORS[i % COUNTRY_COLORS.length] }}></div>
                     <Flag iso2={cleanWaterFull[INDICATORS.water].countries[c]?.iso2 || "un"} className="w-4 h-3 shadow-sm opacity-90" />
-                    <span className="text-sm font-medium text-ink">{shortName(c)}</span>
+                    <span className="text-xs font-medium text-ink">{shortName(c)}</span>
                   </div>
                 ))}
               </div>

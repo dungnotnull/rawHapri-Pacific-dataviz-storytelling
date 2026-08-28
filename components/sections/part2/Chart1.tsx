@@ -232,7 +232,7 @@ export default function Part2Chart1() {
                     textAnchor="middle"
                     fill={yr === year ? "var(--gold)" : "var(--ink-faint)"}
                     fontSize={11}
-                    fontFamily="var(--font-mono)"
+                    fontFamily="'Public Sans', ui-sans-serif, system-ui, sans-serif"
                     fontWeight={yr === year ? 600 : 400}
                   >
                     {yr}

@@ -71,9 +71,9 @@ export const cleanWaterYears = Array.from(
 /** Shorten a few long country names for tight chart labels. */
 export const shortName = (name: string): string => {
   const map: Record<string, string> = {
-    "Federated States of Micronesia": "Micronesia (FSM)",
+    "Federated States of Micronesia": "Micronesia",
     "Republic of Marshall Islands": "Marshall Islands",
-    "Micronesia, Federated State of": "Micronesia (FSM)",
+    "Micronesia, Federated State of": "Micronesia",
     "Northern Mariana Islands": "N. Mariana Is.",
     "Wallis and Futuna": "Wallis & Futuna",
   };

@@ -112,7 +112,7 @@ export function EmittersContrastBar({ active, onCountryClick, selectedYear = 202
       .style("align-items", "center")
       .style("justify-content", "flex-end")
       .style("height", "100%")
-      .style("font-family", "var(--font-body)")
+      .style("font-family", "'Public Sans', ui-sans-serif, system-ui, sans-serif")
       .style("font-size", "10.5px")
       .style("color", "rgba(14,42,44,0.8)")
       .style("text-align", "right")
@@ -147,7 +147,7 @@ export function EmittersContrastBar({ active, onCountryClick, selectedYear = 202
       .attr("x", (d) => xGhg(d.ghg) + 5)
       .attr("y", barH / 2)
       .attr("dy", "0.35em")
-      .attr("font-family", "var(--font-data)")
+      .attr("font-family", "'Public Sans', ui-sans-serif, system-ui, sans-serif")
       .attr("font-size", 9.5)
       .attr("fill", "var(--coral)")
       .text((d) => `${d.ghg.toFixed(1)} Tons`);
@@ -173,7 +173,7 @@ export function EmittersContrastBar({ active, onCountryClick, selectedYear = 202
       .attr("x", (d) => (d.temp !== null ? xTemp(Math.abs(d.temp)) + 5 : 5))
       .attr("y", barH + innerGap + tempBarH / 2)
       .attr("dy", "0.35em")
-      .attr("font-family", "var(--font-data)")
+      .attr("font-family", "'Public Sans', ui-sans-serif, system-ui, sans-serif")
       .attr("font-size", 9.5)
       .attr("fill", "var(--lagoon)")
       .text((d) => (d.temp !== null ? `${d.temp > 0 ? "+" : ""}${d.temp.toFixed(2)}°C` : "—"));

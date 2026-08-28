@@ -2,16 +2,17 @@ import json
 import pandas as pd
 from pathlib import Path
 
-SRC = "data/pacific_data_all_final.xlsx"
+SRC = "data/pacific_data_all.xlsx"
 OUT = Path("data")
 
 # 13 Pacific Island Countries target
-TARGET_CODES = {"CK", "FM", "FJ", "KI", "NR", "NU", "PW", "MH", "WS", "SB", "TO", "TV", "VU"}
+TARGET_CODES = {"CK", "FM", "MIC", "FJ", "KI", "NR", "NU", "PW", "MH", "WS", "SB", "TO", "TV", "VU"}
 
 # Canonical names for each code
 CODE_TO_NAME = {
     "CK": "Cook Islands",
     "FM": "Federated States of Micronesia",
+    "MIC": "Federated States of Micronesia",
     "FJ": "Fiji",
     "KI": "Kiribati",
     "NR": "Nauru",
@@ -27,7 +28,7 @@ CODE_TO_NAME = {
 
 # ISO2 codes mapping
 CODE_TO_ISO2 = {
-    "CK": "CK", "FM": "FM", "FJ": "FJ", "KI": "KI",
+    "CK": "CK", "FM": "FM", "MIC": "FM", "FJ": "FJ", "KI": "KI",
     "NR": "NR", "NU": "NU", "PW": "PW", "MH": "MH",
     "WS": "WS", "SB": "SB", "TO": "TO", "TV": "TV", "VU": "VU",
 }
@@ -36,6 +37,7 @@ CODE_TO_ISO2 = {
 CENTROIDS = {
     "CK": (-21.2367, -159.7777),
     "FM": (6.9248, 158.1611),
+    "MIC": (6.9248, 158.1611),
     "FJ": (-17.7134, 178.0650),
     "KI": (1.4518, 172.9717),
     "NR": (-0.5228, 166.9315),

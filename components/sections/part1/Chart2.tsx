@@ -124,7 +124,7 @@ It causes fear…
                   {yScale.ticks(6).map(tick => (
                     <g key={`y-${tick}`} transform={`translate(0,${yScale(tick)})`}>
                       <line x1={0} x2={innerW} stroke="var(--ink-faint)" strokeOpacity={0.2} strokeDasharray="4 4" />
-                      <text x={-10} y={4} textAnchor="end" fill="var(--ink-faint)" fontSize={11} fontFamily="var(--font-mono)">
+                      <text x={-10} y={4} textAnchor="end" fill="var(--ink-faint)" fontSize={11} fontFamily="'Public Sans', ui-sans-serif, system-ui, sans-serif">
                         {tick}mm
                       </text>
                     </g>
@@ -132,7 +132,7 @@ It causes fear…
                   {xScale.ticks(5).map(tick => (
                     <g key={`x-${tick}`} transform={`translate(${xScale(tick)},0)`}>
                       <line y1={0} y2={innerH} stroke="var(--ink-faint)" strokeOpacity={0.2} strokeDasharray="4 4" />
-                      <text y={innerH + 15} textAnchor="middle" fill="var(--ink-faint)" fontSize={11} fontFamily="var(--font-mono)">
+                      <text y={innerH + 15} textAnchor="middle" fill="var(--ink-faint)" fontSize={11} fontFamily="'Public Sans', ui-sans-serif, system-ui, sans-serif">
                         {tick}
                       </text>
                     </g>
@@ -197,7 +197,7 @@ It causes fear…
                             <g key={s.year} transform={`translate(${x},${y})`}>
                               <circle r={4} fill={color} />
                               <rect x={-20} y={-24} width={40} height={18} fill="white" rx={3} stroke="var(--ink-faint)" strokeOpacity={0.2} className="shadow-sm" />
-                              <text x={0} y={-11} textAnchor="middle" fill="var(--ink)" fontSize={10} fontFamily="var(--font-mono)" fontWeight="bold">
+                              <text x={0} y={-11} textAnchor="middle" fill="var(--ink)" fontSize={10} fontFamily="'Public Sans', ui-sans-serif, system-ui, sans-serif" fontWeight="bold">
                                 {(s.value) > 0 ? '+' : ''}{(s.value).toFixed(3)}
                               </text>
                             </g>

@@ -84,14 +84,14 @@ body {
 }
 
 .eyebrow {
-  font-family: var(--font-data);
+  font-family: var(--font-body);
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .stat-figure {
-  font-family: var(--font-data);
+  font-family: var(--font-body);
   font-variant-numeric: tabular-nums;
 }
 
