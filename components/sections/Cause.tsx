@@ -43,7 +43,7 @@ export function Cause() {
               Click on any country in the bar chart to view detailed data
             </span>
           </div>
-          <div className="mt-4">
+          <div className="">
             <TimelineControl
               minYear={MIN_YEAR}
               maxYear={MAX_YEAR}

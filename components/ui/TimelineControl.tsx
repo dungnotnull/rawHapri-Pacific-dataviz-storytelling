@@ -82,7 +82,7 @@ export function TimelineControl({
   };
 
   return (
-    <div className="flex items-center gap-0 w-full py-4 overflow-hidden select-none">
+    <div className="flex items-center gap-0 w-full py-2 overflow-hidden select-none">
       {/* Play/Pause Button */}
       <button
         onClick={togglePlay}
