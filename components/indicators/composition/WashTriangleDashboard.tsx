@@ -329,8 +329,8 @@ export default function WashTriangleDashboard() {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-10 mb-8 pt-4">
-          <div className="flex-1 lg:flex-[3] relative flex flex-col min-w-0" style={{ minHeight: "550px" }}>
+        <div className="flex flex-col lg:flex-row gap-10 mb-8 pt-4 md:pt-1">
+          <div className="flex-1 lg:flex-[3] relative flex flex-col min-w-0" style={{ minHeight: "620px" }}>
             
             <div className="w-full z-20 mb-2">
               <TimelineControl
@@ -374,7 +374,7 @@ export default function WashTriangleDashboard() {
           </div>
 
           {/* Right Sidebar (Legend) */}
-          <div className="lg:w-64 shrink-0 flex flex-col gap-6">
+          <div className="lg:w-64 shrink-0 flex flex-col gap-6 md:mt-6">
             <div className="bg-transparent border-l border-ink/10 pl-5 flex-1">
               <div className="flex flex-col gap-1 max-h-[450px] overflow-y-auto custom-scroll pr-2">
                 {activeCountries.map((c, i) => (
