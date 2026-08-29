@@ -38,23 +38,32 @@ export function Hero() {
           <div>
             <ScrollReveal animation="fade-down" delay={200}>
               <p className="eyebrow text-coral-soft">
-                A Pacific Climate Crisis
+                A Pacific climate crisis
               </p>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={400}>
               <h1 className="mt-5 max-w-2xl font-display text-[clamp(2rem,6vw,4.25rem)] font-medium leading-[1.05] tracking-tight">
-                Higher Sea Levels, Scarcer Clean Water
+                SEAS CLIMB HIGH, ISLES SINK LOW, WASH IN PICs
               </h1>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={600}>
-              <p className="prose-col mt-7 text-lg text-foam/70">
-                13 pacific island countries, but the same story - relating to the sea. As sea level rise drives saltwater farther inland, drinking water supplies of some coastal cities will be contaminated.
-              </p>
-            
+              <div className="mt-7 text-lg text-foam/70 space-y-4 max-w-[820px]">
+                <p>
+                  Pacific Island Countries (PICs) have some of the lowest water,
+                  sanitation, and hygiene (WASH) coverage rates globally, while
+                  also being among the countries most vulnerable to climate
+                  change. Sea level rise has further intensified WASH
+                  challenges across the Pacific region.
+                </p>
+                <p>
+                  Using the available data, we examine this relationship and
+                  explore how WASH conditions have evolved in PICs.
+                </p>
+              </div>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" delay={800}>
               <div className="mt-14 flex items-center gap-3 text-foam/50">
-                <span className="eyebrow"> Created by Ngoc Nguyen, Lan Nguyen, Thu Truong, Dung Truong</span>
+                <span className="eyebrow"> By Ngoc Nguyen, Dung Truong, Lan Nguyen, Thu Truong</span>
                 <span className="h-8 w-px animate-pulse bg-foam/30" />
               </div>
             </ScrollReveal>
@@ -112,14 +121,15 @@ export function Hero() {
       */}
 
       {/* ---- closing quote ---- */}
-      <div className="relative mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-6 py-24 text-center md:px-16">
+      <div className="relative mx-auto flex min-h-[70vh] max-w-4xl flex-col items-center justify-center px-6 py-24 text-center md:px-16">
         <svg width="28" height="20" viewBox="0 0 28 20" fill="none" className="mb-6 text-coral animate-on-scroll animate-zoom-in is-visible">
           <path d="M0 20V11.5C0 5.15 4.5 0.9 11 0L11.8 3.1C7.8 4 5.6 6.7 5.3 10.2H10V20H0ZM16.2 20V11.5C16.2 5.15 20.7 0.9 27.2 0L28 3.1C24 4 21.8 6.7 21.5 10.2H26.2V20H16.2Z" fill="currentColor"/>
         </svg>
         <p className="font-display text-2xl italic leading-relaxed text-foam md:text-3xl animate-on-scroll animate-fade-up is-visible">
-          The sea keeps us alive, but it rises, 
-then clean water declines;<br/>
-Humans cry,<br/>
+          The sea keeps us alive, but now it starts to rise,<br/>
+then clean water declines,<br/>
+W.A.S.H can barely supply.<br/>
+Humans fight,<br/>
 humans try,<br/>
 … to survive.<br/>
         </p>

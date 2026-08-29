@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { cleanWaterFull, indicatorIds, shortName, cleanWaterYears } from "@/lib/data";
 import { makePalette, NEUTRAL_LINE } from "@/lib/colors";
 import Flag from "@/components/ui/Flag";
+import { SourceNote } from "@/components/ui/SourceNote";
 
 const YEAR_EARLY = cleanWaterYears[0];
 const YEAR_LATE = cleanWaterYears[cleanWaterYears.length - 1];
@@ -24,10 +25,11 @@ const ENGLISH_LABELS: Record<string, string> = {
   "SH_SAN_SAFE": "Safely managed sanitation"
 };
 
-function getClosestVal(dataObj: any, kind: "urban" | "rural", targetYear: number): number {
+function getValForYear(dataObj: any, kind: "urban" | "rural", targetYear: number, exactOnly: boolean = false): number {
   if (!dataObj || !dataObj[kind] || dataObj[kind].length === 0) return 0;
   const exact = dataObj[kind].find((s: any) => s.year === targetYear);
   if (exact) return exact.value;
+  if (exactOnly) return 0;
   
   const closest = dataObj[kind].reduce((prev: any, curr: any) => 
     Math.abs(curr.year - targetYear) < Math.abs(prev.year - targetYear) ? curr : prev
@@ -35,10 +37,14 @@ function getClosestVal(dataObj: any, kind: "urban" | "rural", targetYear: number
   return closest ? closest.value : 0;
 }
 
+function hasExactYear(dataObj: any, kind: "urban" | "rural", year: number): boolean {
+  return dataObj && dataObj[kind] && dataObj[kind].some((s: any) => s.year === year);
+}
+
 function generateStepsForIndicator(indId: string, index: number): Omit<Step, "indId" | "localStepIndex">[] {
   const data = cleanWaterFull[indId as keyof typeof cleanWaterFull].countries;
   const countries = Object.keys(data).filter(
-    (name) => data[name].urban && data[name].rural && data[name].urban.length > 0 && data[name].rural.length > 0
+    (name) => hasExactYear(data[name], "urban", YEAR_LATE) && hasExactYear(data[name], "rural", YEAR_LATE)
   );
   
   if (countries.length === 0) return [];
@@ -46,8 +52,8 @@ function generateStepsForIndicator(indId: string, index: number): Omit<Step, "in
   const label = ENGLISH_LABELS[indId] || cleanWaterFull[indId as keyof typeof cleanWaterFull].label;
   
   const gapData = countries.map(name => {
-    const urban = getClosestVal(data[name], "urban", YEAR_LATE);
-    const rural = getClosestVal(data[name], "rural", YEAR_LATE);
+    const urban = getValForYear(data[name], "urban", YEAR_LATE, true);
+    const rural = getValForYear(data[name], "rural", YEAR_LATE, true);
     const gap = Math.abs(urban - rural);
     return { name, urban, rural, gap };
   }).sort((a, b) => b.gap - a.gap);
@@ -64,13 +70,30 @@ function generateStepsForIndicator(indId: string, index: number): Omit<Step, "in
     else if (d.rural > d.urban) belowCount++;
   });
   
+  // Equal-value ties listed in reverse alphabetical order (e.g. "Palau and Fiji")
+  const onDiagonal = gapData
+    .filter((d) => d.urban === d.rural)
+    .sort((a, b) => b.name.localeCompare(a.name));
+  const onNames = onDiagonal.map((d) => shortName(d.name)).join(" and ");
+  const aboveDiagonal = gapData.filter((d) => d.urban > d.rural);
+  const aboveNames = aboveDiagonal.map((d) => shortName(d.name)).join(" and ");
+
   let patternText = "";
   if (aboveCount === countries.length) {
-    patternText = `All ${countries.length} countries with disaggregated data fall ABOVE the diagonal — meaning in every country without exception, urban rates are higher than rural.`;
+    patternText = `All ${countries.length} countries fall ABOVE the diagonal - meaning in every country without exception, urban rates are better than rural.`;
   } else if (belowCount === countries.length) {
-    patternText = `All ${countries.length} countries fall BELOW the diagonal — meaning rural rates are higher than urban.`;
+    patternText = `All ${countries.length} countries fall BELOW the diagonal - meaning rural rates are higher than urban rates.`;
+  } else if (belowCount > aboveCount) {
+    patternText = `While ${belowCount}/${countries.length} countries fall BELOW the diagonal, meaning rural rates are typically higher than urban rates - worse conditions in rural areas with big gaps`;
+    if (aboveDiagonal.length > 0) {
+      patternText += `, ${aboveNames} ${aboveDiagonal.length > 1 ? "fall" : "falls"} ABOVE it with small gaps`;
+    }
+    patternText += `.`;
+    if (onDiagonal.length > 0) {
+      patternText += ` ${onNames} ${onDiagonal.length > 1 ? "are" : "is"} ON the diagonal.`;
+    }
   } else {
-    patternText = `${aboveCount} out of ${countries.length} countries fall ABOVE the diagonal, meaning urban areas typically have higher rates than rural areas.`;
+    patternText = `${aboveCount}/${countries.length} countries fall ABOVE the diagonal - meaning urban rates are typically better than rural rates.`;
   }
 
   // Adjust wording for Open Defecation
@@ -78,12 +101,16 @@ function generateStepsForIndicator(indId: string, index: number): Omit<Step, "in
   
   const prefix = indId.includes("H2O") ? "WATER" : indId === "SH_SAN_HNDWSH" ? "HYGIENE" : "SANITATION";
   
+  // Equal-gap ties listed in reverse alphabetical order (e.g. "Palau and Fiji")
+  const narrowestList = gapData
+    .filter((d) => d.gap === narrowest.gap)
+    .sort((a, b) => b.name.localeCompare(a.name));
+  const narrowestNames = narrowestList.map((d) => shortName(d.name)).join(" and ");
+
   return [
     {
-      kicker: `${prefix} — ${label.toUpperCase()}`,
-      text: index === 0 
-        ? `Each dot is one country. X-axis shows % of rural population, Y-axis shows urban, in 2024.`
-        : `Urban vs rural rates for ${label.toLowerCase()} in 2024.`,
+      kicker: `${prefix}`,
+      text: `${index === 0 ? "Each dot is one country. " : ""}Rural (X-axis) versus Urban (Y-axis) rates (% of population) for ${label} in ${YEAR_LATE}.`,
       align: "left",
       highlightCountry: null
     },
@@ -95,21 +122,15 @@ function generateStepsForIndicator(indId: string, index: number): Omit<Step, "in
     },
     {
       kicker: `${prefix} — ${widestKicker}`,
-      text: `${shortName(largest.name)}: ${largest.urban.toFixed(1)}% of urban population compared to ${largest.rural.toFixed(1)}% in rural areas — a ${largest.gap.toFixed(1)}-point gap, the widest in the region.`,
+      text: `${shortName(largest.name)}: ${largest.urban.toFixed(1)}% of urban population compared to ${largest.rural.toFixed(1)}% in rural areas - a ${largest.gap.toFixed(1)}-point gap, the widest in the region.`,
       align: "left",
       highlightCountry: largest.name
     },
     {
       kicker: `${prefix} — NARROWEST GAP`,
-      text: `${shortName(narrowest.name)} has just a ${narrowest.gap.toFixed(1)}-point gap between urban (${narrowest.urban.toFixed(1)}%) and rural (${narrowest.rural.toFixed(1)}%).`,
+      text: `${narrowestNames}: just a ${narrowest.gap.toFixed(1)}-point gap between urban (${narrowestList[0].urban.toFixed(1)}%) and rural (${narrowestList[0].rural.toFixed(1)}%).`,
       align: "right",
-      highlightCountry: narrowest.name
-    },
-    {
-      kicker: `${prefix} — TRAJECTORY ${YEAR_EARLY} → ${YEAR_LATE}`,
-      text: `From ${YEAR_EARLY} to ${YEAR_LATE}, you can see how each country progressed. ${isReversed ? "Lines pointing down and left mean rates are improving (decreasing)." : "Lines pointing up and right mean both rural and urban improved."}`,
-      align: "left",
-      highlightCountry: null
+      highlightCountry: narrowestList.length === 1 ? narrowestList[0].name : null
     }
   ];
 }
@@ -138,7 +159,7 @@ export default function Part2Chart2V2() {
   
   const activeData = cleanWaterFull[activeIndId as keyof typeof cleanWaterFull].countries;
   const SCATTER_COUNTRIES = useMemo(() => Object.keys(activeData).filter(
-    (name) => activeData[name].urban && activeData[name].rural && activeData[name].urban.length > 0 && activeData[name].rural.length > 0
+    (name) => hasExactYear(activeData[name], "urban", YEAR_LATE) && hasExactYear(activeData[name], "rural", YEAR_LATE)
   ), [activeData]);
   
   const palette = useMemo(() => makePalette(SCATTER_COUNTRIES), [SCATTER_COUNTRIES]);
@@ -181,7 +202,7 @@ export default function Part2Chart2V2() {
   const scale = (v: number) => (v / 100) * innerW;
 
   const getVal = (name: string, kind: "urban" | "rural", year: number) =>
-    getClosestVal(activeData[name], kind, year);
+    getValForYear(activeData[name], kind, year, year === YEAR_LATE);
 
   const showDiagonalShade = localStep >= 1;
   const highlightCountry = currentMeta.highlightCountry;
@@ -210,7 +231,7 @@ export default function Part2Chart2V2() {
     <section id="part1-chart1" className="relative bg-foam px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
         <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
-          The Rural&mdash;Urban Divide
+          Who is most affected by poor WASH? Rural or Urban?
         </h2>
         <div className="mt-8 flex items-center gap-2 text-xs text-ink-faint animate-pulse">
           <svg width="12" height="16" viewBox="0 0 12 16" fill="none">
@@ -493,6 +514,21 @@ export default function Part2Chart2V2() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mx-auto max-w-6xl pt-6 sm:pt-10">
+        <SourceNote className="text-primary text-xs">
+          <span>Data source: Clean Water and Sanitation (</span>
+          <a
+            href="https://stats.pacificdata.org/vis?locale=en&dataflow%5BdatasourceId%5D=SPC2&dataflow%5BagencyId%5D=SPC&dataflow%5BdataflowId%5D=DF_SDG_06&dataflow%5Bversion%5D=3.0"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-primary"
+          >
+            Pacific Data Hub
+          </a>
+          <span>).</span>
+        </SourceNote>
       </div>
 
       {/* <div className="mx-auto max-w-6xl pt-6 sm:pt-10">

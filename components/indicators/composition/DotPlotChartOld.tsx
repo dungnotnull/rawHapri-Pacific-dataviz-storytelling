@@ -162,14 +162,41 @@ export default function DotPlotChartOld() {
     <section className="relative mb-20">
       <div className="mx-auto max-w-6xl">
         <ScrollReveal animation="fade-down" delay={200}>
-          <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
-            Comparison version (X-axis is %)
+          <p className="eyebrow text-lagoon">Impact on Pacific WASH</p>
+        </ScrollReveal>
+        <ScrollReveal animation="fade-down" delay={200}>
+          <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl mt-2">
+            As the sea rises, WASH stands still
           </h2>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
-          <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink-dim leading-relaxed">
-            xxxxxxxxxxxxxxxxx
-          </p>
+          <div className="mt-3 max-w-3xl text-sm sm:text-base text-ink-dim leading-relaxed space-y-3">
+            <p>
+              Water, Sanitation, and Hygiene (WASH) is a fundamental part of
+              development, enabling families to live clean and healthy lives.
+              Yet delivering WASH services across PICs remains difficult due to
+              their remote geography, small and largely rural populations,
+              limited resources, and cultural diversity. WASH challenges have
+              been intensified by climate change, especially rising sea
+              levels.
+            </p>
+            <p>
+              Climate change is generating unsanitary conditions that limit
+              access to safe water and hinder the development of adequate WASH
+              infrastructure. Rising sea levels are driving more frequent and
+              severe flooding, which in turn raises the risk of waterborne
+              pathogens leaking from sewage systems and spreading disease.
+              Poor WASH practices further contribute to pollution, damaging
+              the ecosystems and biodiversity of Pacific islands.
+            </p>
+            <p>
+              There is not enough data to provide a complete picture, but the
+              available data suggests that the three WASH indicators - safely
+              managed drinking water, open defecation, and basic handwashing
+              facilities - have improved only marginally in some countries,
+              while others show stagnation or even decline.
+            </p>
+          </div>
         </ScrollReveal>
 
         <div className="mt-10 flex flex-col lg:flex-row gap-8">
@@ -357,14 +384,24 @@ export default function DotPlotChartOld() {
         </div>
         <div className="mt-4">
           <SourceNote>
-            <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2024.</span>
+            <span>Data source: Clean Water and Sanitation (</span>
+            <a
+              href="https://stats.pacificdata.org/vis?locale=en&dataflow%5BdatasourceId%5D=SPC2&dataflow%5BagencyId%5D=SPC&dataflow%5BdataflowId%5D=DF_SDG_06&dataflow%5Bversion%5D=3.0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-primary"
+            >
+              Pacific Data Hub
+            </a>
+            <span>).</span>
           </SourceNote>
         </div>
         <ScrollReveal animation="fade-up" delay={600}>
           <p className="mt-3 max-w-2xl text-xs sm:text-sm text-ink-dim leading-relaxed opacity-[0.7]">
-            Distribution of the clean water and sanitation indicators for a selected country. 
-            The dots represent the percentage value staggered vertically by year. 
-            Colors represent the trend from 2016 to 2024 (Green: Improved, Red: Declined, Black: Unchanged).
+            Distribution of clean water and sanitation indicators for a
+            selected country, with dots representing yearly values from 2016
+            to 2024, stacked vertically. Color indicates the overall trend
+            (Green: Improved, Red: Declined, Black: Unchanged).
           </p>
         </ScrollReveal>
       </div>

@@ -241,8 +241,30 @@ export default function WashTriangleDashboard() {
         {/* Header */}
         <div className="flex flex-col mb-6 relative">
           <h2 className="font-display text-2xl sm:text-3xl text-ink max-w-3xl">
-            The Climate Triangle
+            Averages hide the gaps: How WASH access differs across PICs
           </h2>
+          <div className="mt-3 max-w-3xl text-sm sm:text-base text-ink-dim leading-relaxed space-y-3">
+            <p>
+              In particular, based on the data available, in 2024, about 44%
+              of Pacific Islanders had access to safely managed drinking water
+              (WATER), 7.8% practiced open defecation (SANITATION), and 76.4%
+              had access to a handwashing facility with soap and water
+              (HYGIENE).
+            </p>
+            <p>
+              One figure worth noting is that more than 45% of the population
+              in the Solomon Islands practices open defecation, meaning that
+              they defecate in the open - in fields, forests, bushes, open
+              bodies of water, on beaches, in other open spaces or dispose of
+              it with solid waste. Clearly, this shows that nearly half of
+              Solomon Islanders lack access to basic sanitation services.
+            </p>
+            <p>
+              Meanwhile, among the countries with data for all three WASH
+              indicators, Fiji and Samoa perform well above the Pacific
+              average.
+            </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 bg-white/60 rounded-md border border-ink/10 shadow-sm overflow-hidden mb-0 text-sm divide-y md:divide-y-0 md:divide-x divide-ink/10">
@@ -370,10 +392,6 @@ export default function WashTriangleDashboard() {
                 />
               )}
             </div>
-            
-            <div className="text-[11px] text-ink/50 mt-4 pl-4 pt-2 border-t border-ink/5">
-              &#8251; Closer to the top-front-right corner is better (high water, low open defecation, high handwashing)
-            </div>
           </div>
 
           {/* Right Sidebar (Legend) */}
@@ -398,14 +416,23 @@ export default function WashTriangleDashboard() {
         </div>
          <div className="mt-10 md:mt-4">
                   <SourceNote>
-                    <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2024.</span>
+                    <span>Data source: Clean Water and Sanitation (</span>
+                    <a
+                      href="https://stats.pacificdata.org/vis?locale=en&dataflow%5BdatasourceId%5D=SPC2&dataflow%5BagencyId%5D=SPC&dataflow%5BdataflowId%5D=DF_SDG_06&dataflow%5Bversion%5D=3.0"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-2 hover:text-primary"
+                    >
+                      Pacific Data Hub
+                    </a>
+                    <span>).</span>
                   </SourceNote>
                 </div>
                 <ScrollReveal animation="fade-up" delay={600}>
                   <p className="mt-3 max-w-2xl text-xs sm:text-sm text-ink-dim leading-relaxed opacity-[0.7]">
-                    Distribution of the clean water and sanitation indicators for a selected country. 
-                    The dots represent the percentage value staggered vertically by year. 
-                    Colors represent the trend from 2016 to 2024 (Green: Improved, Red: Declined, Black: Unchanged).
+                    Closer to the top-front-right corner is better (High
+                    safely managed drinking water - Low open defecation - High
+                    handwashing facilities).
                   </p>
                 </ScrollReveal>
       </div>

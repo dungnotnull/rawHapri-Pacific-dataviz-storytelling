@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+import { SITE_URL } from "@/lib/site";
+
+const SITE_TITLE =
+  "A Pacific Climate Crisis - Seas Climb High, Isles Sink Low, WASH in PICs";
+const SITE_DESCRIPTION =
+  "Pacific Island Countries pollute the least yet pay the most: as seas climb, clean water and sanitation (WASH) decline. An interactive data story on sea level rise and WASH across the Pacific.";
+
 export const metadata: Metadata = {
-  title: "A Pacific climate story",
-  description:
-    "Pacific Island Countries emit the least, and stand to lose the most. An interactive data story on emissions, sea level, and the cost still to come.",
+  metadataBase: new URL(SITE_URL),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg",
@@ -12,28 +22,36 @@ export const metadata: Metadata = {
   keywords: [
     "climate change",
     "pacific islands",
-    "emissions",
     "sea level rise",
+    "WASH",
+    "water sanitation hygiene",
+    "clean water",
+    "open defecation",
+    "rural urban divide",
+    "emissions",
     "data visualization",
     "interactive story",
-    "global warming",
-    "carbon footprint",
     "Pacific Data Hub"
   ],
-  authors: [{ name: "Hapri Vietnam Team" }],
+  authors: [
+    { name: "Ngoc Nguyen" },
+    { name: "Dung Truong" },
+    { name: "Lan Nguyen" },
+    { name: "Thu Truong" }
+  ],
   creator: "Hapri Vietnam Team",
   publisher: "Hapri Vietnam Team",
   openGraph: {
-    title: "A Pacific climate story",
-    description: "Pacific Island Countries emit the least, and stand to lose the most. Explore this interactive data story on emissions, sea levels, and climate impact.",
-    url: "https://pacific-climate.vercel.app",
-    siteName: "A Pacific climate story",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    url: "/",
+    siteName: "A Pacific Climate Crisis",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "A Pacific climate story",
+        alt: "A Pacific climate crisis: seas climb high, isles sink low, wash in PICs",
       },
     ],
     locale: "en_US",
@@ -41,8 +59,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "A Pacific climate story",
-    description: "Pacific Island Countries emit the least, and stand to lose the most. Explore this interactive data story on emissions, sea levels, and climate impact.",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     creator: "@HapriVietnamTeam",
     images: ["/og-image.png"],
   },

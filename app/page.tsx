@@ -9,10 +9,10 @@ import IndicatorsHub from "@/components/indicators/page";
 
 const MARKS = [
   { id: "closing", label: "closing" },
+  { id: "part1-chart1", label: "rural vs urban" },
   { id: "indicators", label: "indicators" },
-  { id: "part2-chart1", label: "water rankings" },
-  { id: "cause", label: "emissions" },
-  { id: "part1-chart2", label: "sea level" },
+  { id: "cause", label: "the reasons why" },
+  { id: "part1-chart2", label: "sea status" },
   { id: "intro", label: "intro" },
 ];
 
@@ -29,8 +29,8 @@ export default function Home() {
       </div> */}
 
       <Hero />
-      <Cause />
       <Part1Chart2 />
+      <Cause />
       {/* <Part2Chart1 /> */}
       <IndicatorsHub />
       <Part2Chart2V2 />
@@ -41,19 +41,41 @@ export default function Home() {
       >
         <div className="mx-auto max-w-6xl">
           <p className="prose-col max-w-xl font-display text-xl italic leading-snug text-foam/85">
-            Pacific islands have added almost nothing to the carbon ledger - yet
-            they are the ones paying down its interest, one rising tide at a
-            time.
+            “We are the people of this world, and we need to be together” - A
+            Tuvaluan woman.
           </p>
+
+          <div className="mt-10 max-w-3xl space-y-5 text-sm leading-relaxed text-foam/70 sm:text-base">
+            <p>
+              As the global climate continues to change, seawater is expected
+              to increasingly encroach inland in many parts of the world.
+              Behind every number and every chart lies a hidden story - a
+              warning bell that calls on us to pay greater attention to the
+              growing threat to freshwater security and the communities that
+              depend on it - a challenge that is global, not PICs alone.
+            </p>
+            <p>
+              In conclusion, collective action is needed to mitigate climate
+              change, reduce greenhouse gas emissions, and protect vulnerable
+              communities worldwide. Pacific nations will continue to amplify
+              their voices on the global stage, advocating for decisive action
+              to combat climate change and preserve vital freshwater sources.
+            </p>
+            <p>
+              Ensuring access to adequate WASH services is not just about
+              survival - it is about dignity, equality, and a sustainable
+              future for all.
+            </p>
+          </div>
 
           <div className="mt-12 grid gap-8 border-t border-foam/10 pt-8 text-sm text-foam/50 md:grid-cols-2">
             <div>
               <p className="eyebrow text-foam/70">Data</p>
               <p className="mt-2 leading-relaxed">
-                Pacific Data Hub (sea level, GHG, temperature). Migration
-                figures are illustrative placeholders - see{" "}
+                Pacific Data Hub (sea level, GHG, temperature), Climate Data
+                Store (sea level anomalies) - see{" "}
                 <code className="stat-figure text-xs">/data/SOURCES.md</code>{" "}
-                for the full source list and caveats.
+                for the full source list.
               </p>
             </div>
             <div>

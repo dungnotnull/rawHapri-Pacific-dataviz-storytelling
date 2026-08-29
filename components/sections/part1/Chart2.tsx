@@ -99,19 +99,30 @@ export default function Part1Chart2() {
     <section id="part1-chart2" className="relative bg-foam px-6 py-14 md:px-16">
       <div className="mx-auto max-w-6xl">
         <ScrollReveal animation="fade-down" delay={200}>
-          <p className="eyebrow text-lagoon">A Pacific climate story</p>
+          <p className="eyebrow text-lagoon">Pacific sea status</p>
         </ScrollReveal>
         <ScrollReveal animation="fade-down" delay={200}>
           <h1 className="font-display text-3xl sm:text-4xl text-ink max-w-3xl mt-2">
-            Sea level rise over years
+            Rising Seas, Starved of Water
           </h1>
         </ScrollReveal>
         <ScrollReveal animation="fade-up" delay={400}>
-          <p className="mt-3 max-w-3xl text-sm sm:text-base text-ink/65 leading-relaxed">
-            Sea levels across Pacific Island countries fluctuated significantly year-to-year but the overall trend is upward through the years.
-It causes fear…
-
-          </p>
+          <div className="mt-3 max-w-3xl text-sm sm:text-base text-ink-dim leading-relaxed space-y-3">
+            <p>
+              Over the years, sea-level anomalies have remained high across the
+              PICs, with an overall upward trend. Low-lying nations face severe
+              environmental and societal pressures from rising sea levels
+              driven by climate change. Rising sea levels erode coastlines,
+              damage infrastructure, cause flooding, and contaminate
+              freshwater reserves and agricultural land. This places additional
+              pressure on WASH systems across Pacific communities.
+            </p>
+            <p>
+              Despite being surrounded by water, PICs struggle with access to
+              safe drinking water - a crisis that is being intensified by
+              climate change.
+            </p>
+          </div>
         </ScrollReveal>
 
         <div className="mt-10 flex flex-col lg:flex-row gap-8">
@@ -247,12 +258,21 @@ It causes fear…
           </div>
         </div>
          <SourceNote className="text-primary text-xs mt-2 md:mt-6">
-                <span>Source: Pacific Data Hub, CLIMATE_CHANGE_SEA_INDICATORS, 2016–2024.</span>
+                <span>Data source: Sea level anomalies (</span>
+                <a
+                  href="https://cds.climate.copernicus.eu/datasets/satellite-sea-level-global?tab=overview"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-primary"
+                >
+                  Climate Data Store
+                </a>
+                <span>).</span>
               </SourceNote>
          <ScrollReveal animation="fade-up" delay={400}>
-          <p className="mt-4 max-w-2xl text-sm text-primary leading-relaxed opacity-[0.7]">
+          <p className="mt-4 max-w-3xl text-sm text-primary leading-relaxed opacity-[0.7]">
             Relative sea level anomalies by country ({seaLevelYears[0]}–{seaLevelYears[seaLevelYears.length - 1]}).
-            Hover over a country in the legend or the chart to highlight its trend.
+            Hover over a country in the legend or chart for details.
           </p>
         </ScrollReveal>
       </div>
