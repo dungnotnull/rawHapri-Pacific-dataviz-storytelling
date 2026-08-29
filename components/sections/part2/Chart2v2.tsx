@@ -13,7 +13,7 @@ interface Step {
   kicker: string;
   text: string;
   align: "left" | "right";
-  highlightCountry: string | null;
+  highlightCountries: string[];
   indId: string;
   localStepIndex: number;
 }
@@ -112,25 +112,25 @@ function generateStepsForIndicator(indId: string, index: number): Omit<Step, "in
       kicker: `${prefix}`,
       text: `${index === 0 ? "Each dot is one country. " : ""}Rural (X-axis) versus Urban (Y-axis) rates (% of population) for ${label} in ${YEAR_LATE}.`,
       align: "left",
-      highlightCountry: null
+      highlightCountries: []
     },
     {
       kicker: `${prefix} — THE PATTERN`,
       text: patternText,
       align: "right",
-      highlightCountry: null
+      highlightCountries: []
     },
     {
       kicker: `${prefix} — ${widestKicker}`,
       text: `${shortName(largest.name)}: ${largest.urban.toFixed(1)}% of urban population compared to ${largest.rural.toFixed(1)}% in rural areas - a ${largest.gap.toFixed(1)}-point gap, the widest in the region.`,
       align: "left",
-      highlightCountry: largest.name
+      highlightCountries: [largest.name]
     },
     {
       kicker: `${prefix} — NARROWEST GAP`,
       text: `${narrowestNames}: just a ${narrowest.gap.toFixed(1)}-point gap between urban (${narrowestList[0].urban.toFixed(1)}%) and rural (${narrowestList[0].rural.toFixed(1)}%).`,
       align: "right",
-      highlightCountry: narrowestList.length === 1 ? narrowestList[0].name : null
+      highlightCountries: narrowestList.map((d) => d.name)
     }
   ];
 }
@@ -205,7 +205,8 @@ export default function Part2Chart2V2() {
     getValForYear(activeData[name], kind, year, year === YEAR_LATE);
 
   const showDiagonalShade = localStep >= 1;
-  const highlightCountry = currentMeta.highlightCountry;
+  const highlightCountries = currentMeta.highlightCountries;
+  const isHighlighted = (name: string) => highlightCountries.includes(name);
   const showTrajectory = localStep >= 4;
   const isReversed = activeIndId === "SH_SAN_DEFECT";
 
@@ -214,13 +215,13 @@ export default function Part2Chart2V2() {
 
   const radiusFor = (name: string) => {
     if (hoveredNode === name) return 10;
-    if (highlightCountry) return name === highlightCountry ? 12 : 5;
+    if (highlightCountries.length > 0) return isHighlighted(name) ? 12 : 5;
     return 7.5;
   };
 
   const opacityFor = (name: string) => {
     if (hoveredNode === name) return 1;
-    if (highlightCountry) return name === highlightCountry ? 1 : 0.12;
+    if (highlightCountries.length > 0) return isHighlighted(name) ? 1 : 0.12;
     return localStep === 0 ? 0.55 : 0.9;
   };
 
@@ -386,14 +387,14 @@ export default function Part2Chart2V2() {
                   .sort((a, b) => {
                     if (a === hoveredNode) return 1;
                     if (b === hoveredNode) return -1;
-                    if (a === highlightCountry) return 1;
-                    if (b === highlightCountry) return -1;
+                    if (isHighlighted(a)) return 1;
+                    if (isHighlighted(b)) return -1;
                     return 0;
                   })
                   .map((name) => {
                   const rx = scale(getVal(name, "rural", YEAR_LATE));
                   const ry = innerH - scale(getVal(name, "urban", YEAR_LATE));
-                  const isHighlight = highlightCountry === name;
+                  const isHighlight = isHighlighted(name);
                   const isHovered = hoveredNode === name;
                   const showLabel = isHighlight || isHovered;
                   

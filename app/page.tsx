@@ -57,13 +57,14 @@ export default function Home() {
             <p>
               In conclusion, collective action is needed to mitigate climate
               change, reduce greenhouse gas emissions, and protect vulnerable
-              communities worldwide. Pacific nations will continue to amplify
-              their voices on the global stage, advocating for decisive action
-              to combat climate change and preserve vital freshwater sources.
+              communities worldwide. Pacific nations will keep raising their
+              voices on the international stage, pushing for meaningful action
+              to fight climate change and preserve critical freshwater
+              resources.
             </p>
             <p>
-              Ensuring access to adequate WASH services is not just about
-              survival - it is about dignity, equality, and a sustainable
+              Ensuring access to adequate WASH services goes beyond just
+              survival - it speaks to dignity, equity, and a sustainable
               future for all.
             </p>
           </div>
@@ -72,10 +73,9 @@ export default function Home() {
             <div>
               <p className="eyebrow text-foam/70">Data</p>
               <p className="mt-2 leading-relaxed">
-                Pacific Data Hub (sea level, GHG, temperature), Climate Data
-                Store (sea level anomalies) - see{" "}
-                <code className="stat-figure text-xs">/data/SOURCES.md</code>{" "}
-                for the full source list.
+                Pacific Data Hub (Clean Water and Sanitation, GHG per capita,
+                Temperature anomalies), Climate Data Store (Sea level
+                anomalies).
               </p>
             </div>
             <div>
